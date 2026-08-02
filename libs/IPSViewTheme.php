@@ -13,6 +13,11 @@ final class IPSViewTheme
     public const THEME_LIGHT = 1;
     public const THEME_DARK = 2;
     public const THEME_CUSTOM = 3;
+    public const THEME_WARM = 4;
+    public const THEME_COOL = 5;
+    public const THEME_EARTHY = 6;
+    public const THEME_WATER = 7;
+    public const THEME_SUNNY = 8;
 
     public const SCOPE_GLOBAL_DEFAULTS = 0;
     public const SCOPE_MATCHING_CONTROLS = 1;
@@ -80,6 +85,76 @@ final class IPSViewTheme
                 self::ROLE_SUCCESS         => '#22C55E',
                 self::ROLE_WARNING         => '#F59E0B',
                 self::ROLE_ERROR           => '#EF4444',
+            ],
+            self::THEME_WARM => [
+                self::ROLE_VIEW_BACKGROUND => '#3B2420',
+                self::ROLE_PAGE_BACKGROUND => '#4A2E27',
+                self::ROLE_SURFACE         => '#5C3A31',
+                self::ROLE_PRIMARY_TEXT    => '#FFF7ED',
+                self::ROLE_SECONDARY_TEXT  => '#D6B8A8',
+                self::ROLE_BORDER          => '#8A5A44',
+                self::ROLE_ACCENT          => '#F59E0B',
+                self::ROLE_ACTIVE          => '#E76F51',
+                self::ROLE_INACTIVE        => '#8D6E63',
+                self::ROLE_SUCCESS         => '#7BA05B',
+                self::ROLE_WARNING         => '#F4A261',
+                self::ROLE_ERROR           => '#D64545',
+            ],
+            self::THEME_COOL => [
+                self::ROLE_VIEW_BACKGROUND => '#0F1B2D',
+                self::ROLE_PAGE_BACKGROUND => '#17263A',
+                self::ROLE_SURFACE         => '#21354D',
+                self::ROLE_PRIMARY_TEXT    => '#F1F7FF',
+                self::ROLE_SECONDARY_TEXT  => '#A9BCD0',
+                self::ROLE_BORDER          => '#49647E',
+                self::ROLE_ACCENT          => '#38BDF8',
+                self::ROLE_ACTIVE          => '#2DD4BF',
+                self::ROLE_INACTIVE        => '#64748B',
+                self::ROLE_SUCCESS         => '#22C55E',
+                self::ROLE_WARNING         => '#FBBF24',
+                self::ROLE_ERROR           => '#F87171',
+            ],
+            self::THEME_EARTHY => [
+                self::ROLE_VIEW_BACKGROUND => '#2D2A20',
+                self::ROLE_PAGE_BACKGROUND => '#3A3528',
+                self::ROLE_SURFACE         => '#4A4433',
+                self::ROLE_PRIMARY_TEXT    => '#F4EBD0',
+                self::ROLE_SECONDARY_TEXT  => '#C8B894',
+                self::ROLE_BORDER          => '#766A4E',
+                self::ROLE_ACCENT          => '#B08968',
+                self::ROLE_ACTIVE          => '#7A9E5A',
+                self::ROLE_INACTIVE        => '#8B7D6B',
+                self::ROLE_SUCCESS         => '#6B8E4E',
+                self::ROLE_WARNING         => '#D4A373',
+                self::ROLE_ERROR           => '#B75D5D',
+            ],
+            self::THEME_WATER => [
+                self::ROLE_VIEW_BACKGROUND => '#06283D',
+                self::ROLE_PAGE_BACKGROUND => '#0B3A53',
+                self::ROLE_SURFACE         => '#10546D',
+                self::ROLE_PRIMARY_TEXT    => '#E6F7FF',
+                self::ROLE_SECONDARY_TEXT  => '#9CC9D8',
+                self::ROLE_BORDER          => '#347D91',
+                self::ROLE_ACCENT          => '#00B4D8',
+                self::ROLE_ACTIVE          => '#48CAE4',
+                self::ROLE_INACTIVE        => '#5B7F8C',
+                self::ROLE_SUCCESS         => '#2EC4B6',
+                self::ROLE_WARNING         => '#FFD166',
+                self::ROLE_ERROR           => '#EF476F',
+            ],
+            self::THEME_SUNNY => [
+                self::ROLE_VIEW_BACKGROUND => '#FFF3B0',
+                self::ROLE_PAGE_BACKGROUND => '#FFF9DB',
+                self::ROLE_SURFACE         => '#FFFFFF',
+                self::ROLE_PRIMARY_TEXT    => '#5B3A00',
+                self::ROLE_SECONDARY_TEXT  => '#8A6A2B',
+                self::ROLE_BORDER          => '#E7C86E',
+                self::ROLE_ACCENT          => '#F59E0B',
+                self::ROLE_ACTIVE          => '#84CC16',
+                self::ROLE_INACTIVE        => '#C7B37A',
+                self::ROLE_SUCCESS         => '#22C55E',
+                self::ROLE_WARNING         => '#F97316',
+                self::ROLE_ERROR           => '#DC2626',
             ],
             default => throw new InvalidArgumentException('The selected theme is not supported.'),
         };
@@ -757,18 +832,85 @@ final class IPSViewTheme
 
     private static function applyColorObject(stdClass $color, string $hexColor): void
     {
+        $originalPrimary = self::colorObjectToHex($color, $hexColor);
+        $originalSecondary = self::secondaryColorToHex($color, $originalPrimary);
         [$red, $green, $blue] = self::toRgb($hexColor);
         $color->R = $red;
         $color->G = $green;
         $color->B = $blue;
-        $color->Type = 0;
 
-        if (property_exists($color, 'R2')) {
-            [$secondRed, $secondGreen, $secondBlue] = self::toRgb(self::mix($hexColor, '#000000', 0.22));
-            $color->R2 = $secondRed;
-            $color->G2 = $secondGreen;
-            $color->B2 = $secondBlue;
+        if (!self::hasSecondaryColor($color)) {
+            return;
         }
+
+        $secondColor = self::deriveSecondaryColor(
+            $hexColor,
+            $originalPrimary,
+            $originalSecondary
+        );
+        [$secondRed, $secondGreen, $secondBlue] = self::toRgb($secondColor);
+        $color->R2 = $secondRed;
+        $color->G2 = $secondGreen;
+        $color->B2 = $secondBlue;
+    }
+
+    private static function secondaryColorToHex(stdClass $color, string $fallback): string
+    {
+        if (!self::hasSecondaryColor($color)) {
+            return self::normalizeColor($fallback);
+        }
+
+        return sprintf(
+            '#%02X%02X%02X',
+            max(0, min(255, (int) $color->R2)),
+            max(0, min(255, (int) $color->G2)),
+            max(0, min(255, (int) $color->B2))
+        );
+    }
+
+    private static function hasSecondaryColor(stdClass $color): bool
+    {
+        foreach (['R2', 'G2', 'B2'] as $component) {
+            if (!property_exists($color, $component)
+                || (!is_int($color->{$component}) && !is_float($color->{$component}))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static function deriveSecondaryColor(
+        string $newPrimary,
+        string $oldPrimary,
+        string $oldSecondary
+    ): string {
+        $oldPrimaryLuminance = self::relativeLuminance($oldPrimary);
+        $oldSecondaryLuminance = self::relativeLuminance($oldSecondary);
+        $difference = $oldSecondaryLuminance - $oldPrimaryLuminance;
+
+        if (abs($difference) < 0.005) {
+            return self::normalizeColor($newPrimary);
+        }
+
+        if ($difference < 0.0) {
+            $amount = 1.0 - ($oldSecondaryLuminance / max(0.001, $oldPrimaryLuminance));
+
+            return self::mix($newPrimary, '#000000', min(0.65, max(0.0, $amount)));
+        }
+
+        $amount = $difference / max(0.001, 1.0 - $oldPrimaryLuminance);
+
+        return self::mix($newPrimary, '#FFFFFF', min(0.65, max(0.0, $amount)));
+    }
+
+    private static function relativeLuminance(string $color): float
+    {
+        [$red, $green, $blue] = self::toRgb($color);
+
+        return (($red / 255) * 0.2126)
+            + (($green / 255) * 0.7152)
+            + (($blue / 255) * 0.0722);
     }
 
     /**

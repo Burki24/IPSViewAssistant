@@ -23,6 +23,11 @@ The following presets are available:
 - **IPSView Standard** – retains the original IPSView defaults
 - **Light** – bright surfaces with dark text
 - **Dark** – dark surfaces with light text
+- **Warm** – brown, terracotta, amber and cream tones
+- **Cool** – slate, blue, cyan and turquoise tones
+- **Earthy** – sand, clay, olive and muted natural tones
+- **Water** – deep blue, petrol, turquoise and aquamarine tones
+- **Sunny** – warm white, gold, yellow and orange tones
 - **Custom** – individual semantic colors
 
 The user does not need to know the many individual IPSView color property names. The assistant groups them into twelve roles:
@@ -42,6 +47,7 @@ The user does not need to know the many individual IPSView color property names.
 
 Changing any color automatically switches the theme selection to **Custom**. The live preview shows the result before the View is created.
 
+Every preset defines all twelve semantic roles and reaches all 107 global IPSView color objects. Theme changes preserve existing alpha values, gradient types, secondary alpha values and patterns. Existing gradients receive a matching second shade without losing their original light-to-dark direction.
 
 ## 3. Existing Views and design scope
 
@@ -129,3 +135,8 @@ Theme values:
 - `1` = Light
 - `2` = Dark
 - `3` = Custom
+- `4` = Warm
+- `5` = Cool
+- `6` = Earthy
+- `7` = Water
+- `8` = Sunny

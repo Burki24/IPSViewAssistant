@@ -4,6 +4,10 @@
 
 ### Added
 
+- Five additional complete design presets: Warm, Cool, Earthy, Water and Sunny.
+- Theme coverage tests for all 107 global IPSView color objects and every semantic palette role.
+- Preservation of IPSView alpha values, gradient types, secondary alpha values and patterns during theme changes.
+- Automatic secondary gradient shades that retain the original light-to-dark direction.
 - Selectable design scope for existing Views: global defaults, matching control colors or all basic control colors.
 - Safe semantic matching of direct control colors against the View's current global defaults.
 - Strong control-color unification for backgrounds, alternate backgrounds, text and borders while protecting unmatched association and special status colors.

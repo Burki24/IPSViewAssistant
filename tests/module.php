@@ -169,11 +169,19 @@ assertTest(
     'The copy factory does not read the existing media content.'
 );
 assertTest(is_array($themeSelect), 'The theme selection is missing from the form.');
-assertTest(count($themeSelect['options'] ?? []) === 4, 'The form does not offer all four theme modes.');
+assertTest(count($themeSelect['options'] ?? []) === 9, 'The form does not offer all nine theme modes.');
 assertTest(
     str_contains((string) ($themeSelect['onChange'] ?? ''), 'IPSVIEWA_ApplyThemePreset('),
     'The theme selection does not load a preset.'
 );
+
+$themeCaptions = array_column($themeSelect['options'] ?? [], 'caption');
+foreach (['Warm', 'Cool', 'Earthy', 'Water', 'Sunny'] as $caption) {
+    assertTest(
+        in_array($caption, $themeCaptions, true),
+        sprintf('The additional theme "%s" is missing from the form.', $caption)
+    );
+}
 assertTest(is_array($preview), 'The live theme preview is missing from the form.');
 assertTest(($preview['image'] ?? null) === '', 'The dynamic preview placeholder must be empty in form.json.');
 assertTest(($preview['width'] ?? '') === '100%', 'The live preview must fill its responsive panel.');

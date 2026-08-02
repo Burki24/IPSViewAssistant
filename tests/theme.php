@@ -61,6 +61,94 @@ assertTest(ipsViewColorToHex($dark->ColorText) === '#F9FAFB', 'The dark primary 
 assertTest(ipsViewColorToHex($dark->ColorBorder) === '#475569', 'The dark border color is incorrect.');
 assertTest(ipsViewColorToHex($dark->ScheduleNowIndicatorColor) === '#F59E0B', 'The warning color is incorrect.');
 
+$additionalPresets = [
+    IPSViewTheme::THEME_WARM => [
+        IPSViewTheme::ROLE_VIEW_BACKGROUND => '#3B2420',
+        IPSViewTheme::ROLE_ACCENT          => '#F59E0B',
+    ],
+    IPSViewTheme::THEME_COOL => [
+        IPSViewTheme::ROLE_VIEW_BACKGROUND => '#0F1B2D',
+        IPSViewTheme::ROLE_ACCENT          => '#38BDF8',
+    ],
+    IPSViewTheme::THEME_EARTHY => [
+        IPSViewTheme::ROLE_VIEW_BACKGROUND => '#2D2A20',
+        IPSViewTheme::ROLE_ACCENT          => '#B08968',
+    ],
+    IPSViewTheme::THEME_WATER => [
+        IPSViewTheme::ROLE_VIEW_BACKGROUND => '#06283D',
+        IPSViewTheme::ROLE_ACCENT          => '#00B4D8',
+    ],
+    IPSViewTheme::THEME_SUNNY => [
+        IPSViewTheme::ROLE_VIEW_BACKGROUND => '#FFF3B0',
+        IPSViewTheme::ROLE_ACCENT          => '#F59E0B',
+    ],
+];
+
+foreach ($additionalPresets as $theme => $expectedColors) {
+    $palette = IPSViewTheme::preset($theme);
+    assertTest(count($palette) === 12, 'An additional preset does not define all semantic color roles.');
+
+    foreach ($palette as $color) {
+        assertTest(
+            preg_match('/^#[0-9A-F]{6}$/', $color) === 1,
+            'An additional preset contains an invalid hexadecimal color.'
+        );
+    }
+
+    foreach ($expectedColors as $role => $expectedColor) {
+        assertTest(
+            $palette[$role] === $expectedColor,
+            'An additional preset contains an unexpected defining color.'
+        );
+    }
+
+    $presetDocument = IPSViewDocument::fromTemplate($templatePath);
+    $presetDocument->configure('Preset', 11000 + $theme, IPSViewDocument::ASPECT_RATIO_16_9, 0, 'Main');
+    $beforePreset = $presetDocument->copy();
+    $presetReport = $presetDocument->applyThemeWithReport($theme);
+    $afterPreset = $presetDocument->copy();
+
+    assertTest(
+        $presetReport['globalColorsApplied'] === 107,
+        'An additional preset does not cover all 107 global IPSView color objects.'
+    );
+    assertTest(
+        $presetDocument->analyzeThemeColors()['globalColors'] === 107,
+        'An additional preset changed the number of global IPSView color objects.'
+    );
+    assertTest(
+        ipsViewColorToHex($afterPreset->ColorPage) === $expectedColors[IPSViewTheme::ROLE_VIEW_BACKGROUND],
+        'An additional preset did not apply its View background.'
+    );
+    assertTest(
+        $afterPreset->ColorBackOn->Type === $beforePreset->ColorBackOn->Type,
+        'A preset changed an existing IPSView gradient type.'
+    );
+    assertTest(
+        $afterPreset->ColorBackOn->Pattern === $beforePreset->ColorBackOn->Pattern,
+        'A preset changed an existing IPSView color pattern.'
+    );
+    assertTest(
+        $afterPreset->ColorBackOn->A === $beforePreset->ColorBackOn->A
+            && $afterPreset->ColorBackOn->A2 === $beforePreset->ColorBackOn->A2,
+        'A preset changed existing IPSView alpha values.'
+    );
+    assertTest(
+        $afterPreset->ChartGraphFillColor->A === $beforePreset->ChartGraphFillColor->A,
+        'A preset changed a transparent IPSView color alpha value.'
+    );
+    assertTest(
+        ipsViewColorToHex($afterPreset->ColorBackOn)
+            !== sprintf(
+                '#%02X%02X%02X',
+                $afterPreset->ColorBackOn->R2,
+                $afterPreset->ColorBackOn->G2,
+                $afterPreset->ColorBackOn->B2
+            ),
+        'A preset did not derive a matching secondary gradient shade.'
+    );
+}
+
 $allowedColors = array_values($darkPalette);
 $allowedColors[] = IPSViewTheme::mix($darkPalette[IPSViewTheme::ROLE_VIEW_BACKGROUND], '#000000', 0.68);
 
@@ -110,6 +198,12 @@ assertTest(
 assertTest(
     IPSViewTheme::toFormColor('#ABCDEF') === 0xABCDEF,
     'Hexadecimal colors are not converted to SelectColor integers.'
+);
+
+$themeSource = (string) file_get_contents(dirname(__DIR__) . '/libs/IPSViewTheme.php');
+assertTest(
+    !str_contains($themeSource, '$color->Type = 0;'),
+    'Theme application must not flatten existing IPSView gradient or pattern types.'
 );
 
 $preview = IPSViewThemePreview::createDataUri($darkPalette);

@@ -42,7 +42,14 @@ Available presets:
 - IPSView Standard
 - Light
 - Dark
+- Warm
+- Cool
+- Earthy
+- Water
+- Sunny
 - Custom
+
+Every preset defines all twelve semantic roles and therefore reaches all 107 global IPSView color objects. Existing alpha values, gradient types, secondary alpha values and patterns remain unchanged. Where a color object contains a second gradient color, the Assistant derives a matching second shade from the new semantic color while preserving the original light-to-dark direction.
 
 A live SVG preview updates immediately when a preset or semantic color is changed. Colors and preview share one responsive workspace: they are displayed side by side when enough space is available and flow below one another in narrower configuration windows. The selected roles are mapped consistently to the IPSView defaults for buttons, switches, sliders, dialogs, charts, calendars and other controls.
 
@@ -77,4 +84,4 @@ The first save creates the separate design copy. Later saves with the same copy 
 
 ## Roadmap
 
-The next stages will add reusable design profiles, an optional change preview for strong control-color unification, simplified page layouts and guided creation of controls from Symcon objects.
+The next stages will add reusable design profiles, an optional change preview for strong control-color unification and clearer diagnostics for the colors found in existing Views. Page construction, control placement and object assignment remain tasks of the official IPSView Designer.

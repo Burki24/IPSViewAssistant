@@ -68,6 +68,13 @@ $sourceData->Pages[0]->Controls = [
         ],
     ],
 ];
+$sourceData->Pages[0]->Controls[0]->BackColor1->Type = 90;
+$sourceData->Pages[0]->Controls[0]->BackColor1->A = 60;
+$sourceData->Pages[0]->Controls[0]->BackColor1->Pattern = '12';
+$sourceData->Pages[0]->Controls[0]->BackColor1->A2 = 0;
+$sourceData->Pages[0]->Controls[0]->BackColor1->R2 = $sourceData->Pages[0]->Controls[0]->BackColor1->R;
+$sourceData->Pages[0]->Controls[0]->BackColor1->G2 = $sourceData->Pages[0]->Controls[0]->BackColor1->G;
+$sourceData->Pages[0]->Controls[0]->BackColor1->B2 = $sourceData->Pages[0]->Controls[0]->BackColor1->B;
 
 $document = IPSViewDocument::fromJson(
     json_encode($sourceData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR)
@@ -110,6 +117,22 @@ assertTest(
 assertTest(
     IPSViewTheme::colorObjectToHex($matchingCopy->Pages[0]->Controls[0]->BorderColor1) === '#475569',
     'A matching control border was not assigned to the border role.'
+);
+assertTest(
+    $matchingCopy->Pages[0]->Controls[0]->BackColor1->Type === 90
+        && $matchingCopy->Pages[0]->Controls[0]->BackColor1->A === 60
+        && $matchingCopy->Pages[0]->Controls[0]->BackColor1->A2 === 0
+        && $matchingCopy->Pages[0]->Controls[0]->BackColor1->Pattern === '12',
+    'The recommended design scope changed an existing control color type, alpha value or pattern.'
+);
+assertTest(
+    $matchingCopy->Pages[0]->Controls[0]->BackColor1->R2
+        === $matchingCopy->Pages[0]->Controls[0]->BackColor1->R
+        && $matchingCopy->Pages[0]->Controls[0]->BackColor1->G2
+        === $matchingCopy->Pages[0]->Controls[0]->BackColor1->G
+        && $matchingCopy->Pages[0]->Controls[0]->BackColor1->B2
+        === $matchingCopy->Pages[0]->Controls[0]->BackColor1->B,
+    'A flat secondary control color was not retained as a matching themed shade.'
 );
 assertTest(
     IPSViewTheme::colorObjectToHex($matchingCopy->Pages[0]->Controls[1]->BackColor1) === '#123456',
