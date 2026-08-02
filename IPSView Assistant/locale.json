@@ -39,7 +39,20 @@
             "Success": "Erfolg",
             "Warning": "Warnung",
             "Error": "Fehler",
-            "Preview": "Vorschau"
+            "Preview": "Vorschau",
+            "Existing View": "Bestehende View",
+            "Select an existing IPSView. Its design is loaded into the semantic color controls; the original is never changed.": "Wähle eine bestehende IPSView aus. Ihr Design wird in die verständlichen Farbfelder geladen; das Original wird niemals verändert.",
+            "Source IPSView": "Quell-IPSView",
+            "Copy name": "Name der Kopie",
+            "Copy target category": "Zielkategorie der Kopie",
+            "No existing IPSView has been loaded yet.": "Es wurde noch keine bestehende IPSView geladen.",
+            "Design copy": "Designkopie",
+            "Loaded \"%s\": %d pages and %d controls. The original remains unchanged.": "„%s“ geladen: %d Seiten und %d Bedienelemente. Das Original bleibt unverändert.",
+            "The existing IPSView could not be loaded: %s": "Die bestehende IPSView konnte nicht geladen werden: %s",
+            "Create styled copy": "Designkopie erstellen",
+            "The styled IPSView copy \"%s\" was created successfully with object ID %d.": "Die gestaltete IPSView-Kopie „%s“ wurde erfolgreich mit der Objekt-ID %d erstellt.",
+            "The styled IPSView copy could not be created: %s": "Die gestaltete IPSView-Kopie konnte nicht erstellt werden: %s",
+            "A styled copy preserves all pages, controls and unknown IPSView fields. Only the global design defaults are changed.": "Eine Designkopie erhält alle Seiten, Bedienelemente und unbekannten IPSView-Felder. Geändert werden ausschließlich die globalen Designvorgaben."
         }
     }
 }

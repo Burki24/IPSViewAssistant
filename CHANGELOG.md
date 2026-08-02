@@ -4,6 +4,9 @@
 
 ### Added
 
+- A3 safe design transfer for existing IPSView media objects.
+- Existing View inspection with semantic color extraction, page count and control count.
+- Lossless styled copies that preserve pages, controls, license data and unknown IPSView fields while leaving the original untouched.
 - Shared `ConfigurationFormHelper` integration and automatic helper synchronization configuration.
 - Responsive design workspace with semantic color controls and live preview side by side on wide screens and stacked on narrower screens.
 - A2 design assistant with IPSView Standard, Light, Dark and Custom themes.

@@ -7,6 +7,7 @@ require_once __DIR__ . '/bootstrap.php';
 $root = dirname(__DIR__);
 $moduleSource = file_get_contents($root . '/IPSView Assistant/module.php');
 $factorySource = file_get_contents($root . '/libs/IPSViewFactory.php');
+$copyFactorySource = file_get_contents($root . '/libs/IPSViewCopyFactory.php');
 $form = json_decode(
     (string) file_get_contents($root . '/IPSView Assistant/form.json'),
     true,
@@ -16,10 +17,13 @@ $form = json_decode(
 
 assertTest(is_string($moduleSource), 'The module source could not be read.');
 assertTest(is_string($factorySource), 'The IPSView factory source could not be read.');
+assertTest(is_string($copyFactorySource), 'The IPSView copy factory source could not be read.');
 assertTest(str_contains($moduleSource, 'extends IPSModuleStrict'), 'The module does not use IPSModuleStrict.');
 assertTest(str_contains($moduleSource, 'use ConfigurationFormHelper;'), 'The module does not use ConfigurationFormHelper.');
 assertTest(str_contains($moduleSource, 'public function GetConfigurationForm(): string'), 'The dynamic configuration form is missing.');
 assertTest(str_contains($moduleSource, 'public function CreateView('), 'The public CreateView method is missing.');
+assertTest(str_contains($moduleSource, 'public function LoadExistingView('), 'The public LoadExistingView method is missing.');
+assertTest(str_contains($moduleSource, 'public function CreateStyledCopy('), 'The public CreateStyledCopy method is missing.');
 assertTest(
     str_contains($moduleSource, 'public function ApplyThemePreset('),
     'The public ApplyThemePreset method is missing.'
@@ -56,6 +60,9 @@ function flattenFormItems(array $items): array
 
 $actions = flattenFormItems($form['actions'] ?? []);
 $button = null;
+$copyButton = null;
+$sourceView = null;
+$existingStatus = null;
 $themeSelect = null;
 $preview = null;
 $colorFields = [];
@@ -63,6 +70,18 @@ $colorFields = [];
 foreach ($actions as $action) {
     if (($action['type'] ?? '') === 'Button' && ($action['caption'] ?? '') === 'Create View') {
         $button = $action;
+    }
+
+    if (($action['type'] ?? '') === 'Button' && ($action['caption'] ?? '') === 'Create styled copy') {
+        $copyButton = $action;
+    }
+
+    if (($action['type'] ?? '') === 'SelectMedia' && ($action['name'] ?? '') === 'SourceViewID') {
+        $sourceView = $action;
+    }
+
+    if (($action['type'] ?? '') === 'Label' && ($action['name'] ?? '') === 'ExistingViewStatus') {
+        $existingStatus = $action;
     }
 
     if (($action['type'] ?? '') === 'Select' && ($action['name'] ?? '') === 'Theme') {
@@ -86,6 +105,21 @@ assertTest(
 assertTest(
     str_contains((string) ($button['onClick'] ?? ''), '$Theme'),
     'The Create View button does not pass the selected theme.'
+);
+assertTest(is_array($copyButton), 'The Create styled copy button is missing from the form.');
+assertTest(
+    str_contains((string) ($copyButton['onClick'] ?? ''), 'IPSVIEWA_CreateStyledCopy('),
+    'The styled copy button does not call the public module method.'
+);
+assertTest(is_array($sourceView), 'The existing IPSView selector is missing from the form.');
+assertTest(
+    str_contains((string) ($sourceView['onChange'] ?? ''), 'IPSVIEWA_LoadExistingView('),
+    'Selecting an existing IPSView does not load its design.'
+);
+assertTest(is_array($existingStatus), 'The existing View status label is missing from the form.');
+assertTest(
+    str_contains($copyFactorySource, 'IPS_GetMediaContent('),
+    'The copy factory does not read the existing media content.'
 );
 assertTest(is_array($themeSelect), 'The theme selection is missing from the form.');
 assertTest(count($themeSelect['options'] ?? []) === 4, 'The form does not offer all four theme modes.');

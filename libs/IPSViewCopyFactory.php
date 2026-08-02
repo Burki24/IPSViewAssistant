@@ -1,0 +1,155 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Burki24\IPSViewAssistant;
+
+use InvalidArgumentException;
+use RuntimeException;
+use Throwable;
+
+final class IPSViewCopyFactory
+{
+    /**
+     * Reads one existing IPSView and returns its editable design information.
+     *
+     * @return array{
+     *     name: string,
+     *     parentID: int,
+     *     pageCount: int,
+     *     controlCount: int,
+     *     palette: array<string, string>
+     * }
+     */
+    public function inspect(int $sourceMediaID): array
+    {
+        $document = $this->loadDocument($sourceMediaID);
+        $object = IPS_GetObject($sourceMediaID);
+
+        return [
+            'name'         => (string) ($object['ObjectName'] ?? ''),
+            'parentID'     => (int) ($object['ParentID'] ?? 0),
+            'pageCount'    => $document->getPageCount(),
+            'controlCount' => $document->getControlCount(),
+            'palette'      => $document->extractThemePalette(),
+        ];
+    }
+
+    /**
+     * Creates a styled copy while preserving all pages, controls and unknown fields.
+     *
+     * @param array<string, mixed> $customPalette
+     */
+    public function create(
+        int $sourceMediaID,
+        string $copyName,
+        int $targetCategoryID,
+        int $theme,
+        array $customPalette = []
+    ): int {
+        $copyName = trim($copyName);
+
+        $this->validateName($copyName);
+        $this->validateTargetCategory($targetCategoryID);
+        $this->ensureUniqueViewName($copyName, $targetCategoryID);
+
+        $document = $this->loadDocument($sourceMediaID);
+        $mediaID = IPS_CreateMedia(MEDIATYPE_DASHBOARD);
+
+        try {
+            IPS_SetName($mediaID, $copyName);
+            IPS_SetParent($mediaID, $targetCategoryID);
+
+            $document->prepareCopy($copyName, $mediaID);
+            $document->applyTheme($theme, $customPalette);
+
+            $mediaFile = IPS_GetKernelDir()
+                . 'media'
+                . DIRECTORY_SEPARATOR
+                . $mediaID
+                . '.ipsView';
+
+            if (!IPS_SetMediaFile($mediaID, $mediaFile, false)) {
+                throw new RuntimeException('The media file could not be assigned.');
+            }
+
+            if (!IPS_SetMediaContent($mediaID, base64_encode($document->toJson()))) {
+                throw new RuntimeException('The IPSView content could not be written.');
+            }
+
+            IPS_SendMediaEvent($mediaID);
+
+            return $mediaID;
+        } catch (Throwable $exception) {
+            if (IPS_MediaExists($mediaID)) {
+                IPS_DeleteMedia($mediaID, true);
+            }
+
+            throw $exception;
+        }
+    }
+
+    private function loadDocument(int $sourceMediaID): IPSViewDocument
+    {
+        if ($sourceMediaID < 1 || !IPS_MediaExists($sourceMediaID)) {
+            throw new InvalidArgumentException('The selected source medium does not exist.');
+        }
+
+        $media = IPS_GetMedia($sourceMediaID);
+        if ((int) ($media['MediaType'] ?? -1) !== MEDIATYPE_DASHBOARD) {
+            throw new InvalidArgumentException('The selected source medium is not an IPSView.');
+        }
+
+        $encodedContent = IPS_GetMediaContent($sourceMediaID);
+        $json = base64_decode($encodedContent, true);
+
+        if ($json === false || trim($json) === '') {
+            throw new RuntimeException('The selected IPSView does not contain readable content.');
+        }
+
+        return IPSViewDocument::fromJson($json);
+    }
+
+    private function validateName(string $copyName): void
+    {
+        if ($copyName === '') {
+            throw new InvalidArgumentException('The copy name must not be empty.');
+        }
+
+        if (strlen($copyName) > 128) {
+            throw new InvalidArgumentException('The copy name must not exceed 128 characters.');
+        }
+    }
+
+    private function validateTargetCategory(int $targetCategoryID): void
+    {
+        if ($targetCategoryID === 0) {
+            return;
+        }
+
+        if (!IPS_ObjectExists($targetCategoryID)) {
+            throw new InvalidArgumentException('The selected target category does not exist.');
+        }
+
+        $object = IPS_GetObject($targetCategoryID);
+        if (($object['ObjectType'] ?? -1) !== 0) {
+            throw new InvalidArgumentException('The selected target object is not a category.');
+        }
+    }
+
+    private function ensureUniqueViewName(string $copyName, int $targetCategoryID): void
+    {
+        foreach (IPS_GetChildrenIDs($targetCategoryID) as $childID) {
+            $object = IPS_GetObject($childID);
+            if (($object['ObjectType'] ?? -1) !== 5) {
+                continue;
+            }
+
+            if (($object['ObjectName'] ?? '') === $copyName) {
+                throw new InvalidArgumentException(
+                    sprintf('An IPSView named "%s" already exists in the selected category.', $copyName)
+                );
+            }
+        }
+    }
+}

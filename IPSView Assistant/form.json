@@ -89,6 +89,49 @@
         },
         {
             "type": "ExpansionPanel",
+            "caption": "Existing View",
+            "expanded": true,
+            "items": [
+                {
+                    "type": "Label",
+                    "caption": "Select an existing IPSView. Its design is loaded into the semantic color controls; the original is never changed."
+                },
+                {
+                    "type": "RowLayout",
+                    "items": [
+                        {
+                            "type": "SelectMedia",
+                            "name": "SourceViewID",
+                            "caption": "Source IPSView",
+                            "value": 0,
+                            "width": "500px",
+                            "onChange": "IPSVIEWA_LoadExistingView($id, $SourceViewID);"
+                        },
+                        {
+                            "type": "ValidationTextBox",
+                            "name": "CopyViewName",
+                            "caption": "Copy name",
+                            "value": "IPSView Designkopie",
+                            "width": "420px"
+                        },
+                        {
+                            "type": "SelectCategory",
+                            "name": "CopyTargetCategoryID",
+                            "caption": "Copy target category",
+                            "value": 0,
+                            "width": "420px"
+                        }
+                    ]
+                },
+                {
+                    "type": "Label",
+                    "name": "ExistingViewStatus",
+                    "caption": "No existing IPSView has been loaded yet."
+                }
+            ]
+        },
+        {
+            "type": "ExpansionPanel",
             "caption": "Design",
             "expanded": true,
             "items": [
@@ -293,9 +336,23 @@
             ]
         },
         {
-            "type": "Button",
-            "caption": "Create View",
-            "onClick": "echo IPSVIEWA_CreateView($id, $ViewName, $TargetCategoryID, $AspectRatio, $Orientation, $Template, $MainPageName, $Theme, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES));"
+            "type": "RowLayout",
+            "items": [
+                {
+                    "type": "Button",
+                    "caption": "Create View",
+                    "onClick": "echo IPSVIEWA_CreateView($id, $ViewName, $TargetCategoryID, $AspectRatio, $Orientation, $Template, $MainPageName, $Theme, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES));"
+                },
+                {
+                    "type": "Button",
+                    "caption": "Create styled copy",
+                    "onClick": "echo IPSVIEWA_CreateStyledCopy($id, $SourceViewID, $CopyViewName, $CopyTargetCategoryID, $Theme, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES));"
+                }
+            ]
+        },
+        {
+            "type": "Label",
+            "caption": "A styled copy preserves all pages, controls and unknown IPSView fields. Only the global design defaults are changed."
         },
         {
             "type": "Label",

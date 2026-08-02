@@ -6,8 +6,10 @@ require_once __DIR__ . '/../libs/helper/ConfigurationFormHelper.php';
 require_once __DIR__ . '/../libs/IPSViewTheme.php';
 require_once __DIR__ . '/../libs/IPSViewThemePreview.php';
 require_once __DIR__ . '/../libs/IPSViewDocument.php';
+require_once __DIR__ . '/../libs/IPSViewCopyFactory.php';
 require_once __DIR__ . '/../libs/IPSViewFactory.php';
 
+use Burki24\IPSViewAssistant\IPSViewCopyFactory;
 use Burki24\IPSViewAssistant\IPSViewFactory;
 use Burki24\IPSViewAssistant\IPSViewTheme;
 use Burki24\IPSViewAssistant\IPSViewThemePreview;
@@ -114,6 +116,80 @@ class IPSViewAssistant extends IPSModuleStrict
 
             return sprintf(
                 $this->Translate('The IPSView could not be created: %s'),
+                $exception->getMessage()
+            );
+        }
+    }
+
+    /**
+     * Loads the design of an existing IPSView into the semantic color fields.
+     */
+    public function LoadExistingView(int $SourceViewID): void
+    {
+        try {
+            $factory = new IPSViewCopyFactory();
+            $inspection = $factory->inspect($SourceViewID);
+            $palette = $inspection['palette'];
+
+            $this->UpdateFormField('Theme', 'value', IPSViewTheme::THEME_CUSTOM);
+            $this->updateColorFields($palette);
+            $this->UpdateFormField('ThemePreview', 'image', IPSViewThemePreview::createDataUri($palette));
+            $this->UpdateFormField(
+                'CopyViewName',
+                'value',
+                trim($inspection['name']) . ' - ' . $this->Translate('Design copy')
+            );
+            $this->UpdateFormField('CopyTargetCategoryID', 'value', $inspection['parentID']);
+            $this->UpdateFormField(
+                'ExistingViewStatus',
+                'caption',
+                sprintf(
+                    $this->Translate('Loaded "%s": %d pages and %d controls. The original remains unchanged.'),
+                    $inspection['name'],
+                    $inspection['pageCount'],
+                    $inspection['controlCount']
+                )
+            );
+        } catch (Throwable $exception) {
+            $this->SendDebug('LoadExistingView', $exception->getMessage(), 0);
+            $this->UpdateFormField(
+                'ExistingViewStatus',
+                'caption',
+                sprintf($this->Translate('The existing IPSView could not be loaded: %s'), $exception->getMessage())
+            );
+        }
+    }
+
+    /**
+     * Creates a styled copy of an existing IPSView without changing the source.
+     */
+    public function CreateStyledCopy(
+        int $SourceViewID,
+        string $CopyViewName,
+        int $CopyTargetCategoryID,
+        int $Theme,
+        string $ThemePalette = ''
+    ): string {
+        try {
+            $factory = new IPSViewCopyFactory();
+            $mediaID = $factory->create(
+                $SourceViewID,
+                $CopyViewName,
+                $CopyTargetCategoryID,
+                $Theme,
+                $this->decodePalette($ThemePalette)
+            );
+
+            return sprintf(
+                $this->Translate('The styled IPSView copy "%s" was created successfully with object ID %d.'),
+                trim($CopyViewName),
+                $mediaID
+            );
+        } catch (Throwable $exception) {
+            $this->SendDebug('CreateStyledCopy', $exception->getMessage(), 0);
+
+            return sprintf(
+                $this->Translate('The styled IPSView copy could not be created: %s'),
                 $exception->getMessage()
             );
         }

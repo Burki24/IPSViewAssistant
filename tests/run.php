@@ -27,6 +27,7 @@ $commands = [
     ['Verify vendored helpers', 'python3 tests/helper_integrity.py'],
     ['Test IPSView theme mapping', 'php tests/theme.php'],
     ['Test IPSView document generation', 'php tests/document.php'],
+    ['Test existing IPSView handling', 'php tests/existing_view.php'],
     ['Test module integration', 'php tests/module.php'],
     ['Test library metadata updater', 'python3 tests/test_update_library_metadata.py'],
 ];

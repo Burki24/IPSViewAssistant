@@ -46,6 +46,19 @@ Available presets:
 
 A live SVG preview updates immediately when a preset or semantic color is changed. Colors and preview share one responsive workspace: they are displayed side by side when enough space is available and flow below one another in narrower configuration windows. The selected roles are mapped consistently to the IPSView defaults for buttons, switches, sliders, dialogs, charts, calendars and other controls.
 
+### Safe design transfer from existing Views
+
+An existing IPSView media object can be selected directly in the Assistant. Its current global IPSView colors are translated into the same twelve semantic roles and displayed in the live preview.
+
+The Assistant never overwrites the selected source. Instead, it creates a separate styled copy that preserves:
+
+- all pages and controls
+- all known and unknown IPSView fields
+- local IPSView license information
+- dimensions, navigation and object assignments
+
+Only the global IPSView design defaults are changed. Controls with individual color overrides remain untouched in this first safe editing stage.
+
 ## Development foundation
 
 - PHP 8.5 and `IPSModuleStrict`
@@ -56,4 +69,4 @@ A live SVG preview updates immediately when a preset or semantic color is change
 
 ## Roadmap
 
-The next stages will add safe editing of existing Views, reusable design profiles, simplified page layouts and guided creation of controls from Symcon objects.
+The next stages will add reusable design profiles, optional handling of individually overridden control colors, simplified page layouts and guided creation of controls from Symcon objects.

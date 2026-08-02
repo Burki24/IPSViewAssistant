@@ -26,7 +26,7 @@ final class IPSViewDocument
     }
 
     /**
-     * Loads an IPSView document without converting JSON objects into PHP arrays.
+     * Loads an IPSView document from a template file.
      */
     public static function fromTemplate(string $templatePath): self
     {
@@ -35,14 +35,22 @@ final class IPSViewDocument
             throw new RuntimeException('The IPSView template could not be read.');
         }
 
+        return self::fromJson($json);
+    }
+
+    /**
+     * Loads an IPSView document without converting JSON objects into PHP arrays.
+     */
+    public static function fromJson(string $json): self
+    {
         try {
             $document = json_decode($json, false, 512, JSON_THROW_ON_ERROR);
         } catch (JsonException $exception) {
-            throw new RuntimeException('The IPSView template contains invalid JSON.', 0, $exception);
+            throw new RuntimeException('The IPSView document contains invalid JSON.', 0, $exception);
         }
 
         if (!$document instanceof stdClass) {
-            throw new RuntimeException('The IPSView template must contain a JSON object.');
+            throw new RuntimeException('The IPSView document must contain a JSON object.');
         }
 
         return new self($document);
@@ -108,6 +116,25 @@ final class IPSViewDocument
     }
 
     /**
+     * Prepares a lossless copy of an existing View for a new media object.
+     */
+    public function prepareCopy(string $viewName, int $mediaID): void
+    {
+        $viewName = trim($viewName);
+
+        if ($viewName === '') {
+            throw new InvalidArgumentException('The View name must not be empty.');
+        }
+
+        if ($mediaID < 1) {
+            throw new InvalidArgumentException('The media ID must be greater than zero.');
+        }
+
+        $this->document->Name = $viewName;
+        $this->document->ID = $mediaID;
+    }
+
+    /**
      * Applies a semantic color theme to the IPSView defaults.
      *
      * @param array<string, mixed> $customPalette
@@ -117,6 +144,32 @@ final class IPSViewDocument
     public function applyTheme(int $theme, array $customPalette = []): array
     {
         return IPSViewTheme::apply($this->document, $theme, $customPalette);
+    }
+
+    /**
+     * Reads the current IPSView defaults into the semantic color model.
+     *
+     * @return array<string, string>
+     */
+    public function extractThemePalette(): array
+    {
+        return IPSViewTheme::extract($this->document);
+    }
+
+    /**
+     * Returns the number of pages in the document.
+     */
+    public function getPageCount(): int
+    {
+        return is_array($this->document->Pages ?? null) ? count($this->document->Pages) : 0;
+    }
+
+    /**
+     * Returns the number of controls in all nested control collections.
+     */
+    public function getControlCount(): int
+    {
+        return self::countControls($this->document);
     }
 
     /**
@@ -179,6 +232,35 @@ final class IPSViewDocument
             self::ORIENTATION_PORTRAIT  => ['Portrait', $height, $width],
             default                     => throw new InvalidArgumentException('The selected orientation is not supported.'),
         };
+    }
+
+    private static function countControls(mixed $value): int
+    {
+        if (is_array($value)) {
+            $count = 0;
+
+            foreach ($value as $item) {
+                $count += self::countControls($item);
+            }
+
+            return $count;
+        }
+
+        if (!$value instanceof stdClass) {
+            return 0;
+        }
+
+        $count = 0;
+
+        foreach (get_object_vars($value) as $property => $child) {
+            if ($property === 'Controls' && is_array($child)) {
+                $count += count($child);
+            }
+
+            $count += self::countControls($child);
+        }
+
+        return $count;
     }
 
     /**

@@ -21,9 +21,11 @@ $requiredFiles = [
     'libs/IPSViewTheme.php',
     'libs/IPSViewThemePreview.php',
     'libs/IPSViewDocument.php',
+    'libs/IPSViewCopyFactory.php',
     'libs/IPSViewFactory.php',
     'libs/templates/empty-view.json',
     'tests/theme.php',
+    'tests/existing_view.php',
     'tests/stubs',
     '.style',
 ];
@@ -74,6 +76,9 @@ assertTest(str_contains($formJson, 'ThemePreviewPanel'), 'The theme preview pane
 assertTest(str_contains($formJson, 'SelectColor'), 'The semantic color controls are missing.');
 assertTest(str_contains($formJson, 'IPSVIEWA_ApplyThemePreset'), 'The theme preset action is missing.');
 assertTest(str_contains($formJson, 'IPSVIEWA_UpdateThemePreview'), 'The live preview action is missing.');
+assertTest(str_contains($formJson, 'SourceViewID'), 'The existing IPSView selector is missing.');
+assertTest(str_contains($formJson, 'IPSVIEWA_LoadExistingView'), 'The existing View load action is missing.');
+assertTest(str_contains($formJson, 'IPSVIEWA_CreateStyledCopy'), 'The styled copy action is missing.');
 
 $gitmodules = (string) file_get_contents($root . '/.gitmodules');
 assertTest(str_contains($gitmodules, 'url = https://github.com/symcon/StylePHP'), 'StylePHP submodule is missing.');

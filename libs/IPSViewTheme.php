@@ -141,6 +141,65 @@ final class IPSViewTheme
     }
 
     /**
+     * Extracts one representative color for every semantic role.
+     *
+     * @return array<string, string>
+     */
+    public static function extract(stdClass $document): array
+    {
+        $fallbacks = self::preset(self::THEME_DARK);
+        $representatives = [
+            self::ROLE_VIEW_BACKGROUND => 'ColorPage',
+            self::ROLE_PAGE_BACKGROUND => 'ColorPopupBack',
+            self::ROLE_SURFACE         => 'ColorBack',
+            self::ROLE_PRIMARY_TEXT    => 'ColorText',
+            self::ROLE_SECONDARY_TEXT  => 'ColorTextOff',
+            self::ROLE_BORDER          => 'ColorBorder',
+            self::ROLE_ACCENT          => 'SwitchTrackColorActive',
+            self::ROLE_ACTIVE          => 'ColorBackOn',
+            self::ROLE_INACTIVE        => 'ColorBackOff',
+            self::ROLE_SUCCESS         => 'FlowLineColorPositive',
+            self::ROLE_WARNING         => 'ScheduleNowIndicatorColor',
+            self::ROLE_ERROR           => 'FlowLineColorNegative',
+        ];
+
+        $palette = [];
+
+        foreach ($representatives as $role => $property) {
+            $value = $document->{$property} ?? null;
+            $palette[$role] = self::colorObjectToHex($value, $fallbacks[$role]);
+        }
+
+        return $palette;
+    }
+
+    /**
+     * Converts an IPSView color object to #RRGGBB.
+     */
+    public static function colorObjectToHex(mixed $color, string $fallback = '#000000'): string
+    {
+        if (!$color instanceof stdClass
+            || !property_exists($color, 'R')
+            || !property_exists($color, 'G')
+            || !property_exists($color, 'B')) {
+            return self::normalizeColor($fallback);
+        }
+
+        foreach (['R', 'G', 'B'] as $component) {
+            if (!is_int($color->{$component}) && !is_float($color->{$component})) {
+                return self::normalizeColor($fallback);
+            }
+        }
+
+        return sprintf(
+            '#%02X%02X%02X',
+            max(0, min(255, (int) $color->R)),
+            max(0, min(255, (int) $color->G)),
+            max(0, min(255, (int) $color->B))
+        );
+    }
+
+    /**
      * Normalizes a Symcon color integer or hexadecimal value to #RRGGBB.
      */
     public static function normalizeColor(mixed $color, string $fallback = '#000000'): string
