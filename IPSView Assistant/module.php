@@ -105,8 +105,7 @@ class IPSViewAssistant extends IPSModuleStrict
         string $ThemePalette = '',
         string $Effects = '',
         string $Appearance = ''
-    ): string
-    {
+    ): string {
         try {
             $factory = new IPSViewFactory(__DIR__ . '/../libs/templates');
             $mediaID = $factory->create(
@@ -246,8 +245,7 @@ class IPSViewAssistant extends IPSModuleStrict
         int $DesignScope = IPSViewTheme::SCOPE_MATCHING_CONTROLS,
         string $Effects = '',
         string $Appearance = ''
-    ): string
-    {
+    ): string {
         try {
             $factory = new IPSViewCopyFactory();
             $copyName = trim($CopyViewName);
@@ -340,8 +338,7 @@ class IPSViewAssistant extends IPSModuleStrict
         string $ThemePalette = '',
         string $Effects = '',
         string $Appearance = ''
-    ): void
-    {
+    ): void {
         try {
             $palette = IPSViewTheme::resolvePalette($Theme, $this->decodePalette($ThemePalette));
             $this->UpdateFormField('Theme', 'value', $Theme);
@@ -367,8 +364,7 @@ class IPSViewAssistant extends IPSModuleStrict
         string $ThemePalette,
         string $Effects = '',
         string $Appearance = ''
-    ): void
-    {
+    ): void {
         try {
             $palette = IPSViewTheme::resolvePalette(
                 IPSViewTheme::THEME_CUSTOM,
@@ -397,8 +393,7 @@ class IPSViewAssistant extends IPSModuleStrict
         string $ThemePalette,
         string $Effects = '',
         string $Appearance = ''
-    ): void
-    {
+    ): void {
         try {
             $palette = IPSViewTheme::resolvePalette(
                 IPSViewTheme::THEME_CUSTOM,
@@ -426,8 +421,7 @@ class IPSViewAssistant extends IPSModuleStrict
         string $ThemePalette,
         string $Effects = '',
         string $Appearance = ''
-    ): void
-    {
+    ): void {
         try {
             $palette = IPSViewTheme::resolvePalette(
                 IPSViewTheme::THEME_CUSTOM,
@@ -458,8 +452,7 @@ class IPSViewAssistant extends IPSModuleStrict
         string $name,
         string $property,
         mixed $value
-    ): void
-    {
+    ): void {
         $actions = &$form['actions'];
 
         if (!is_array($actions) || !$this->setConfigurationFormFieldInItems($actions, $name, $property, $value)) {
@@ -475,8 +468,7 @@ class IPSViewAssistant extends IPSModuleStrict
         string $name,
         string $property,
         mixed $value
-    ): bool
-    {
+    ): bool {
         foreach ($items as &$item) {
             if (($item['name'] ?? '') === $name) {
                 $item[$property] = $value;
@@ -498,8 +490,7 @@ class IPSViewAssistant extends IPSModuleStrict
         int $sourceMediaID,
         string $copyName,
         int $targetCategoryID
-    ): ?int
-    {
+    ): ?int {
         foreach (array_reverse($this->readManagedCopies()) as $managedCopy) {
             if ($managedCopy['sourceMediaID'] !== $sourceMediaID) {
                 continue;
