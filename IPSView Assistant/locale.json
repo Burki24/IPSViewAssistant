@@ -38,7 +38,8 @@
             "Inactive": "Inaktiv",
             "Success": "Erfolg",
             "Warning": "Warnung",
-            "Error": "Fehler"
+            "Error": "Fehler",
+            "Preview": "Vorschau"
         }
     }
 }

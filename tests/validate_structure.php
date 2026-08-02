@@ -7,6 +7,7 @@ require_once __DIR__ . '/bootstrap.php';
 $root = dirname(__DIR__);
 $requiredFiles = [
     '.gitmodules',
+    '.helper-sync.json',
     '.github/workflows/tests.yml',
     '.github/workflows/style.yml',
     '.github/workflows/update-library-metadata.yml',
@@ -15,6 +16,8 @@ $requiredFiles = [
     'IPSView Assistant/module.php',
     'IPSView Assistant/form.json',
     'IPSView Assistant/locale.json',
+    'libs/helper/ConfigurationFormHelper.php',
+    'libs/helper/manifest.json',
     'libs/IPSViewTheme.php',
     'libs/IPSViewThemePreview.php',
     'libs/IPSViewDocument.php',
@@ -65,6 +68,9 @@ $form = json_decode(
 );
 $formJson = json_encode($form, JSON_THROW_ON_ERROR);
 assertTest(str_contains($formJson, 'ThemePreview'), 'The live theme preview is missing.');
+assertTest(str_contains($formJson, 'ThemeWorkspace'), 'The responsive theme workspace is missing.');
+assertTest(str_contains($formJson, 'ThemeColorsPanel'), 'The theme color panel is missing.');
+assertTest(str_contains($formJson, 'ThemePreviewPanel'), 'The theme preview panel is missing.');
 assertTest(str_contains($formJson, 'SelectColor'), 'The semantic color controls are missing.');
 assertTest(str_contains($formJson, 'IPSVIEWA_ApplyThemePreset'), 'The theme preset action is missing.');
 assertTest(str_contains($formJson, 'IPSVIEWA_UpdateThemePreview'), 'The live preview action is missing.');

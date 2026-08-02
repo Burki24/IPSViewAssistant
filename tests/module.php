@@ -17,6 +17,8 @@ $form = json_decode(
 assertTest(is_string($moduleSource), 'The module source could not be read.');
 assertTest(is_string($factorySource), 'The IPSView factory source could not be read.');
 assertTest(str_contains($moduleSource, 'extends IPSModuleStrict'), 'The module does not use IPSModuleStrict.');
+assertTest(str_contains($moduleSource, 'use ConfigurationFormHelper;'), 'The module does not use ConfigurationFormHelper.');
+assertTest(str_contains($moduleSource, 'public function GetConfigurationForm(): string'), 'The dynamic configuration form is missing.');
 assertTest(str_contains($moduleSource, 'public function CreateView('), 'The public CreateView method is missing.');
 assertTest(
     str_contains($moduleSource, 'public function ApplyThemePreset('),
@@ -92,12 +94,27 @@ assertTest(
     'The theme selection does not load a preset.'
 );
 assertTest(is_array($preview), 'The live theme preview is missing from the form.');
-assertTest(
-    str_starts_with((string) ($preview['image'] ?? ''), 'data:image/svg+xml;base64,'),
-    'The initial theme preview is not an SVG data URI.'
-);
-assertTest(($preview['width'] ?? '') === '700px', 'The live preview must use a compact fixed width.');
+assertTest(($preview['image'] ?? null) === '', 'The dynamic preview placeholder must be empty in form.json.');
+assertTest(($preview['width'] ?? '') === '100%', 'The live preview must fill its responsive panel.');
 assertTest(($preview['center'] ?? false) === true, 'The live preview must be centered.');
+
+$workspace = null;
+$colorsPanel = null;
+$previewPanel = null;
+foreach ($actions as $action) {
+    if (($action['name'] ?? '') === 'ThemeWorkspace') {
+        $workspace = $action;
+    }
+    if (($action['name'] ?? '') === 'ThemeColorsPanel') {
+        $colorsPanel = $action;
+    }
+    if (($action['name'] ?? '') === 'ThemePreviewPanel') {
+        $previewPanel = $action;
+    }
+}
+assertTest(is_array($workspace) && ($workspace['type'] ?? '') === 'RowLayout', 'The responsive theme workspace is missing.');
+assertTest(($colorsPanel['width'] ?? '') === '820px', 'The color panel must have a readable responsive base width.');
+assertTest(($previewPanel['width'] ?? '') === '700px', 'The preview panel must have a compact responsive base width.');
 assertTest(count($colorFields) === 12, 'The form must expose exactly twelve semantic color roles.');
 
 foreach ($colorFields as $field) {
@@ -106,7 +123,7 @@ foreach ($colorFields as $field) {
         'A semantic color field does not refresh the live preview.'
     );
     assertTest(($field['allowTransparent'] ?? true) === false, 'Semantic colors must not allow transparency.');
-    assertTest(($field['width'] ?? '') === '420px', 'Semantic color fields must be clearly readable.');
+    assertTest(($field['width'] ?? '') === '48%', 'Semantic color fields must share the responsive color panel.');
     assertTest(is_int($field['value'] ?? null), 'SelectColor values must use the Symcon integer format.');
 }
 

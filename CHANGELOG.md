@@ -4,6 +4,8 @@
 
 ### Added
 
+- Shared `ConfigurationFormHelper` integration and automatic helper synchronization configuration.
+- Responsive design workspace with semantic color controls and live preview side by side on wide screens and stacked on narrower screens.
 - A2 design assistant with IPSView Standard, Light, Dark and Custom themes.
 - Twelve semantic color roles that replace direct editing of numerous technical IPSView color properties.
 - Live SVG preview in the module configuration form.

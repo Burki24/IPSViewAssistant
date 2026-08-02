@@ -2,17 +2,20 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/../libs/helper/ConfigurationFormHelper.php';
 require_once __DIR__ . '/../libs/IPSViewTheme.php';
 require_once __DIR__ . '/../libs/IPSViewThemePreview.php';
 require_once __DIR__ . '/../libs/IPSViewDocument.php';
 require_once __DIR__ . '/../libs/IPSViewFactory.php';
 
 use Burki24\IPSViewAssistant\IPSViewFactory;
+use Burki24\SymconModuleHelper\ConfigurationFormHelper;
 use Burki24\IPSViewAssistant\IPSViewTheme;
 use Burki24\IPSViewAssistant\IPSViewThemePreview;
 
 class IPSViewAssistant extends IPSModuleStrict
 {
+    use ConfigurationFormHelper;
     /**
      * @var array<string, string>
      */
@@ -46,6 +49,33 @@ class IPSViewAssistant extends IPSModuleStrict
     {
         parent::ApplyChanges();
         $this->SetStatus(IS_ACTIVE);
+    }
+
+    /**
+     * Builds the dynamic assistant form from the shared configuration form helper.
+     */
+    public function GetConfigurationForm(): string
+    {
+        $form = $this->LoadConfigurationForm();
+        $palette = IPSViewTheme::preset(IPSViewTheme::THEME_STANDARD);
+
+        foreach (self::FORM_COLOR_FIELDS as $role => $field) {
+            $this->setConfigurationFormField(
+                $form,
+                $field,
+                'value',
+                IPSViewTheme::toFormColor($palette[$role])
+            );
+        }
+
+        $this->setConfigurationFormField(
+            $form,
+            'ThemePreview',
+            'image',
+            IPSViewThemePreview::createDataUri($palette)
+        );
+
+        return $this->EncodeConfigurationForm($form);
     }
 
     /**
@@ -120,6 +150,50 @@ class IPSViewAssistant extends IPSModuleStrict
         } catch (Throwable $exception) {
             $this->SendDebug('UpdateThemePreview', $exception->getMessage(), 0);
         }
+    }
+
+    /**
+     * Updates one named field in the nested configuration form definition.
+     *
+     * @param array<string, mixed> $form
+     */
+    private function setConfigurationFormField(
+        array &$form,
+        string $name,
+        string $property,
+        mixed $value
+    ): void {
+        $actions = &$form['actions'];
+
+        if (!is_array($actions) || !$this->setConfigurationFormFieldInItems($actions, $name, $property, $value)) {
+            throw new RuntimeException(sprintf('Configuration form field "%s" was not found.', $name));
+        }
+    }
+
+    /**
+     * @param list<array<string, mixed>> $items
+     */
+    private function setConfigurationFormFieldInItems(
+        array &$items,
+        string $name,
+        string $property,
+        mixed $value
+    ): bool {
+        foreach ($items as &$item) {
+            if (($item['name'] ?? '') === $name) {
+                $item[$property] = $value;
+
+                return true;
+            }
+
+            if (isset($item['items']) && is_array($item['items'])) {
+                if ($this->setConfigurationFormFieldInItems($item['items'], $name, $property, $value)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**

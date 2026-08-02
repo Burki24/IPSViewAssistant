@@ -44,13 +44,14 @@ Available presets:
 - Dark
 - Custom
 
-A live SVG preview updates immediately when a preset or semantic color is changed. The selected roles are mapped consistently to the IPSView defaults for buttons, switches, sliders, dialogs, charts, calendars and other controls.
+A live SVG preview updates immediately when a preset or semantic color is changed. Colors and preview share one responsive workspace: they are displayed side by side when enough space is available and flow below one another in narrower configuration windows. The selected roles are mapped consistently to the IPSView defaults for buttons, switches, sliders, dialogs, charts, calendars and other controls.
 
 ## Development foundation
 
 - PHP 8.5 and `IPSModuleStrict`
 - shared checks from `Symcon_ModuleCI v1.0.0`
 - official `symcon/StylePHP` and `symcon/SymconStubs` submodules
+- shared `ConfigurationFormHelper` from `Symcon_ModuleHelper` for dynamic form generation
 - required status checks: `tests` and `style`
 
 ## Roadmap
