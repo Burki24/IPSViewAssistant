@@ -1,0 +1,12 @@
+{
+    "id": "{06099875-0B1F-C82A-D647-D40A968E1598}",
+    "name": "IPSView Assistant",
+    "type": 3,
+    "vendor": "Burkhard Kneiseler",
+    "aliases": [],
+    "parentRequirements": [],
+    "childRequirements": [],
+    "implemented": [],
+    "prefix": "IPSVIEWA",
+    "url": ""
+}

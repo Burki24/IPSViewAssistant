@@ -1,0 +1,12 @@
+{
+    "id": "{F4BE05DD-2D77-26EB-A8BB-41C435F1DDB9}",
+    "name": "IPSViewAssistant",
+    "author": "Burkhard Kneiseler",
+    "url": "https://github.com/Burki24/IPSViewAssistant",
+    "compatibility": {
+        "version": "9.0"
+    },
+    "version": "1.0",
+    "build": 0,
+    "date": 0
+}
