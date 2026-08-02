@@ -147,6 +147,49 @@ final class IPSViewDocument
     }
 
     /**
+     * Applies a semantic theme with the selected scope and returns a report.
+     *
+     * @param array<string, mixed> $customPalette
+     *
+     * @return array{
+     *     palette: array<string, string>,
+     *     scope: int,
+     *     globalColorsApplied: int,
+     *     controlColorsApplied: int,
+     *     controlColorsPreserved: int
+     * }
+     */
+    public function applyThemeWithReport(
+        int $theme,
+        array $customPalette = [],
+        int $scope = IPSViewTheme::SCOPE_GLOBAL_DEFAULTS
+    ): array {
+        return IPSViewTheme::applyWithReport(
+            $this->document,
+            $theme,
+            $customPalette,
+            $scope
+        );
+    }
+
+    /**
+     * Analyzes the available global and direct control colors.
+     *
+     * @return array{
+     *     globalColors: int,
+     *     controlColorsTotal: int,
+     *     matchingControlColors: int,
+     *     allControlDefaults: int,
+     *     individualControlColors: int,
+     *     specialControlColors: int
+     * }
+     */
+    public function analyzeThemeColors(): array
+    {
+        return IPSViewTheme::analyze($this->document);
+    }
+
+    /**
      * Reads the current IPSView defaults into the semantic color model.
      *
      * @return array<string, string>

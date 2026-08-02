@@ -84,6 +84,7 @@ $copyButton = null;
 $sourceView = null;
 $existingStatus = null;
 $themeSelect = null;
+$designScope = null;
 $preview = null;
 $colorFields = [];
 
@@ -106,6 +107,10 @@ foreach ($actions as $action) {
 
     if (($action['type'] ?? '') === 'Select' && ($action['name'] ?? '') === 'Theme') {
         $themeSelect = $action;
+    }
+
+    if (($action['type'] ?? '') === 'Select' && ($action['name'] ?? '') === 'DesignScope') {
+        $designScope = $action;
     }
 
     if (($action['type'] ?? '') === 'Image' && ($action['name'] ?? '') === 'ThemePreview') {
@@ -138,6 +143,27 @@ assertTest(
     'Selecting an existing IPSView does not load its design.'
 );
 assertTest(is_array($existingStatus), 'The existing View status label is missing from the form.');
+assertTest(is_array($designScope), 'The design scope selection is missing from the form.');
+assertTest(
+    ($designScope['value'] ?? null) === 1,
+    'The recommended matching control color scope must be selected by default.'
+);
+assertTest(
+    count($designScope['options'] ?? []) === 3,
+    'The form does not offer all three design scopes.'
+);
+assertTest(
+    str_contains((string) ($copyButton['onClick'] ?? ''), '$DesignScope'),
+    'The styled copy button does not pass the selected design scope.'
+);
+assertTest(
+    str_contains($copyFactorySource, 'applyThemeWithReport('),
+    'The copy factory does not apply scoped themes with a report.'
+);
+assertTest(
+    str_contains($copyFactorySource, 'getLastThemeReport('),
+    'The copy factory does not expose its latest scope report.'
+);
 assertTest(
     str_contains($copyFactorySource, 'IPS_GetMediaContent('),
     'The copy factory does not read the existing media content.'

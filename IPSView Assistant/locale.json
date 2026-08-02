@@ -52,7 +52,7 @@
             "Create styled copy": "Designkopie erstellen",
             "The styled IPSView copy \"%s\" was created successfully with object ID %d.": "Die gestaltete IPSView-Kopie „%s“ wurde erfolgreich mit der Objekt-ID %d erstellt.",
             "The styled IPSView copy could not be created: %s": "Die gestaltete IPSView-Kopie konnte nicht erstellt werden: %s",
-            "A styled copy preserves all pages, controls and unknown IPSView fields. Only the global design defaults are changed.": "Eine Designkopie erhält alle Seiten, Bedienelemente und unbekannten IPSView-Felder. Geändert werden ausschließlich die globalen Designvorgaben.",
+            "A styled copy preserves all pages, controls and unknown IPSView fields. Only the global design defaults are changed.": "Eine Designkopie erhält alle Seiten, Bedienelemente und unbekannten IPSView-Felder. Je nach gewähltem Gestaltungsumfang werden globale Vorgaben und passende oder grundlegende Bedienelementfarben geändert.",
             "Save styled copy": "Designkopie speichern",
             "The first save creates a separate design copy. Further saves with the same name and target category update that copy while preserving all later IPSView Designer changes.": "Beim ersten Speichern wird eine separate Designkopie erstellt. Weitere Speichervorgänge mit demselben Namen und derselben Zielkategorie aktualisieren diese Kopie; spätere Änderungen aus dem IPSView Designer bleiben erhalten.",
             "The existing design copy \"%s\" (ID %d) will be updated on the next save.": "Die bestehende Designkopie „%s“ (ID %d) wird beim nächsten Speichern aktualisiert.",
@@ -60,7 +60,14 @@
             "The styled IPSView copy \"%s\" was updated successfully with object ID %d.": "Die gestaltete IPSView-Kopie „%s“ wurde erfolgreich mit der Objekt-ID %d aktualisiert.",
             "The design copy \"%s\" (ID %d) was created and will be updated on future saves.": "Die Designkopie „%s“ (ID %d) wurde erstellt und wird bei weiteren Speichervorgängen aktualisiert.",
             "The styled IPSView copy could not be saved: %s": "Die gestaltete IPSView-Kopie konnte nicht gespeichert werden: %s",
-            "The source IPSView cannot be used as its own design copy.": "Die Quell-IPSView kann nicht als eigene Designkopie verwendet werden."
+            "The source IPSView cannot be used as its own design copy.": "Die Quell-IPSView kann nicht als eigene Designkopie verwendet werden.",
+            "Design scope": "Gestaltungsumfang",
+            "Global defaults only (safest)": "Nur globale Vorgaben (sehr sicher)",
+            "Theme matching control colors (recommended)": "Passende Bedienelementfarben mitgestalten (empfohlen)",
+            "All basic control colors (strong)": "Alle Grundfarben der Bedienelemente vereinheitlichen (stark)",
+            "The recommended scope updates control colors only when they match an existing global design color. The strong scope also standardizes basic backgrounds, text and borders; association and special status colors remain protected unless they match a semantic global color.": "Die empfohlene Stufe ändert Bedienelementfarben nur dann, wenn sie einer vorhandenen globalen Designfarbe entsprechen. Die starke Stufe vereinheitlicht zusätzlich grundlegende Hintergründe, Texte und Rahmen; Assoziations- und besondere Statusfarben bleiben geschützt, solange sie keiner semantischen globalen Farbe entsprechen.",
+            "%d global design values, %d matching control colors and %d individual or special colors were found.": "%d globale Designwerte, %d passende Bedienelementfarben und %d individuelle oder besondere Farben wurden gefunden.",
+            "%d global design values and %d control colors were applied; %d individual or special colors were preserved.": "%d globale Designwerte und %d Bedienelementfarben wurden angewendet; %d individuelle oder besondere Farben blieben erhalten."
         }
     }
 }

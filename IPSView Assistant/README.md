@@ -42,16 +42,29 @@ The user does not need to know the many individual IPSView color property names.
 
 Changing any color automatically switches the theme selection to **Custom**. The live preview shows the result before the View is created.
 
-## 3. Requirements
+
+## 3. Existing Views and design scope
+
+An existing IPSView can be selected without changing the original. The Assistant creates a separate design copy and updates the same copy on later saves.
+
+Three design scopes are available:
+
+- **Global defaults only** changes only the central IPSView design properties.
+- **Theme matching control colors** is recommended. It updates direct control colors only when they match a current global semantic color.
+- **All basic control colors** also standardizes basic backgrounds, alternate backgrounds, text and borders.
+
+Association colors and special status colors remain protected unless they match one of the semantic global colors. The form reports detected, applied and preserved color counts.
+
+## 4. Requirements
 
 - Symcon 9.0 or newer
 - IPSView Designer installed and licensed for normal editing and saving
 
-## 4. Setup
+## 5. Setup
 
 Create one **IPSView Assistant** instance. The instance does not need a parent connection and creates no status variables.
 
-## 5. Creating a View
+## 6. Creating a View
 
 1. Open the instance configuration.
 2. Enter the View name and main page name.
@@ -63,7 +76,7 @@ Create one **IPSView Assistant** instance. The instance does not need a parent c
 
 The assistant does not copy personal IPSView license data. The IPSView Designer supplies the local license information when the View is saved.
 
-## 6. PHP command
+## 7. PHP command
 
 The original A1 call remains valid and creates an IPSView with the standard design:
 

@@ -4,6 +4,10 @@
 
 ### Added
 
+- Selectable design scope for existing Views: global defaults, matching control colors or all basic control colors.
+- Safe semantic matching of direct control colors against the View's current global defaults.
+- Strong control-color unification for backgrounds, alternate backgrounds, text and borders while protecting unmatched association and special status colors.
+- Color analysis and save reports with applied and preserved value counts.
 - Automatic create-or-update workflow for styled IPSView copies.
 - Persistent tracking of Assistant-managed design copies, including safe adoption of existing same-name IPSView targets.
 - In-place design updates based on the current copy content so later IPSView Designer changes remain intact.

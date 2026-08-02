@@ -13,6 +13,17 @@ final class IPSViewCopyFactory
     private const IPSVIEW_MEDIA_TYPE = 0;
 
     /**
+     * @var array{
+     *     palette: array<string, string>,
+     *     scope: int,
+     *     globalColorsApplied: int,
+     *     controlColorsApplied: int,
+     *     controlColorsPreserved: int
+     * }|null
+     */
+    private ?array $lastThemeReport = null;
+
+    /**
      * Reads one existing IPSView and returns its editable design information.
      *
      * @return array{
@@ -20,7 +31,15 @@ final class IPSViewCopyFactory
      *     parentID: int,
      *     pageCount: int,
      *     controlCount: int,
-     *     palette: array<string, string>
+     *     palette: array<string, string>,
+     *     designAnalysis: array{
+     *         globalColors: int,
+     *         controlColorsTotal: int,
+     *         matchingControlColors: int,
+     *         allControlDefaults: int,
+     *         individualControlColors: int,
+     *         specialControlColors: int
+     *     }
      * }
      */
     public function inspect(int $sourceMediaID): array
@@ -32,8 +51,9 @@ final class IPSViewCopyFactory
             'name'         => (string) ($object['ObjectName'] ?? ''),
             'parentID'     => (int) ($object['ParentID'] ?? 0),
             'pageCount'    => $document->getPageCount(),
-            'controlCount' => $document->getControlCount(),
-            'palette'      => $document->extractThemePalette(),
+            'controlCount'   => $document->getControlCount(),
+            'palette'        => $document->extractThemePalette(),
+            'designAnalysis' => $document->analyzeThemeColors(),
         ];
     }
 
@@ -47,7 +67,8 @@ final class IPSViewCopyFactory
         string $copyName,
         int $targetCategoryID,
         int $theme,
-        array $customPalette = []
+        array $customPalette = [],
+        int $scope = IPSViewTheme::SCOPE_GLOBAL_DEFAULTS
     ): int {
         $copyName = trim($copyName);
 
@@ -68,7 +89,11 @@ final class IPSViewCopyFactory
             IPS_SetParent($mediaID, $targetCategoryID);
 
             $document->prepareCopy($copyName, $mediaID);
-            $document->applyTheme($theme, $customPalette);
+            $this->lastThemeReport = $document->applyThemeWithReport(
+                $theme,
+                $customPalette,
+                $scope
+            );
 
             $mediaFile = IPS_GetKernelDir()
                 . 'media'
@@ -107,10 +132,15 @@ final class IPSViewCopyFactory
     public function update(
         int $targetMediaID,
         int $theme,
-        array $customPalette = []
+        array $customPalette = [],
+        int $scope = IPSViewTheme::SCOPE_GLOBAL_DEFAULTS
     ): int {
         $document = $this->loadDocument($targetMediaID);
-        $document->applyTheme($theme, $customPalette);
+        $this->lastThemeReport = $document->applyThemeWithReport(
+            $theme,
+            $customPalette,
+            $scope
+        );
 
         if (!IPS_SetMediaContent($targetMediaID, base64_encode($document->toJson()))) {
             throw new RuntimeException('The IPSView content could not be written.');
@@ -119,6 +149,22 @@ final class IPSViewCopyFactory
         IPS_SendMediaEvent($targetMediaID);
 
         return $targetMediaID;
+    }
+
+    /**
+     * Returns the report of the most recent create or update operation.
+     *
+     * @return array{
+     *     palette: array<string, string>,
+     *     scope: int,
+     *     globalColorsApplied: int,
+     *     controlColorsApplied: int,
+     *     controlColorsPreserved: int
+     * }|null
+     */
+    public function getLastThemeReport(): ?array
+    {
+        return $this->lastThemeReport;
     }
 
     public function findExistingTarget(string $copyName, int $targetCategoryID): ?int

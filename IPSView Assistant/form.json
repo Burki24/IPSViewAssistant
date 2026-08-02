@@ -124,6 +124,31 @@
                     ]
                 },
                 {
+                    "type": "Select",
+                    "name": "DesignScope",
+                    "caption": "Design scope",
+                    "value": 1,
+                    "width": "500px",
+                    "options": [
+                        {
+                            "caption": "Global defaults only (safest)",
+                            "value": 0
+                        },
+                        {
+                            "caption": "Theme matching control colors (recommended)",
+                            "value": 1
+                        },
+                        {
+                            "caption": "All basic control colors (strong)",
+                            "value": 2
+                        }
+                    ]
+                },
+                {
+                    "type": "Label",
+                    "caption": "The recommended scope updates control colors only when they match an existing global design color. The strong scope also standardizes basic backgrounds, text and borders; association and special status colors remain protected unless they match a semantic global color."
+                },
+                {
                     "type": "Label",
                     "name": "ExistingViewStatus",
                     "caption": "No existing IPSView has been loaded yet."
@@ -346,7 +371,7 @@
                 {
                     "type": "Button",
                     "caption": "Save styled copy",
-                    "onClick": "echo IPSVIEWA_CreateStyledCopy($id, $SourceViewID, $CopyViewName, $CopyTargetCategoryID, $Theme, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES));",
+                    "onClick": "echo IPSVIEWA_CreateStyledCopy($id, $SourceViewID, $CopyViewName, $CopyTargetCategoryID, $Theme, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), $DesignScope);",
                     "name": "SaveStyledCopyButton"
                 }
             ]

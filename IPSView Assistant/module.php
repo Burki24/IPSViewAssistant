@@ -170,6 +170,14 @@ class IPSViewAssistant extends IPSModuleStrict
                 );
             }
 
+            $analysis = $paletteInspection['designAnalysis'];
+            $status .= ' ' . sprintf(
+                $this->Translate('%d global design values, %d matching control colors and %d individual or special colors were found.'),
+                $analysis['globalColors'],
+                $analysis['matchingControlColors'],
+                $analysis['individualControlColors']
+            );
+
             $palette = $paletteInspection['palette'];
             $this->UpdateFormField('Theme', 'value', IPSViewTheme::THEME_CUSTOM);
             $this->updateColorFields($palette);
@@ -195,7 +203,8 @@ class IPSViewAssistant extends IPSModuleStrict
         string $CopyViewName,
         int $CopyTargetCategoryID,
         int $Theme,
-        string $ThemePalette = ''
+        string $ThemePalette = '',
+        int $DesignScope = IPSViewTheme::SCOPE_MATCHING_CONTROLS
     ): string {
         try {
             $factory = new IPSViewCopyFactory();
@@ -220,9 +229,11 @@ class IPSViewAssistant extends IPSModuleStrict
                 $factory->update(
                     $targetMediaID,
                     $Theme,
-                    $this->decodePalette($ThemePalette)
+                    $this->decodePalette($ThemePalette),
+                    $DesignScope
                 );
                 $this->rememberManagedCopy($SourceViewID, $targetMediaID);
+                $reportText = $this->formatThemeReport($factory->getLastThemeReport());
                 $this->UpdateFormField(
                     'ExistingViewStatus',
                     'caption',
@@ -230,14 +241,14 @@ class IPSViewAssistant extends IPSModuleStrict
                         $this->Translate('The design copy "%s" (ID %d) was updated. The original remains unchanged.'),
                         $copyName,
                         $targetMediaID
-                    )
+                    ) . $reportText
                 );
 
                 return sprintf(
                     $this->Translate('The styled IPSView copy "%s" was updated successfully with object ID %d.'),
                     $copyName,
                     $targetMediaID
-                );
+                ) . $reportText;
             }
 
             $mediaID = $factory->create(
@@ -245,9 +256,11 @@ class IPSViewAssistant extends IPSModuleStrict
                 $copyName,
                 $CopyTargetCategoryID,
                 $Theme,
-                $this->decodePalette($ThemePalette)
+                $this->decodePalette($ThemePalette),
+                $DesignScope
             );
             $this->rememberManagedCopy($SourceViewID, $mediaID);
+            $reportText = $this->formatThemeReport($factory->getLastThemeReport());
             $this->UpdateFormField(
                 'ExistingViewStatus',
                 'caption',
@@ -255,14 +268,14 @@ class IPSViewAssistant extends IPSModuleStrict
                     $this->Translate('The design copy "%s" (ID %d) was created and will be updated on future saves.'),
                     $copyName,
                     $mediaID
-                )
+                ) . $reportText
             );
 
             return sprintf(
                 $this->Translate('The styled IPSView copy "%s" was created successfully with object ID %d.'),
                 $copyName,
                 $mediaID
-            );
+            ) . $reportText;
         } catch (Throwable $exception) {
             $this->SendDebug('CreateStyledCopy', $exception->getMessage(), 0);
 
@@ -450,6 +463,29 @@ class IPSViewAssistant extends IPSModuleStrict
         }
 
         return $managedCopies;
+    }
+
+    /**
+     * @param array{
+     *     palette: array<string, string>,
+     *     scope: int,
+     *     globalColorsApplied: int,
+     *     controlColorsApplied: int,
+     *     controlColorsPreserved: int
+     * }|null $report
+     */
+    private function formatThemeReport(?array $report): string
+    {
+        if ($report === null) {
+            return '';
+        }
+
+        return ' ' . sprintf(
+            $this->Translate('%d global design values and %d control colors were applied; %d individual or special colors were preserved.'),
+            $report['globalColorsApplied'],
+            $report['controlColorsApplied'],
+            $report['controlColorsPreserved']
+        );
     }
 
     /**

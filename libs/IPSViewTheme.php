@@ -14,6 +14,10 @@ final class IPSViewTheme
     public const THEME_DARK = 2;
     public const THEME_CUSTOM = 3;
 
+    public const SCOPE_GLOBAL_DEFAULTS = 0;
+    public const SCOPE_MATCHING_CONTROLS = 1;
+    public const SCOPE_ALL_CONTROL_DEFAULTS = 2;
+
     public const ROLE_VIEW_BACKGROUND = 'viewBackground';
     public const ROLE_PAGE_BACKGROUND = 'pageBackground';
     public const ROLE_SURFACE = 'surface';
@@ -108,36 +112,129 @@ final class IPSViewTheme
     /**
      * Applies one semantic palette to the IPSView default color properties.
      *
-     * The original IPSView Standard theme is retained byte-for-byte when the
-     * standard preset is selected. Light, dark and custom themes are mapped to
-     * all known top-level IPSView color defaults.
-     *
      * @param array<string, mixed> $customPalette
      *
      * @return array<string, string> Effective palette
      */
     public static function apply(stdClass $document, int $theme, array $customPalette = []): array
     {
+        $report = self::applyWithReport(
+            $document,
+            $theme,
+            $customPalette,
+            self::SCOPE_GLOBAL_DEFAULTS
+        );
+
+        return $report['palette'];
+    }
+
+    /**
+     * Applies a semantic palette with the selected design scope.
+     *
+     * @param array<string, mixed> $customPalette
+     *
+     * @return array{
+     *     palette: array<string, string>,
+     *     scope: int,
+     *     globalColorsApplied: int,
+     *     controlColorsApplied: int,
+     *     controlColorsPreserved: int
+     * }
+     */
+    public static function applyWithReport(
+        stdClass $document,
+        int $theme,
+        array $customPalette = [],
+        int $scope = self::SCOPE_GLOBAL_DEFAULTS
+    ): array {
+        self::validateScope($scope);
+
         $palette = self::resolvePalette($theme, $customPalette);
+        $controlAnalysis = self::analyzeControlColors($document);
+        $report = [
+            'palette'                => $palette,
+            'scope'                  => $scope,
+            'globalColorsApplied'    => 0,
+            'controlColorsApplied'   => 0,
+            'controlColorsPreserved' => $controlAnalysis['total'],
+        ];
 
         if ($theme === self::THEME_STANDARD) {
-            return $palette;
+            return $report;
         }
 
-        $mapping = self::propertyMapping();
+        $sourceRoleSignatures = self::sourceRoleSignatures($document);
 
-        foreach ($mapping as $role => $properties) {
+        foreach (self::propertyMapping() as $role => $properties) {
             foreach ($properties as $property) {
-                self::applyColor($document, $property, $palette[$role]);
+                if (self::applyColor($document, $property, $palette[$role])) {
+                    ++$report['globalColorsApplied'];
+                }
             }
         }
 
         $shadow = self::mix($palette[self::ROLE_VIEW_BACKGROUND], '#000000', 0.68);
         foreach (['ColorPopupShadow', 'ColorAssocShadow', 'ShadowColor'] as $property) {
-            self::applyColor($document, $property, $shadow);
+            if (self::applyColor($document, $property, $shadow)) {
+                ++$report['globalColorsApplied'];
+            }
         }
 
-        return $palette;
+        if ($scope === self::SCOPE_GLOBAL_DEFAULTS) {
+            return $report;
+        }
+
+        $controlReport = self::applyControlColors(
+            $document,
+            $palette,
+            $sourceRoleSignatures,
+            $scope
+        );
+        $report['controlColorsApplied'] = $controlReport['applied'];
+        $report['controlColorsPreserved'] = $controlReport['preserved'];
+
+        return $report;
+    }
+
+    /**
+     * Analyzes which direct control colors can be safely or comprehensively themed.
+     *
+     * @return array{
+     *     globalColors: int,
+     *     controlColorsTotal: int,
+     *     matchingControlColors: int,
+     *     allControlDefaults: int,
+     *     individualControlColors: int,
+     *     specialControlColors: int
+     * }
+     */
+    public static function analyze(stdClass $document): array
+    {
+        $controlAnalysis = self::analyzeControlColors($document);
+        $globalColors = 0;
+
+        foreach (self::propertyMapping() as $properties) {
+            foreach ($properties as $property) {
+                if (self::isColorObject($document->{$property} ?? null)) {
+                    ++$globalColors;
+                }
+            }
+        }
+
+        foreach (['ColorPopupShadow', 'ColorAssocShadow', 'ShadowColor'] as $property) {
+            if (self::isColorObject($document->{$property} ?? null)) {
+                ++$globalColors;
+            }
+        }
+
+        return [
+            'globalColors'           => $globalColors,
+            'controlColorsTotal'     => $controlAnalysis['total'],
+            'matchingControlColors'  => $controlAnalysis['matching'],
+            'allControlDefaults'     => $controlAnalysis['all'],
+            'individualControlColors' => $controlAnalysis['total'] - $controlAnalysis['matching'],
+            'specialControlColors'   => $controlAnalysis['total'] - $controlAnalysis['all'],
+        ];
     }
 
     /**
@@ -390,14 +487,277 @@ final class IPSViewTheme
         ];
     }
 
-    private static function applyColor(stdClass $document, string $property, string $hexColor): void
+    /**
+     * @return array{
+     *     total: int,
+     *     matching: int,
+     *     all: int
+     * }
+     */
+    private static function analyzeControlColors(stdClass $document): array
     {
-        if (!property_exists($document, $property) || !$document->{$property} instanceof stdClass) {
+        $counters = [
+            'total'    => 0,
+            'matching' => 0,
+            'all'      => 0,
+            'applied'  => 0,
+        ];
+
+        self::walkControlColors(
+            $document,
+            self::sourceRoleSignatures($document),
+            null,
+            self::SCOPE_GLOBAL_DEFAULTS,
+            $counters
+        );
+
+        return [
+            'total'    => $counters['total'],
+            'matching' => $counters['matching'],
+            'all'      => $counters['all'],
+        ];
+    }
+
+    /**
+     * @param array<string, string>              $palette
+     * @param array<string, array<string, true>> $sourceRoleSignatures
+     *
+     * @return array{applied: int, preserved: int}
+     */
+    private static function applyControlColors(
+        stdClass $document,
+        array $palette,
+        array $sourceRoleSignatures,
+        int $scope
+    ): array {
+        $counters = [
+            'total'    => 0,
+            'matching' => 0,
+            'all'      => 0,
+            'applied'  => 0,
+        ];
+
+        self::walkControlColors(
+            $document,
+            $sourceRoleSignatures,
+            $palette,
+            $scope,
+            $counters
+        );
+
+        return [
+            'applied'   => $counters['applied'],
+            'preserved' => $counters['total'] - $counters['applied'],
+        ];
+    }
+
+    /**
+     * @param array<string, array<string, true>> $sourceRoleSignatures
+     * @param array<string, string>|null         $palette
+     * @param array{total: int, matching: int, all: int, applied: int} $counters
+     */
+    private static function walkControlColors(
+        mixed $value,
+        array $sourceRoleSignatures,
+        ?array $palette,
+        int $scope,
+        array &$counters
+    ): void {
+        if (is_array($value)) {
+            foreach ($value as $item) {
+                self::walkControlColors(
+                    $item,
+                    $sourceRoleSignatures,
+                    $palette,
+                    $scope,
+                    $counters
+                );
+            }
+
             return;
         }
 
+        if (!$value instanceof stdClass) {
+            return;
+        }
+
+        foreach (get_object_vars($value) as $property => $child) {
+            if (!self::isColorObject($child) || !self::isSupportedControlColorProperty($property)) {
+                self::walkControlColors(
+                    $child,
+                    $sourceRoleSignatures,
+                    $palette,
+                    $scope,
+                    $counters
+                );
+
+                continue;
+            }
+
+            ++$counters['total'];
+            $signature = self::colorObjectToHex($child);
+            $matchingRole = self::resolveControlRole(
+                $property,
+                $signature,
+                $sourceRoleSignatures,
+                self::SCOPE_MATCHING_CONTROLS
+            );
+            $allRole = self::resolveControlRole(
+                $property,
+                $signature,
+                $sourceRoleSignatures,
+                self::SCOPE_ALL_CONTROL_DEFAULTS
+            );
+
+            if ($matchingRole !== null) {
+                ++$counters['matching'];
+            }
+
+            if ($allRole !== null) {
+                ++$counters['all'];
+            }
+
+            if ($palette === null || $scope === self::SCOPE_GLOBAL_DEFAULTS) {
+                continue;
+            }
+
+            $role = $scope === self::SCOPE_MATCHING_CONTROLS ? $matchingRole : $allRole;
+            if ($role === null) {
+                continue;
+            }
+
+            self::applyColorObject($child, $palette[$role]);
+            ++$counters['applied'];
+        }
+    }
+
+    /**
+     * @return array<string, array<string, true>>
+     */
+    private static function sourceRoleSignatures(stdClass $document): array
+    {
+        $signatures = [];
+
+        foreach (self::propertyMapping() as $role => $properties) {
+            $signatures[$role] = [];
+
+            foreach ($properties as $property) {
+                $color = $document->{$property} ?? null;
+                if (!self::isColorObject($color)) {
+                    continue;
+                }
+
+                $signatures[$role][self::colorObjectToHex($color)] = true;
+            }
+        }
+
+        return $signatures;
+    }
+
+    /**
+     * @param array<string, array<string, true>> $sourceRoleSignatures
+     */
+    private static function resolveControlRole(
+        string $property,
+        string $signature,
+        array $sourceRoleSignatures,
+        int $scope
+    ): ?string {
+        $preferredRole = self::preferredControlRole($property);
+        $matchingRoles = [];
+
+        foreach ($sourceRoleSignatures as $role => $signatures) {
+            if (isset($signatures[$signature])) {
+                $matchingRoles[] = $role;
+            }
+        }
+
+        if ($scope === self::SCOPE_ALL_CONTROL_DEFAULTS && $preferredRole !== null) {
+            return $preferredRole;
+        }
+
+        if ($preferredRole !== null && in_array($preferredRole, $matchingRoles, true)) {
+            return $preferredRole;
+        }
+
+        if (count($matchingRoles) === 1) {
+            return $matchingRoles[0];
+        }
+
+        return null;
+    }
+
+    private static function preferredControlRole(string $property): ?string
+    {
+        if (preg_match('/^BorderColor\d+$/', $property) === 1) {
+            return self::ROLE_BORDER;
+        }
+
+        if (preg_match('/^ForeColor\d+$/', $property) === 1) {
+            return self::ROLE_PRIMARY_TEXT;
+        }
+
+        if ($property === 'BackColor1') {
+            return self::ROLE_SURFACE;
+        }
+
+        if (preg_match('/^BackColor[2-9]\d*$/', $property) === 1) {
+            return self::ROLE_ACTIVE;
+        }
+
+        return null;
+    }
+
+    private static function isSupportedControlColorProperty(string $property): bool
+    {
+        return preg_match('/^(BackColor|ForeColor|BackColor\d+|ForeColor\d+|BorderColor\d+)$/', $property) === 1;
+    }
+
+    private static function isColorObject(mixed $value): bool
+    {
+        if (!$value instanceof stdClass) {
+            return false;
+        }
+
+        foreach (['R', 'G', 'B'] as $component) {
+            if (!property_exists($value, $component)
+                || (!is_int($value->{$component}) && !is_float($value->{$component}))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static function validateScope(int $scope): void
+    {
+        if (!in_array(
+            $scope,
+            [
+                self::SCOPE_GLOBAL_DEFAULTS,
+                self::SCOPE_MATCHING_CONTROLS,
+                self::SCOPE_ALL_CONTROL_DEFAULTS,
+            ],
+            true
+        )) {
+            throw new InvalidArgumentException('The selected design scope is not supported.');
+        }
+    }
+
+    private static function applyColor(stdClass $document, string $property, string $hexColor): bool
+    {
+        if (!property_exists($document, $property) || !self::isColorObject($document->{$property})) {
+            return false;
+        }
+
+        self::applyColorObject($document->{$property}, $hexColor);
+
+        return true;
+    }
+
+    private static function applyColorObject(stdClass $color, string $hexColor): void
+    {
         [$red, $green, $blue] = self::toRgb($hexColor);
-        $color = $document->{$property};
         $color->R = $red;
         $color->G = $green;
         $color->B = $blue;

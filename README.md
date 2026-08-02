@@ -57,7 +57,13 @@ The Assistant never overwrites the selected source. Instead, it creates a separa
 - local IPSView license information
 - dimensions, navigation and object assignments
 
-Only the global IPSView design defaults are changed. Controls with individual color overrides remain untouched in this first safe editing stage.
+The design scope can be selected separately:
+
+- **Global defaults only** changes only the central IPSView design values.
+- **Theme matching control colors** is the recommended mode. Direct control colors are changed only when they match one of the View's current global semantic colors. Deliberately individual colors remain untouched.
+- **All basic control colors** also standardizes basic control backgrounds, alternate backgrounds, text and borders. Association colors and special status colors remain protected unless they match a global semantic color.
+
+When a View is loaded, the Assistant reports how many global values, matching control colors and individual or special colors were detected. After saving, the exact number of applied and preserved colors is shown.
 
 The first save creates the separate design copy. Later saves with the same copy name and target category automatically update the existing copy instead of creating another media object. The Assistant reads the current copy before applying the new colors, so pages, controls and changes made in the official IPSView Designer remain intact. Changing the copy name or target category deliberately creates another design variant.
 
@@ -71,4 +77,4 @@ The first save creates the separate design copy. Later saves with the same copy 
 
 ## Roadmap
 
-The next stages will add reusable design profiles, optional handling of individually overridden control colors, simplified page layouts and guided creation of controls from Symcon objects.
+The next stages will add reusable design profiles, an optional change preview for strong control-color unification, simplified page layouts and guided creation of controls from Symcon objects.
