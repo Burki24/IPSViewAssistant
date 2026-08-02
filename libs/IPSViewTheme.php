@@ -99,7 +99,7 @@ final class IPSViewTheme
 
         foreach ($defaults as $role => $fallback) {
             $value = $customPalette[$role] ?? $fallback;
-            $palette[$role] = self::normalizeColor(is_scalar($value) ? (string) $value : '', $fallback);
+            $palette[$role] = self::normalizeColor($value, $fallback);
         }
 
         return $palette;
@@ -141,10 +141,24 @@ final class IPSViewTheme
     }
 
     /**
-     * Normalizes a color to #RRGGBB.
+     * Normalizes a Symcon color integer or hexadecimal value to #RRGGBB.
      */
-    public static function normalizeColor(string $color, string $fallback = '#000000'): string
+    public static function normalizeColor(mixed $color, string $fallback = '#000000'): string
     {
+        if (is_int($color) || is_float($color)) {
+            $integerColor = (int) $color;
+
+            if ($integerColor >= 0 && $integerColor <= 0xFFFFFF) {
+                return sprintf('#%06X', $integerColor);
+            }
+
+            return self::normalizeColor($fallback);
+        }
+
+        if (!is_string($color)) {
+            return self::normalizeColor($fallback);
+        }
+
         $color = strtoupper(trim($color));
         $color = preg_replace('/^(#|0X)/', '', $color) ?? '';
 
@@ -153,6 +167,14 @@ final class IPSViewTheme
         }
 
         return '#' . $color;
+    }
+
+    /**
+     * Converts a hexadecimal color to the integer format used by SelectColor.
+     */
+    public static function toFormColor(string $color): int
+    {
+        return hexdec(substr(self::normalizeColor($color), 1));
     }
 
     /**

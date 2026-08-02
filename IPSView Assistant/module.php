@@ -146,7 +146,7 @@ class IPSViewAssistant extends IPSModuleStrict
     private function updateColorFields(array $palette): void
     {
         foreach (self::FORM_COLOR_FIELDS as $role => $field) {
-            $this->UpdateFormField($field, 'value', $palette[$role]);
+            $this->UpdateFormField($field, 'value', IPSViewTheme::toFormColor($palette[$role]));
         }
     }
 }

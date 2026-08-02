@@ -96,6 +96,8 @@ assertTest(
     str_starts_with((string) ($preview['image'] ?? ''), 'data:image/svg+xml;base64,'),
     'The initial theme preview is not an SVG data URI.'
 );
+assertTest(($preview['width'] ?? '') === '700px', 'The live preview must use a compact fixed width.');
+assertTest(($preview['center'] ?? false) === true, 'The live preview must be centered.');
 assertTest(count($colorFields) === 12, 'The form must expose exactly twelve semantic color roles.');
 
 foreach ($colorFields as $field) {
@@ -104,6 +106,8 @@ foreach ($colorFields as $field) {
         'A semantic color field does not refresh the live preview.'
     );
     assertTest(($field['allowTransparent'] ?? true) === false, 'Semantic colors must not allow transparency.');
+    assertTest(($field['width'] ?? '') === '420px', 'Semantic color fields must be clearly readable.');
+    assertTest(is_int($field['value'] ?? null), 'SelectColor values must use the Symcon integer format.');
 }
 
 echo "IPSView Assistant module tests passed.\n";

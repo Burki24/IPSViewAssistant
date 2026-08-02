@@ -91,6 +91,28 @@ assertTest($custom[IPSViewTheme::ROLE_VIEW_BACKGROUND] === '#ABCDEF', 'Custom co
 assertTest($custom[IPSViewTheme::ROLE_ACCENT] === '#123456', 'Valid custom colors were changed.');
 assertTest($custom[IPSViewTheme::ROLE_ERROR] === '#EF4444', 'Invalid custom colors do not use the fallback.');
 
+
+$integerCustom = IPSViewTheme::resolvePalette(
+    IPSViewTheme::THEME_CUSTOM,
+    [
+        IPSViewTheme::ROLE_VIEW_BACKGROUND => 0x102030,
+        IPSViewTheme::ROLE_ACCENT          => 0xABCDEF,
+    ]
+);
+
+assertTest(
+    $integerCustom[IPSViewTheme::ROLE_VIEW_BACKGROUND] === '#102030',
+    'Symcon color integers are not converted for the live preview.'
+);
+assertTest(
+    $integerCustom[IPSViewTheme::ROLE_ACCENT] === '#ABCDEF',
+    'Symcon color integers are not retained for custom Views.'
+);
+assertTest(
+    IPSViewTheme::toFormColor('#ABCDEF') === 0xABCDEF,
+    'Hexadecimal colors are not converted to SelectColor integers.'
+);
+
 $preview = IPSViewThemePreview::createDataUri($darkPalette);
 assertTest(
     str_starts_with($preview, 'data:image/svg+xml;base64,'),

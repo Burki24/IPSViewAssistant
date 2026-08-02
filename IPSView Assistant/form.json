@@ -126,7 +126,7 @@
                     "name": "ThemePreview",
                     "image": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI5MjAiIGhlaWdodD0iNDIwIiB2aWV3Qm94PSIwIDAgOTIwIDQyMCI+CiAgPGRlZnM+CiAgICA8ZmlsdGVyIGlkPSJzaGFkb3ciIHg9Ii0yMCUiIHk9Ii0yMCUiIHdpZHRoPSIxNDAlIiBoZWlnaHQ9IjE2MCUiPgogICAgICA8ZmVEcm9wU2hhZG93IGR4PSIwIiBkeT0iOCIgc3RkRGV2aWF0aW9uPSIxMCIgZmxvb2QtY29sb3I9IiMxMjEyMTIiIGZsb29kLW9wYWNpdHk9IjAuNDIiLz4KICAgIDwvZmlsdGVyPgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iOTIwIiBoZWlnaHQ9IjQyMCIgcng9IjI0IiBmaWxsPSIjNDA0MDQwIi8+CiAgPHJlY3QgeD0iMjIiIHk9IjIyIiB3aWR0aD0iODc2IiBoZWlnaHQ9IjM3NiIgcng9IjE4IiBmaWxsPSIjNDA0MDQwIiBzdHJva2U9IiM3RjdGN0YiIHN0cm9rZS13aWR0aD0iMiIvPgogIDxyZWN0IHg9IjIyIiB5PSIyMiIgd2lkdGg9Ijg3NiIgaGVpZ2h0PSI2OCIgcng9IjE4IiBmaWxsPSIjNjA2MDYwIi8+CiAgPHJlY3QgeD0iMjIiIHk9IjcyIiB3aWR0aD0iODc2IiBoZWlnaHQ9IjE4IiBmaWxsPSIjNjA2MDYwIi8+CiAgPGNpcmNsZSBjeD0iNjAiIGN5PSI1NiIgcj0iMTciIGZpbGw9IiMwMDdBRkYiLz4KICA8cGF0aCBkPSJNNTIgNTZoMTZNNjAgNDh2MTYiIHN0cm9rZT0iI0ZGRkZGRiIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8dGV4dCB4PSI5MCIgeT0iNTIiIGZpbGw9IiNGRkZGRkYiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMCIgZm9udC13ZWlnaHQ9IjcwMCI+RGVzaWduIHByZXZpZXc8L3RleHQ+CiAgPHRleHQgeD0iOTAiIHk9IjczIiBmaWxsPSIjQTRBNEE0IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTMiPlNlbWFudGljIGNvbG9ycyBhcHBsaWVkIGNvbnNpc3RlbnRseTwvdGV4dD4KICA8dGV4dCB4PSI4MjQiIHk9IjYyIiBmaWxsPSIjRkZGRkZGIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI3MDAiPjIxLjUgwrBDPC90ZXh0PgoKICA8ZyBmaWx0ZXI9InVybCgjc2hhZG93KSI+CiAgICA8cmVjdCB4PSI0OCIgeT0iMTE4IiB3aWR0aD0iMjUwIiBoZWlnaHQ9IjExNiIgcng9IjE2IiBmaWxsPSIjNjA2MDYwIiBzdHJva2U9IiM3RjdGN0YiLz4KICAgIDx0ZXh0IHg9IjcwIiB5PSIxNTAiIGZpbGw9IiNBNEE0QTQiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMyI+TElHSFRTPC90ZXh0PgogICAgPHRleHQgeD0iNzAiIHk9IjE4MSIgZmlsbD0iI0ZGRkZGRiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmb250LXdlaWdodD0iNzAwIj5MaXZpbmcgcm9vbTwvdGV4dD4KICAgIDxyZWN0IHg9IjIxOCIgeT0iMTY0IiB3aWR0aD0iNTQiIGhlaWdodD0iMzAiIHJ4PSIxNSIgZmlsbD0iIzBBQkUwQSIvPgogICAgPGNpcmNsZSBjeD0iMjU3IiBjeT0iMTc5IiByPSIxMSIgZmlsbD0iI0ZGRkZGRiIvPgogICAgPHRleHQgeD0iNzAiIHk9IjIxMyIgZmlsbD0iIzBBQkUwQSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEzIiBmb250LXdlaWdodD0iNzAwIj5BY3RpdmU8L3RleHQ+CiAgPC9nPgoKICA8ZyBmaWx0ZXI9InVybCgjc2hhZG93KSI+CiAgICA8cmVjdCB4PSIzMzUiIHk9IjExOCIgd2lkdGg9IjI1MCIgaGVpZ2h0PSIxMTYiIHJ4PSIxNiIgZmlsbD0iIzYwNjA2MCIgc3Ryb2tlPSIjN0Y3RjdGIi8+CiAgICA8dGV4dCB4PSIzNTciIHk9IjE1MCIgZmlsbD0iI0E0QTRBNCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEzIj5TSFVUVEVSUzwvdGV4dD4KICAgIDx0ZXh0IHg9IjM1NyIgeT0iMTgxIiBmaWxsPSIjRkZGRkZGIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjIiIGZvbnQtd2VpZ2h0PSI3MDAiPjY1ICU8L3RleHQ+CiAgICA8cmVjdCB4PSIzNTciIHk9IjIwMiIgd2lkdGg9IjE5OCIgaGVpZ2h0PSI4IiByeD0iNCIgZmlsbD0iI0JFMEEwQSIvPgogICAgPHJlY3QgeD0iMzU3IiB5PSIyMDIiIHdpZHRoPSIxMjkiIGhlaWdodD0iOCIgcng9IjQiIGZpbGw9IiMwMDdBRkYiLz4KICAgIDxjaXJjbGUgY3g9IjQ4NiIgY3k9IjIwNiIgcj0iMTEiIGZpbGw9IiMwMDdBRkYiIHN0cm9rZT0iIzYwNjA2MCIgc3Ryb2tlLXdpZHRoPSI0Ii8+CiAgPC9nPgoKICA8ZyBmaWx0ZXI9InVybCgjc2hhZG93KSI+CiAgICA8cmVjdCB4PSI2MjIiIHk9IjExOCIgd2lkdGg9IjI1MCIgaGVpZ2h0PSIxMTYiIHJ4PSIxNiIgZmlsbD0iIzYwNjA2MCIgc3Ryb2tlPSIjN0Y3RjdGIi8+CiAgICA8dGV4dCB4PSI2NDQiIHk9IjE1MCIgZmlsbD0iI0E0QTRBNCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEzIj5TRUNVUklUWTwvdGV4dD4KICAgIDx0ZXh0IHg9IjY0NCIgeT0iMTgxIiBmaWxsPSIjRkZGRkZGIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjIiIGZvbnQtd2VpZ2h0PSI3MDAiPkhvbWU8L3RleHQ+CiAgICA8cmVjdCB4PSI2NDQiIHk9IjE5OSIgd2lkdGg9IjgyIiBoZWlnaHQ9IjI0IiByeD0iMTIiIGZpbGw9IiMwQUJFMEEiLz4KICAgIDx0ZXh0IHg9IjY4NSIgeT0iMjE2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjRkZGRkZGIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtd2VpZ2h0PSI3MDAiPk9LPC90ZXh0PgogICAgPHJlY3QgeD0iNzM2IiB5PSIxOTkiIHdpZHRoPSIxMDYiIGhlaWdodD0iMjQiIHJ4PSIxMiIgZmlsbD0iI0ZGMDAwMCIvPgogICAgPHRleHQgeD0iNzg5IiB5PSIyMTYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNGRkZGRkYiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMiIgZm9udC13ZWlnaHQ9IjcwMCI+Tk9USUNFPC90ZXh0PgogIDwvZz4KCiAgPHJlY3QgeD0iNDgiIHk9IjI2OCIgd2lkdGg9IjgyNCIgaGVpZ2h0PSI5NiIgcng9IjE2IiBmaWxsPSIjNjA2MDYwIiBzdHJva2U9IiM3RjdGN0YiLz4KICA8dGV4dCB4PSI3MCIgeT0iMjk5IiBmaWxsPSIjRkZGRkZGIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI3MDAiPlN0YXR1cyBjb2xvcnM8L3RleHQ+CiAgPHRleHQgeD0iNzAiIHk9IjMyNSIgZmlsbD0iI0E0QTRBNCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEzIj5UaGUgc2FtZSByb2xlcyBhcmUgdXNlZCBmb3Igc3dpdGNoZXMsIHNsaWRlcnMsIGRpYWxvZ3MsIGNoYXJ0cyBhbmQgY2FsZW5kYXJzLjwvdGV4dD4KICA8Y2lyY2xlIGN4PSI2OTAiIGN5PSIzMTYiIHI9IjEyIiBmaWxsPSIjMEFCRTBBIi8+CiAgPGNpcmNsZSBjeD0iNzM1IiBjeT0iMzE2IiByPSIxMiIgZmlsbD0iI0ZGMDAwMCIvPgogIDxjaXJjbGUgY3g9Ijc4MCIgY3k9IjMxNiIgcj0iMTIiIGZpbGw9IiNCRTBBMEEiLz4KICA8Y2lyY2xlIGN4PSI4MjUiIGN5PSIzMTYiIHI9IjEyIiBmaWxsPSIjQkUwQTBBIi8+Cjwvc3ZnPg==",
                     "center": true,
-                    "width": "100%"
+                    "width": "700px"
                 },
                 {
                     "type": "ExpansionPanel",
@@ -140,18 +140,18 @@
                                     "type": "SelectColor",
                                     "name": "ViewBackgroundColor",
                                     "caption": "View background",
-                                    "value": "#404040",
+                                    "value": 4210752,
                                     "allowTransparent": false,
-                                    "width": "100%",
+                                    "width": "420px",
                                     "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES));"
                                 },
                                 {
                                     "type": "SelectColor",
                                     "name": "PageBackgroundColor",
                                     "caption": "Page background",
-                                    "value": "#404040",
+                                    "value": 4210752,
                                     "allowTransparent": false,
-                                    "width": "100%",
+                                    "width": "420px",
                                     "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES));"
                                 }
                             ]
@@ -163,18 +163,18 @@
                                     "type": "SelectColor",
                                     "name": "SurfaceColor",
                                     "caption": "Cards and controls",
-                                    "value": "#606060",
+                                    "value": 6316128,
                                     "allowTransparent": false,
-                                    "width": "100%",
+                                    "width": "420px",
                                     "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES));"
                                 },
                                 {
                                     "type": "SelectColor",
                                     "name": "PrimaryTextColor",
                                     "caption": "Primary text",
-                                    "value": "#FFFFFF",
+                                    "value": 16777215,
                                     "allowTransparent": false,
-                                    "width": "100%",
+                                    "width": "420px",
                                     "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES));"
                                 }
                             ]
@@ -186,18 +186,18 @@
                                     "type": "SelectColor",
                                     "name": "SecondaryTextColor",
                                     "caption": "Secondary text",
-                                    "value": "#A4A4A4",
+                                    "value": 10790052,
                                     "allowTransparent": false,
-                                    "width": "100%",
+                                    "width": "420px",
                                     "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES));"
                                 },
                                 {
                                     "type": "SelectColor",
                                     "name": "BorderColor",
                                     "caption": "Borders and separators",
-                                    "value": "#7F7F7F",
+                                    "value": 8355711,
                                     "allowTransparent": false,
-                                    "width": "100%",
+                                    "width": "420px",
                                     "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES));"
                                 }
                             ]
@@ -209,18 +209,18 @@
                                     "type": "SelectColor",
                                     "name": "AccentColor",
                                     "caption": "Accent",
-                                    "value": "#007AFF",
+                                    "value": 31487,
                                     "allowTransparent": false,
-                                    "width": "100%",
+                                    "width": "420px",
                                     "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES));"
                                 },
                                 {
                                     "type": "SelectColor",
                                     "name": "ActiveColor",
                                     "caption": "Active",
-                                    "value": "#0ABE0A",
+                                    "value": 704010,
                                     "allowTransparent": false,
-                                    "width": "100%",
+                                    "width": "420px",
                                     "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES));"
                                 }
                             ]
@@ -232,18 +232,18 @@
                                     "type": "SelectColor",
                                     "name": "InactiveColor",
                                     "caption": "Inactive",
-                                    "value": "#BE0A0A",
+                                    "value": 12454410,
                                     "allowTransparent": false,
-                                    "width": "100%",
+                                    "width": "420px",
                                     "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES));"
                                 },
                                 {
                                     "type": "SelectColor",
                                     "name": "SuccessColor",
                                     "caption": "Success",
-                                    "value": "#0ABE0A",
+                                    "value": 704010,
                                     "allowTransparent": false,
-                                    "width": "100%",
+                                    "width": "420px",
                                     "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES));"
                                 }
                             ]
@@ -255,18 +255,18 @@
                                     "type": "SelectColor",
                                     "name": "WarningColor",
                                     "caption": "Warning",
-                                    "value": "#FF0000",
+                                    "value": 16711680,
                                     "allowTransparent": false,
-                                    "width": "100%",
+                                    "width": "420px",
                                     "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES));"
                                 },
                                 {
                                     "type": "SelectColor",
                                     "name": "ErrorColor",
                                     "caption": "Error",
-                                    "value": "#BE0A0A",
+                                    "value": 12454410,
                                     "allowTransparent": false,
-                                    "width": "100%",
+                                    "width": "420px",
                                     "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES));"
                                 }
                             ]

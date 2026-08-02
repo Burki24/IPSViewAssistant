@@ -16,3 +16,10 @@
 - License-neutral IPSView template based on the verified creation experiment.
 - Shared `tests` and `style` checks through `Symcon_ModuleCI v1.0.0`.
 - Automated library metadata updates through the GitHub App.
+
+### Fixed
+
+- Reduced and centered the design preview for a more compact configuration form.
+- Enlarged the semantic color controls and fixed truncated captions.
+- Fixed live preview and custom View generation for integer values returned by Symcon SelectColor fields.
+
