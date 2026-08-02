@@ -345,14 +345,15 @@
                 },
                 {
                     "type": "Button",
-                    "caption": "Create styled copy",
-                    "onClick": "echo IPSVIEWA_CreateStyledCopy($id, $SourceViewID, $CopyViewName, $CopyTargetCategoryID, $Theme, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES));"
+                    "caption": "Save styled copy",
+                    "onClick": "echo IPSVIEWA_CreateStyledCopy($id, $SourceViewID, $CopyViewName, $CopyTargetCategoryID, $Theme, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES));",
+                    "name": "SaveStyledCopyButton"
                 }
             ]
         },
         {
             "type": "Label",
-            "caption": "A styled copy preserves all pages, controls and unknown IPSView fields. Only the global design defaults are changed."
+            "caption": "The first save creates a separate design copy. Further saves with the same name and target category update that copy while preserving all later IPSView Designer changes."
         },
         {
             "type": "Label",

@@ -4,6 +4,9 @@
 
 ### Added
 
+- Automatic create-or-update workflow for styled IPSView copies.
+- Persistent tracking of Assistant-managed design copies, including safe adoption of existing same-name IPSView targets.
+- In-place design updates based on the current copy content so later IPSView Designer changes remain intact.
 - A3 safe design transfer for existing IPSView media objects.
 - Existing View inspection with semantic color extraction, page count and control count.
 - Lossless styled copies that preserve pages, controls, license data and unknown IPSView fields while leaving the original untouched.

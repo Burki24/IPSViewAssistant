@@ -45,6 +45,18 @@ assertTest(
     !str_contains($copyFactorySource, 'MEDIATYPE_DASHBOARD'),
     'The copy factory uses an unavailable Symcon media type constant.'
 );
+assertTest(
+    str_contains($moduleSource, "RegisterAttributeString(self::ATTRIBUTE_MANAGED_COPIES, '[]')"),
+    'The module does not persist its managed design copy registry.'
+);
+assertTest(
+    str_contains($moduleSource, '$factory->update('),
+    'The module does not update an existing design copy.'
+);
+assertTest(
+    str_contains($moduleSource, 'findExistingTarget('),
+    'The module does not adopt an existing same-name IPSView target.'
+);
 
 /**
  * @param list<array<string, mixed>> $items
@@ -80,7 +92,7 @@ foreach ($actions as $action) {
         $button = $action;
     }
 
-    if (($action['type'] ?? '') === 'Button' && ($action['caption'] ?? '') === 'Create styled copy') {
+    if (($action['type'] ?? '') === 'Button' && ($action['caption'] ?? '') === 'Save styled copy') {
         $copyButton = $action;
     }
 
@@ -114,7 +126,8 @@ assertTest(
     str_contains((string) ($button['onClick'] ?? ''), '$Theme'),
     'The Create View button does not pass the selected theme.'
 );
-assertTest(is_array($copyButton), 'The Create styled copy button is missing from the form.');
+assertTest(is_array($copyButton), 'The Save styled copy button is missing from the form.');
+assertTest(($copyButton['name'] ?? '') === 'SaveStyledCopyButton', 'The styled copy button has no stable form name.');
 assertTest(
     str_contains((string) ($copyButton['onClick'] ?? ''), 'IPSVIEWA_CreateStyledCopy('),
     'The styled copy button does not call the public module method.'

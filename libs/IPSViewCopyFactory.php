@@ -53,7 +53,12 @@ final class IPSViewCopyFactory
 
         $this->validateName($copyName);
         $this->validateTargetCategory($targetCategoryID);
-        $this->ensureUniqueViewName($copyName, $targetCategoryID);
+
+        if ($this->findExistingTarget($copyName, $targetCategoryID) !== null) {
+            throw new InvalidArgumentException(
+                sprintf('An IPSView named "%s" already exists in the selected category.', $copyName)
+            );
+        }
 
         $document = $this->loadDocument($sourceMediaID);
         $mediaID = IPS_CreateMedia(self::IPSVIEW_MEDIA_TYPE);
@@ -89,6 +94,76 @@ final class IPSViewCopyFactory
 
             throw $exception;
         }
+    }
+
+    /**
+     * Updates the global design defaults of an existing IPSView in place.
+     *
+     * The current target content is read first, so pages, controls and later
+     * changes made in the IPSView Designer remain untouched.
+     *
+     * @param array<string, mixed> $customPalette
+     */
+    public function update(
+        int $targetMediaID,
+        int $theme,
+        array $customPalette = []
+    ): int {
+        $document = $this->loadDocument($targetMediaID);
+        $document->applyTheme($theme, $customPalette);
+
+        if (!IPS_SetMediaContent($targetMediaID, base64_encode($document->toJson()))) {
+            throw new RuntimeException('The IPSView content could not be written.');
+        }
+
+        IPS_SendMediaEvent($targetMediaID);
+
+        return $targetMediaID;
+    }
+
+    public function findExistingTarget(string $copyName, int $targetCategoryID): ?int
+    {
+        $copyName = trim($copyName);
+        $this->validateName($copyName);
+        $this->validateTargetCategory($targetCategoryID);
+        $matchingObjects = [];
+
+        foreach (IPS_GetChildrenIDs($targetCategoryID) as $childID) {
+            $object = IPS_GetObject($childID);
+
+            if ((string) ($object['ObjectName'] ?? '') === $copyName) {
+                $matchingObjects[] = [
+                    'id'   => $childID,
+                    'type' => (int) ($object['ObjectType'] ?? -1),
+                ];
+            }
+        }
+
+        if ($matchingObjects === []) {
+            return null;
+        }
+
+        if (count($matchingObjects) > 1) {
+            throw new InvalidArgumentException(
+                sprintf('More than one object named "%s" exists in the selected category.', $copyName)
+            );
+        }
+
+        $matchingObject = $matchingObjects[0];
+        if ($matchingObject['type'] !== 5 || !IPS_MediaExists($matchingObject['id'])) {
+            throw new InvalidArgumentException(
+                sprintf('An object named "%s" exists, but it is not an IPSView media object.', $copyName)
+            );
+        }
+
+        $media = IPS_GetMedia($matchingObject['id']);
+        if ((int) ($media['MediaType'] ?? -1) !== self::IPSVIEW_MEDIA_TYPE) {
+            throw new InvalidArgumentException(
+                sprintf('A media object named "%s" exists, but it is not an IPSView.', $copyName)
+            );
+        }
+
+        return $matchingObject['id'];
     }
 
     private function loadDocument(int $sourceMediaID): IPSViewDocument
@@ -139,19 +214,4 @@ final class IPSViewCopyFactory
         }
     }
 
-    private function ensureUniqueViewName(string $copyName, int $targetCategoryID): void
-    {
-        foreach (IPS_GetChildrenIDs($targetCategoryID) as $childID) {
-            $object = IPS_GetObject($childID);
-            if (($object['ObjectType'] ?? -1) !== 5) {
-                continue;
-            }
-
-            if (($object['ObjectName'] ?? '') === $copyName) {
-                throw new InvalidArgumentException(
-                    sprintf('An IPSView named "%s" already exists in the selected category.', $copyName)
-                );
-            }
-        }
-    }
 }

@@ -18,6 +18,9 @@ use Burki24\SymconModuleHelper\ConfigurationFormHelper;
 class IPSViewAssistant extends IPSModuleStrict
 {
     use ConfigurationFormHelper;
+
+    private const ATTRIBUTE_MANAGED_COPIES = 'ManagedCopies';
+
     /**
      * @var array<string, string>
      */
@@ -42,6 +45,8 @@ class IPSViewAssistant extends IPSModuleStrict
     public function Create(): void
     {
         parent::Create();
+
+        $this->RegisterAttributeString(self::ATTRIBUTE_MANAGED_COPIES, '[]');
     }
 
     /**
@@ -128,28 +133,50 @@ class IPSViewAssistant extends IPSModuleStrict
     {
         try {
             $factory = new IPSViewCopyFactory();
-            $inspection = $factory->inspect($SourceViewID);
-            $palette = $inspection['palette'];
+            $sourceInspection = $factory->inspect($SourceViewID);
+            $copyName = trim($sourceInspection['name']) . ' - ' . $this->Translate('Design copy');
+            $copyTargetCategoryID = $sourceInspection['parentID'];
+            $copyMediaID = $this->findPreferredManagedCopy($SourceViewID);
 
+            if ($copyMediaID === null) {
+                $copyMediaID = $factory->findExistingTarget($copyName, $copyTargetCategoryID);
+
+                if ($copyMediaID === $SourceViewID) {
+                    $copyMediaID = null;
+                }
+
+                if ($copyMediaID !== null) {
+                    $this->rememberManagedCopy($SourceViewID, $copyMediaID);
+                }
+            }
+
+            $paletteInspection = $sourceInspection;
+            $status = sprintf(
+                $this->Translate('Loaded "%s": %d pages and %d controls. The original remains unchanged.'),
+                $sourceInspection['name'],
+                $sourceInspection['pageCount'],
+                $sourceInspection['controlCount']
+            );
+
+            if ($copyMediaID !== null) {
+                $copyInspection = $factory->inspect($copyMediaID);
+                $copyName = $copyInspection['name'];
+                $copyTargetCategoryID = $copyInspection['parentID'];
+                $paletteInspection = $copyInspection;
+                $status .= ' ' . sprintf(
+                    $this->Translate('The existing design copy "%s" (ID %d) will be updated on the next save.'),
+                    $copyName,
+                    $copyMediaID
+                );
+            }
+
+            $palette = $paletteInspection['palette'];
             $this->UpdateFormField('Theme', 'value', IPSViewTheme::THEME_CUSTOM);
             $this->updateColorFields($palette);
             $this->UpdateFormField('ThemePreview', 'image', IPSViewThemePreview::createDataUri($palette));
-            $this->UpdateFormField(
-                'CopyViewName',
-                'value',
-                trim($inspection['name']) . ' - ' . $this->Translate('Design copy')
-            );
-            $this->UpdateFormField('CopyTargetCategoryID', 'value', $inspection['parentID']);
-            $this->UpdateFormField(
-                'ExistingViewStatus',
-                'caption',
-                sprintf(
-                    $this->Translate('Loaded "%s": %d pages and %d controls. The original remains unchanged.'),
-                    $inspection['name'],
-                    $inspection['pageCount'],
-                    $inspection['controlCount']
-                )
-            );
+            $this->UpdateFormField('CopyViewName', 'value', $copyName);
+            $this->UpdateFormField('CopyTargetCategoryID', 'value', $copyTargetCategoryID);
+            $this->UpdateFormField('ExistingViewStatus', 'caption', $status);
         } catch (Throwable $exception) {
             $this->SendDebug('LoadExistingView', $exception->getMessage(), 0);
             $this->UpdateFormField(
@@ -172,24 +199,75 @@ class IPSViewAssistant extends IPSModuleStrict
     ): string {
         try {
             $factory = new IPSViewCopyFactory();
+            $copyName = trim($CopyViewName);
+            $targetMediaID = $this->findManagedCopy(
+                $SourceViewID,
+                $copyName,
+                $CopyTargetCategoryID
+            );
+
+            if ($targetMediaID === null) {
+                $targetMediaID = $factory->findExistingTarget($copyName, $CopyTargetCategoryID);
+            }
+
+            if ($targetMediaID !== null) {
+                if ($targetMediaID === $SourceViewID) {
+                    throw new RuntimeException(
+                        $this->Translate('The source IPSView cannot be used as its own design copy.')
+                    );
+                }
+
+                $factory->update(
+                    $targetMediaID,
+                    $Theme,
+                    $this->decodePalette($ThemePalette)
+                );
+                $this->rememberManagedCopy($SourceViewID, $targetMediaID);
+                $this->UpdateFormField(
+                    'ExistingViewStatus',
+                    'caption',
+                    sprintf(
+                        $this->Translate('The design copy "%s" (ID %d) was updated. The original remains unchanged.'),
+                        $copyName,
+                        $targetMediaID
+                    )
+                );
+
+                return sprintf(
+                    $this->Translate('The styled IPSView copy "%s" was updated successfully with object ID %d.'),
+                    $copyName,
+                    $targetMediaID
+                );
+            }
+
             $mediaID = $factory->create(
                 $SourceViewID,
-                $CopyViewName,
+                $copyName,
                 $CopyTargetCategoryID,
                 $Theme,
                 $this->decodePalette($ThemePalette)
             );
+            $this->rememberManagedCopy($SourceViewID, $mediaID);
+            $this->UpdateFormField(
+                'ExistingViewStatus',
+                'caption',
+                sprintf(
+                    $this->Translate('The design copy "%s" (ID %d) was created and will be updated on future saves.'),
+                    $copyName,
+                    $mediaID
+                )
+            );
 
             return sprintf(
                 $this->Translate('The styled IPSView copy "%s" was created successfully with object ID %d.'),
-                trim($CopyViewName),
+                $copyName,
                 $mediaID
             );
         } catch (Throwable $exception) {
             $this->SendDebug('CreateStyledCopy', $exception->getMessage(), 0);
 
             return sprintf(
-                $this->Translate('The styled IPSView copy could not be created: %s'),
+                $this->Translate('The styled IPSView copy could not be saved: %s'),
                 $exception->getMessage()
             );
         }
@@ -270,6 +348,108 @@ class IPSViewAssistant extends IPSModuleStrict
         }
 
         return false;
+    }
+
+    private function findManagedCopy(
+        int $sourceMediaID,
+        string $copyName,
+        int $targetCategoryID
+    ): ?int {
+        foreach (array_reverse($this->readManagedCopies()) as $managedCopy) {
+            if ($managedCopy['sourceMediaID'] !== $sourceMediaID) {
+                continue;
+            }
+
+            $targetMediaID = $managedCopy['targetMediaID'];
+            $object = IPS_GetObject($targetMediaID);
+
+            if (
+                (string) ($object['ObjectName'] ?? '') === $copyName
+                && (int) ($object['ParentID'] ?? -1) === $targetCategoryID
+            ) {
+                return $targetMediaID;
+            }
+        }
+
+        return null;
+    }
+
+    private function findPreferredManagedCopy(int $sourceMediaID): ?int
+    {
+        foreach (array_reverse($this->readManagedCopies()) as $managedCopy) {
+            if ($managedCopy['sourceMediaID'] === $sourceMediaID) {
+                return $managedCopy['targetMediaID'];
+            }
+        }
+
+        return null;
+    }
+
+    private function rememberManagedCopy(int $sourceMediaID, int $targetMediaID): void
+    {
+        $managedCopies = array_values(
+            array_filter(
+                $this->readManagedCopies(),
+                static fn (array $managedCopy): bool => $managedCopy['targetMediaID'] !== $targetMediaID
+            )
+        );
+        $managedCopies[] = [
+            'sourceMediaID' => $sourceMediaID,
+            'targetMediaID' => $targetMediaID,
+        ];
+
+        $this->WriteAttributeString(
+            self::ATTRIBUTE_MANAGED_COPIES,
+            json_encode($managedCopies, JSON_THROW_ON_ERROR)
+        );
+    }
+
+    /**
+     * @return list<array{sourceMediaID: int, targetMediaID: int}>
+     */
+    private function readManagedCopies(): array
+    {
+        try {
+            $decoded = json_decode(
+                $this->ReadAttributeString(self::ATTRIBUTE_MANAGED_COPIES),
+                true,
+                512,
+                JSON_THROW_ON_ERROR
+            );
+        } catch (Throwable) {
+            $decoded = [];
+        }
+
+        if (!is_array($decoded)) {
+            $decoded = [];
+        }
+
+        $managedCopies = [];
+
+        foreach ($decoded as $managedCopy) {
+            if (!is_array($managedCopy)) {
+                continue;
+            }
+
+            $sourceMediaID = (int) ($managedCopy['sourceMediaID'] ?? 0);
+            $targetMediaID = (int) ($managedCopy['targetMediaID'] ?? 0);
+
+            if ($sourceMediaID < 1 || $targetMediaID < 1 || !IPS_MediaExists($targetMediaID)) {
+                continue;
+            }
+
+            $media = IPS_GetMedia($targetMediaID);
+            if ((int) ($media['MediaType'] ?? -1) !== 0) {
+                continue;
+            }
+
+            $managedCopies[] = [
+                'sourceMediaID' => $sourceMediaID,
+                'targetMediaID' => $targetMediaID,
+            ];
+        }
+
+        return $managedCopies;
     }
 
     /**

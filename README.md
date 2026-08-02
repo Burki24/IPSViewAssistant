@@ -59,6 +59,8 @@ The Assistant never overwrites the selected source. Instead, it creates a separa
 
 Only the global IPSView design defaults are changed. Controls with individual color overrides remain untouched in this first safe editing stage.
 
+The first save creates the separate design copy. Later saves with the same copy name and target category automatically update the existing copy instead of creating another media object. The Assistant reads the current copy before applying the new colors, so pages, controls and changes made in the official IPSView Designer remain intact. Changing the copy name or target category deliberately creates another design variant.
+
 ## Development foundation
 
 - PHP 8.5 and `IPSModuleStrict`

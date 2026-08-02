@@ -71,6 +71,25 @@ assertTest(
     'The custom accent was not applied to the copied View.'
 );
 
+$copy->Pages[0]->Controls[0]->ChangedLaterInDesigner = true;
+$updatedDocument = IPSViewDocument::fromJson(
+    json_encode($copy, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR)
+);
+$updatedDocument->applyTheme(
+    IPSViewTheme::THEME_CUSTOM,
+    [IPSViewTheme::ROLE_VIEW_BACKGROUND => '#304050']
+);
+$updatedCopy = $updatedDocument->copy();
+
+assertTest(
+    ($updatedCopy->Pages[0]->Controls[0]->ChangedLaterInDesigner ?? false) === true,
+    'A later IPSView Designer change was lost during an in-place design update.'
+);
+assertTest(
+    $updatedCopy->ID === 12002,
+    'An in-place design update changed the existing copy media ID.'
+);
+
 $copyFactorySource = (string) file_get_contents(dirname(__DIR__) . '/libs/IPSViewCopyFactory.php');
 assertTest(
     str_contains($copyFactorySource, 'IPS_GetMediaContent('),
@@ -95,6 +114,18 @@ assertTest(
 assertTest(
     str_contains($copyFactorySource, 'prepareCopy('),
     'The copy factory does not prepare a separate media document.'
+);
+assertTest(
+    str_contains($copyFactorySource, 'public function update('),
+    'The copy factory cannot update an existing design copy.'
+);
+assertTest(
+    str_contains($copyFactorySource, 'public function findExistingTarget('),
+    'The copy factory cannot resolve an existing same-name IPSView target.'
+);
+assertTest(
+    str_contains($copyFactorySource, '$document = $this->loadDocument($targetMediaID);'),
+    'The copy factory does not reload the current target before updating its design.'
 );
 
 try {
