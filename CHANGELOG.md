@@ -58,6 +58,7 @@
 
 ### Fixed
 
+- Moved the bundled preview fonts from the library root into `libs/fonts` so Symcon no longer interprets `assets` as an invalid module.
 - Replaced the unavailable `MEDIATYPE_DASHBOARD` runtime constant with the documented IPSView media type `0` when validating and creating design copies.
 - Replaced percentage-based SelectColor widths with stable pixel widths so captions and color bars remain fully readable beside the preview.
 - Reduced and centered the design preview for a more compact configuration form.

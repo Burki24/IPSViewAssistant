@@ -275,7 +275,7 @@ SVG;
             return self::$previewFontData[$filename];
         }
 
-        $path = dirname(__DIR__) . '/assets/fonts/' . $filename;
+        $path = __DIR__ . '/fonts/' . $filename;
         $contents = is_file($path) ? file_get_contents($path) : false;
         self::$previewFontData[$filename] = is_string($contents)
             ? base64_encode($contents)
