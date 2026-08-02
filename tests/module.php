@@ -18,17 +18,61 @@ assertTest(is_string($moduleSource), 'The module source could not be read.');
 assertTest(is_string($factorySource), 'The IPSView factory source could not be read.');
 assertTest(str_contains($moduleSource, 'extends IPSModuleStrict'), 'The module does not use IPSModuleStrict.');
 assertTest(str_contains($moduleSource, 'public function CreateView('), 'The public CreateView method is missing.');
+assertTest(
+    str_contains($moduleSource, 'public function ApplyThemePreset('),
+    'The public ApplyThemePreset method is missing.'
+);
+assertTest(
+    str_contains($moduleSource, 'public function UpdateThemePreview('),
+    'The public UpdateThemePreview method is missing.'
+);
 assertTest(str_contains($factorySource, 'IPS_CreateMedia(0)'), 'The factory does not create an IPSView media object.');
 assertTest(str_contains($factorySource, 'IPS_SetMediaFile('), 'The factory does not assign a media file.');
 assertTest(str_contains($factorySource, 'IPS_SetMediaContent('), 'The factory does not write the IPSView content.');
 assertTest(str_contains($factorySource, 'IPS_SendMediaEvent('), 'The factory does not announce the media update.');
+assertTest(str_contains($factorySource, 'applyTheme('), 'The factory does not apply the selected theme.');
 
-$actions = $form['actions'] ?? [];
+/**
+ * @param list<array<string, mixed>> $items
+ *
+ * @return list<array<string, mixed>>
+ */
+function flattenFormItems(array $items): array
+{
+    $flat = [];
+
+    foreach ($items as $item) {
+        $flat[] = $item;
+
+        if (isset($item['items']) && is_array($item['items'])) {
+            $flat = [...$flat, ...flattenFormItems($item['items'])];
+        }
+    }
+
+    return $flat;
+}
+
+$actions = flattenFormItems($form['actions'] ?? []);
 $button = null;
+$themeSelect = null;
+$preview = null;
+$colorFields = [];
+
 foreach ($actions as $action) {
     if (($action['type'] ?? '') === 'Button' && ($action['caption'] ?? '') === 'Create View') {
         $button = $action;
-        break;
+    }
+
+    if (($action['type'] ?? '') === 'Select' && ($action['name'] ?? '') === 'Theme') {
+        $themeSelect = $action;
+    }
+
+    if (($action['type'] ?? '') === 'Image' && ($action['name'] ?? '') === 'ThemePreview') {
+        $preview = $action;
+    }
+
+    if (($action['type'] ?? '') === 'SelectColor') {
+        $colorFields[] = $action;
     }
 }
 
@@ -37,5 +81,29 @@ assertTest(
     str_contains((string) ($button['onClick'] ?? ''), 'IPSVIEWA_CreateView('),
     'The Create View button does not call the public module method.'
 );
+assertTest(
+    str_contains((string) ($button['onClick'] ?? ''), '$Theme'),
+    'The Create View button does not pass the selected theme.'
+);
+assertTest(is_array($themeSelect), 'The theme selection is missing from the form.');
+assertTest(count($themeSelect['options'] ?? []) === 4, 'The form does not offer all four theme modes.');
+assertTest(
+    str_contains((string) ($themeSelect['onChange'] ?? ''), 'IPSVIEWA_ApplyThemePreset('),
+    'The theme selection does not load a preset.'
+);
+assertTest(is_array($preview), 'The live theme preview is missing from the form.');
+assertTest(
+    str_starts_with((string) ($preview['image'] ?? ''), 'data:image/svg+xml;base64,'),
+    'The initial theme preview is not an SVG data URI.'
+);
+assertTest(count($colorFields) === 12, 'The form must expose exactly twelve semantic color roles.');
+
+foreach ($colorFields as $field) {
+    assertTest(
+        str_contains((string) ($field['onChange'] ?? ''), 'IPSVIEWA_UpdateThemePreview('),
+        'A semantic color field does not refresh the live preview.'
+    );
+    assertTest(($field['allowTransparent'] ?? true) === false, 'Semantic colors must not allow transparency.');
+}
 
 echo "IPSView Assistant module tests passed.\n";

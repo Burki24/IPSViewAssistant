@@ -24,6 +24,7 @@ function runTestCommand(string $label, string $command): void
 
 $commands = [
     ['Validate repository structure', 'php tests/validate_structure.php'],
+    ['Test IPSView theme mapping', 'php tests/theme.php'],
     ['Test IPSView document generation', 'php tests/document.php'],
     ['Test module integration', 'php tests/module.php'],
     ['Test library metadata updater', 'python3 tests/test_update_library_metadata.py'],

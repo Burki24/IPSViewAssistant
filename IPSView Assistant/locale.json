@@ -17,7 +17,28 @@
             "Create View": "View erstellen",
             "After creation, open the new media object in the object tree and save it once in the IPSView Designer.": "Nach dem Erstellen das neue Medienobjekt im Objektbaum öffnen und einmal im IPSView Designer speichern.",
             "The IPSView \"%s\" was created successfully with object ID %d.": "Die IPSView „%s“ wurde erfolgreich mit der Objekt-ID %d erstellt.",
-            "The IPSView could not be created: %s": "Die IPSView konnte nicht erstellt werden: %s"
+            "The IPSView could not be created: %s": "Die IPSView konnte nicht erstellt werden: %s",
+            "View settings": "View-Einstellungen",
+            "Design": "Design",
+            "Theme": "Designvorlage",
+            "IPSView Standard": "IPSView-Standard",
+            "Light": "Hell",
+            "Dark": "Dunkel",
+            "Custom": "Benutzerdefiniert",
+            "Choose a preset or adjust the semantic colors below. A manual color change automatically switches the theme to Custom.": "Wähle eine Vorlage oder passe die verständlich gruppierten Farben an. Eine manuelle Farbänderung schaltet automatisch auf „Benutzerdefiniert“ um.",
+            "Design colors": "Designfarben",
+            "View background": "View-Hintergrund",
+            "Page background": "Seitenhintergrund",
+            "Cards and controls": "Flächen und Bedienelemente",
+            "Primary text": "Haupttext",
+            "Secondary text": "Nebentext",
+            "Borders and separators": "Rahmen und Trennlinien",
+            "Accent": "Akzent",
+            "Active": "Aktiv",
+            "Inactive": "Inaktiv",
+            "Success": "Erfolg",
+            "Warning": "Warnung",
+            "Error": "Fehler"
         }
     }
 }

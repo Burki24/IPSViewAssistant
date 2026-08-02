@@ -15,9 +15,12 @@ $requiredFiles = [
     'IPSView Assistant/module.php',
     'IPSView Assistant/form.json',
     'IPSView Assistant/locale.json',
+    'libs/IPSViewTheme.php',
+    'libs/IPSViewThemePreview.php',
     'libs/IPSViewDocument.php',
     'libs/IPSViewFactory.php',
     'libs/templates/empty-view.json',
+    'tests/theme.php',
     'tests/stubs',
     '.style',
 ];
@@ -53,6 +56,18 @@ assertTest(($template->LicenseKey ?? null) === '', 'The template must not contai
 assertTest(($template->LicenseRegister ?? null) === '', 'The template must not contain a registered user.');
 assertTest(($template->UsedIDs ?? null) instanceof stdClass, 'UsedIDs must be a JSON object.');
 assertTest(($template->GroupIDs ?? null) instanceof stdClass, 'GroupIDs must be a JSON object.');
+
+$form = json_decode(
+    (string) file_get_contents($root . '/IPSView Assistant/form.json'),
+    true,
+    512,
+    JSON_THROW_ON_ERROR
+);
+$formJson = json_encode($form, JSON_THROW_ON_ERROR);
+assertTest(str_contains($formJson, 'ThemePreview'), 'The live theme preview is missing.');
+assertTest(str_contains($formJson, 'SelectColor'), 'The semantic color controls are missing.');
+assertTest(str_contains($formJson, 'IPSVIEWA_ApplyThemePreset'), 'The theme preset action is missing.');
+assertTest(str_contains($formJson, 'IPSVIEWA_UpdateThemePreview'), 'The live preview action is missing.');
 
 $gitmodules = (string) file_get_contents($root . '/.gitmodules');
 assertTest(str_contains($gitmodules, 'url = https://github.com/symcon/StylePHP'), 'StylePHP submodule is missing.');

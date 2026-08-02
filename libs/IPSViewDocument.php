@@ -108,6 +108,18 @@ final class IPSViewDocument
     }
 
     /**
+     * Applies a semantic color theme to the IPSView defaults.
+     *
+     * @param array<string, mixed> $customPalette
+     *
+     * @return array<string, string> Effective palette
+     */
+    public function applyTheme(int $theme, array $customPalette = []): array
+    {
+        return IPSViewTheme::apply($this->document, $theme, $customPalette);
+    }
+
+    /**
      * Serializes the document while preserving empty JSON objects as objects.
      */
     public function toJson(): string
