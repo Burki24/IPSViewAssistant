@@ -91,7 +91,6 @@ assertTest($custom[IPSViewTheme::ROLE_VIEW_BACKGROUND] === '#ABCDEF', 'Custom co
 assertTest($custom[IPSViewTheme::ROLE_ACCENT] === '#123456', 'Valid custom colors were changed.');
 assertTest($custom[IPSViewTheme::ROLE_ERROR] === '#EF4444', 'Invalid custom colors do not use the fallback.');
 
-
 $integerCustom = IPSViewTheme::resolvePalette(
     IPSViewTheme::THEME_CUSTOM,
     [
