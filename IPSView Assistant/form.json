@@ -139,7 +139,7 @@
                                             "caption": "View background",
                                             "value": 4210752,
                                             "allowTransparent": false,
-                                            "width": "48%",
+                                            "width": "360px",
                                             "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES));"
                                         },
                                         {
@@ -148,7 +148,7 @@
                                             "caption": "Page background",
                                             "value": 4210752,
                                             "allowTransparent": false,
-                                            "width": "48%",
+                                            "width": "360px",
                                             "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES));"
                                         }
                                     ]
@@ -162,7 +162,7 @@
                                             "caption": "Cards and controls",
                                             "value": 6316128,
                                             "allowTransparent": false,
-                                            "width": "48%",
+                                            "width": "360px",
                                             "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES));"
                                         },
                                         {
@@ -171,7 +171,7 @@
                                             "caption": "Primary text",
                                             "value": 16777215,
                                             "allowTransparent": false,
-                                            "width": "48%",
+                                            "width": "360px",
                                             "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES));"
                                         }
                                     ]
@@ -185,7 +185,7 @@
                                             "caption": "Secondary text",
                                             "value": 10790052,
                                             "allowTransparent": false,
-                                            "width": "48%",
+                                            "width": "360px",
                                             "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES));"
                                         },
                                         {
@@ -194,7 +194,7 @@
                                             "caption": "Borders and separators",
                                             "value": 8355711,
                                             "allowTransparent": false,
-                                            "width": "48%",
+                                            "width": "360px",
                                             "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES));"
                                         }
                                     ]
@@ -208,7 +208,7 @@
                                             "caption": "Accent",
                                             "value": 31487,
                                             "allowTransparent": false,
-                                            "width": "48%",
+                                            "width": "360px",
                                             "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES));"
                                         },
                                         {
@@ -217,7 +217,7 @@
                                             "caption": "Active",
                                             "value": 704010,
                                             "allowTransparent": false,
-                                            "width": "48%",
+                                            "width": "360px",
                                             "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES));"
                                         }
                                     ]
@@ -231,7 +231,7 @@
                                             "caption": "Inactive",
                                             "value": 12454410,
                                             "allowTransparent": false,
-                                            "width": "48%",
+                                            "width": "360px",
                                             "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES));"
                                         },
                                         {
@@ -240,7 +240,7 @@
                                             "caption": "Success",
                                             "value": 704010,
                                             "allowTransparent": false,
-                                            "width": "48%",
+                                            "width": "360px",
                                             "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES));"
                                         }
                                     ]
@@ -254,7 +254,7 @@
                                             "caption": "Warning",
                                             "value": 16711680,
                                             "allowTransparent": false,
-                                            "width": "48%",
+                                            "width": "360px",
                                             "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES));"
                                         },
                                         {
@@ -263,7 +263,7 @@
                                             "caption": "Error",
                                             "value": 12454410,
                                             "allowTransparent": false,
-                                            "width": "48%",
+                                            "width": "360px",
                                             "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES));"
                                         }
                                     ]

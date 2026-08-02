@@ -123,7 +123,7 @@ foreach ($colorFields as $field) {
         'A semantic color field does not refresh the live preview.'
     );
     assertTest(($field['allowTransparent'] ?? true) === false, 'Semantic colors must not allow transparency.');
-    assertTest(($field['width'] ?? '') === '48%', 'Semantic color fields must share the responsive color panel.');
+    assertTest(($field['width'] ?? '') === '360px', 'Semantic color fields must remain fully readable in the color panel.');
     assertTest(is_int($field['value'] ?? null), 'SelectColor values must use the Symcon integer format.');
 }
 
