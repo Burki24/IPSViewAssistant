@@ -228,12 +228,12 @@ final class IPSViewTheme
         }
 
         return [
-            'globalColors'           => $globalColors,
-            'controlColorsTotal'     => $controlAnalysis['total'],
-            'matchingControlColors'  => $controlAnalysis['matching'],
-            'allControlDefaults'     => $controlAnalysis['all'],
+            'globalColors'            => $globalColors,
+            'controlColorsTotal'      => $controlAnalysis['total'],
+            'matchingControlColors'   => $controlAnalysis['matching'],
+            'allControlDefaults'      => $controlAnalysis['all'],
             'individualControlColors' => $controlAnalysis['total'] - $controlAnalysis['matching'],
-            'specialControlColors'   => $controlAnalysis['total'] - $controlAnalysis['all'],
+            'specialControlColors'    => $controlAnalysis['total'] - $controlAnalysis['all'],
         ];
     }
 

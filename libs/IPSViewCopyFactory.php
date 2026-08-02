@@ -48,9 +48,9 @@ final class IPSViewCopyFactory
         $object = IPS_GetObject($sourceMediaID);
 
         return [
-            'name'         => (string) ($object['ObjectName'] ?? ''),
-            'parentID'     => (int) ($object['ParentID'] ?? 0),
-            'pageCount'    => $document->getPageCount(),
+            'name'           => (string) ($object['ObjectName'] ?? ''),
+            'parentID'       => (int) ($object['ParentID'] ?? 0),
+            'pageCount'      => $document->getPageCount(),
             'controlCount'   => $document->getControlCount(),
             'palette'        => $document->extractThemePalette(),
             'designAnalysis' => $document->analyzeThemeColors(),
