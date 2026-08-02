@@ -1,67 +1,61 @@
 # IPSView Assistant
-Beschreibung des Moduls.
 
-### Inhaltsverzeichnis
+## 1. Function
 
-1. [Funktionsumfang](#1-funktionsumfang)
-2. [Voraussetzungen](#2-voraussetzungen)
-3. [Software-Installation](#3-software-installation)
-4. [Einrichten der Instanzen in Symcon](#4-einrichten-der-instanzen-in-symcon)
-5. [Statusvariablen und Profile](#5-statusvariablen-und-profile)
-6. [WebFront](#6-webfront)
-7. [PHP-Befehlsreferenz](#7-php-befehlsreferenz)
+The module creates a fully initialized IPSView media object without the normal multi-step creation process in the Symcon object tree and the IPSView Designer.
 
-### 1. Funktionsumfang
+The user selects:
 
-*
+- View name
+- target category
+- main page name
+- aspect ratio: 1:1, 4:3 or 16:9
+- landscape or portrait orientation
+- template (currently: empty View)
 
-### 2. Voraussetzungen
+The generated media object can be opened immediately in the IPSView Designer and saved normally.
 
-- Symcon ab Version 7.1
+## 2. Requirements
 
-### 3. Software-Installation
+- Symcon 9.0 or newer
+- IPSView Designer installed and licensed for normal editing and saving
 
-* Über den Module Store das 'IPSView Assistant'-Modul installieren.
-* Alternativ über das Module Control folgende URL hinzufügen
+## 3. Setup
 
-### 4. Einrichten der Instanzen in Symcon
+Create one **IPSView Assistant** instance. The instance does not need a parent connection and creates no status variables.
 
- Unter 'Instanz hinzufügen' kann das 'IPSView Assistant'-Modul mithilfe des Schnellfilters gefunden werden.  
-	- Weitere Informationen zum Hinzufügen von Instanzen in der [Dokumentation der Instanzen](https://www.symcon.de/service/dokumentation/konzepte/instanzen/#Instanz_hinzufügen)
+## 4. Creating a View
 
-__Konfigurationsseite__:
+1. Open the instance configuration.
+2. Enter the View name and main page name.
+3. Select the target category, aspect ratio and orientation.
+4. Press **Create View**.
+5. Open the new IPSView media object in the object tree.
+6. Save it once in the IPSView Designer.
 
-Name     | Beschreibung
--------- | ------------------
-         |
-         |
+The assistant does not copy personal IPSView license data. The IPSView Designer supplies the local license information when the View is saved.
 
-### 5. Statusvariablen und Profile
+## 5. PHP command
 
-Die Statusvariablen/Kategorien werden automatisch angelegt. Das Löschen einzelner kann zu Fehlfunktionen führen.
+```php
+$result = IPSVIEWA_CreateView(
+    12345,
+    'Haussteuerung',
+    23456,
+    2,
+    0,
+    0,
+    'Hauptseite'
+);
+```
 
-#### Statusvariablen
+Parameters after the instance ID:
 
-Name   | Typ     | Beschreibung
------- | ------- | ------------
-       |         |
-       |         |
+1. View name
+2. target category ID (`0` = Symcon root)
+3. aspect ratio (`0` = 1:1, `1` = 4:3, `2` = 16:9)
+4. orientation (`0` = landscape, `1` = portrait)
+5. template (`0` = empty View)
+6. main page name
 
-#### Profile
-
-Name   | Typ
------- | -------
-       |
-       |
-
-### 6. Visualisierung
-
-Die Funktionalität, die das Modul in der Visualisierung bietet.
-
-### 7. PHP-Befehlsreferenz
-
-`boolean IPSVIEWA_BeispielFunktion(integer $InstanzID);`
-Erklärung der Funktion.
-
-Beispiel:
-`IPSVIEWA_BeispielFunktion(12345);`
+The function returns a readable success or error message.

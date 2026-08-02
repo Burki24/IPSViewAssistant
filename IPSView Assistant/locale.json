@@ -1,8 +1,23 @@
 {
     "translations": {
         "de": {
-            "Translation 1": "Übersetzung 1",
-            "Translation 2": "Übersetzung 2"
+            "Create a new IPSView without using the technical IPSView creation dialog.": "Erstellt eine neue IPSView, ohne den technischen IPSView-Erstellungsdialog verwenden zu müssen.",
+            "View name": "Name der View",
+            "Target category": "Zielkategorie",
+            "Main page name": "Name der Hauptseite",
+            "Aspect ratio": "Seitenverhältnis",
+            "Square (1:1)": "Quadratisch (1:1)",
+            "Classic (4:3)": "Klassisch (4:3)",
+            "Widescreen (16:9)": "Breitbild (16:9)",
+            "Orientation": "Ausrichtung",
+            "Landscape": "Querformat",
+            "Portrait": "Hochformat",
+            "Template": "Vorlage",
+            "Empty View": "Leere View",
+            "Create View": "View erstellen",
+            "After creation, open the new media object in the object tree and save it once in the IPSView Designer.": "Nach dem Erstellen das neue Medienobjekt im Objektbaum öffnen und einmal im IPSView Designer speichern.",
+            "The IPSView \"%s\" was created successfully with object ID %d.": "Die IPSView „%s“ wurde erfolgreich mit der Objekt-ID %d erstellt.",
+            "The IPSView could not be created: %s": "Die IPSView konnte nicht erstellt werden: %s"
         }
     }
 }

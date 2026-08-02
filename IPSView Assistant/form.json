@@ -1,5 +1,84 @@
 {
-    "elements": [],
-    "actions": [],
+    "actions": [
+        {
+            "type": "Label",
+            "caption": "Create a new IPSView without using the technical IPSView creation dialog."
+        },
+        {
+            "type": "ValidationTextBox",
+            "name": "ViewName",
+            "caption": "View name",
+            "value": "Neue IPSView"
+        },
+        {
+            "type": "SelectCategory",
+            "name": "TargetCategoryID",
+            "caption": "Target category",
+            "value": 0
+        },
+        {
+            "type": "ValidationTextBox",
+            "name": "MainPageName",
+            "caption": "Main page name",
+            "value": "Hauptseite"
+        },
+        {
+            "type": "Select",
+            "name": "AspectRatio",
+            "caption": "Aspect ratio",
+            "value": 2,
+            "options": [
+                {
+                    "caption": "Square (1:1)",
+                    "value": 0
+                },
+                {
+                    "caption": "Classic (4:3)",
+                    "value": 1
+                },
+                {
+                    "caption": "Widescreen (16:9)",
+                    "value": 2
+                }
+            ]
+        },
+        {
+            "type": "Select",
+            "name": "Orientation",
+            "caption": "Orientation",
+            "value": 0,
+            "options": [
+                {
+                    "caption": "Landscape",
+                    "value": 0
+                },
+                {
+                    "caption": "Portrait",
+                    "value": 1
+                }
+            ]
+        },
+        {
+            "type": "Select",
+            "name": "Template",
+            "caption": "Template",
+            "value": 0,
+            "options": [
+                {
+                    "caption": "Empty View",
+                    "value": 0
+                }
+            ]
+        },
+        {
+            "type": "Button",
+            "caption": "Create View",
+            "onClick": "echo IPSVIEWA_CreateView($id, $ViewName, $TargetCategoryID, $AspectRatio, $Orientation, $Template, $MainPageName);"
+        },
+        {
+            "type": "Label",
+            "caption": "After creation, open the new media object in the object tree and save it once in the IPSView Designer."
+        }
+    ],
     "status": []
 }
