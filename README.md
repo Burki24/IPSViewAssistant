@@ -77,7 +77,7 @@ The Assistant also provides a small set of global design basics that remain clea
 
 Typography presets scale the global IPSView font hierarchy proportionally instead of flattening all text to one size. Depending on the selected design scope, the Assistant can additionally update only control fonts that still match the previous global default, or proportionally scale all direct control fonts. Bold settings and other individual font details remain unchanged.
 
-Corners and border widths change only the global IPSView defaults and related rounded-track switches. The Assistant does not edit element positions, sizes, page structure, navigation or individual control logic. The live preview shows the selected typography and form language together with colors and effects. For existing Views, **Preserve existing** remains the safe default.
+Corners and border widths change only the global IPSView defaults and related rounded-track switches. The Assistant does not edit element positions, sizes, page structure, navigation or individual control logic. The live preview shows the selected typography and form language together with colors and effects. Matching fonts for the fixed IPSView catalogue are bundled as compact WOFF2 preview fonts, embedded directly into the generated SVG and therefore require neither an installed system font nor an internet connection. The Segment7 selection uses a compatible OFL-licensed seven-segment preview font. Detected fonts from existing Views still use the local browser fallback when they are not installed. For existing Views, **Preserve existing** remains the safe default.
 
 ### Safe design transfer from existing Views
 

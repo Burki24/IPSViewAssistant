@@ -220,3 +220,7 @@ Theme values:
 - `6` = Earthy
 - `7` = Water
 - `8` = Sunny
+
+## Offline font preview
+
+The live SVG preview embeds the matching catalogue preview font as a local WOFF2 resource. Segment7 uses a compatible seven-segment preview font. No external font service or internet connection is used.

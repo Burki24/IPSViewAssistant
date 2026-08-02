@@ -9,6 +9,8 @@
 
 ### Added
 
+- Offline WOFF2 preview fonts for the fixed IPSView font catalogue, embedded only for the currently selected family in the generated SVG.
+- Font license and attribution files for all bundled preview fonts.
 - A5 global typography presets with preserve, compact, standard, large and custom base-size modes.
 - Selectable font families aligned with the fixed IPSView font catalogue: Roboto, RobotoMono, DancingScript, IndieFlower, OpenSans, PTSans, BebasNeue and Segment7.
 - Global form-language presets for square, slightly rounded, rounded, strongly rounded and custom corners.

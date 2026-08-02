@@ -7,6 +7,78 @@ namespace Burki24\IPSViewAssistant;
 final class IPSViewThemePreview
 {
     /**
+     * @var array<string, array{alias: string, fallback: string, weights: array<int, string>}>
+     */
+    private const PREVIEW_FONTS = [
+        'Roboto' => [
+            'alias'    => 'IPSViewPreviewFont01',
+            'fallback' => 'sans-serif',
+            'weights'  => [
+                400 => 'preview-font-01-400.woff2',
+                700 => 'preview-font-01-700.woff2',
+            ],
+        ],
+        'RobotoMono' => [
+            'alias'    => 'IPSViewPreviewFont02',
+            'fallback' => 'monospace',
+            'weights'  => [
+                400 => 'preview-font-02-400.woff2',
+                700 => 'preview-font-02-700.woff2',
+            ],
+        ],
+        'DancingScript' => [
+            'alias'    => 'IPSViewPreviewFont03',
+            'fallback' => 'cursive',
+            'weights'  => [
+                400 => 'preview-font-03-400.woff2',
+                700 => 'preview-font-03-700.woff2',
+            ],
+        ],
+        'IndieFlower' => [
+            'alias'    => 'IPSViewPreviewFont04',
+            'fallback' => 'cursive',
+            'weights'  => [
+                400 => 'preview-font-04-400.woff2',
+            ],
+        ],
+        'OpenSans' => [
+            'alias'    => 'IPSViewPreviewFont05',
+            'fallback' => 'sans-serif',
+            'weights'  => [
+                400 => 'preview-font-05-400.woff2',
+                700 => 'preview-font-05-700.woff2',
+            ],
+        ],
+        'PTSans' => [
+            'alias'    => 'IPSViewPreviewFont06',
+            'fallback' => 'sans-serif',
+            'weights'  => [
+                400 => 'preview-font-06-400.woff2',
+                700 => 'preview-font-06-700.woff2',
+            ],
+        ],
+        'BebasNeue' => [
+            'alias'    => 'IPSViewPreviewFont07',
+            'fallback' => 'sans-serif',
+            'weights'  => [
+                400 => 'preview-font-07-400.woff2',
+            ],
+        ],
+        'Segment7' => [
+            'alias'    => 'IPSViewPreviewFont08',
+            'fallback' => 'monospace',
+            'weights'  => [
+                400 => 'preview-font-08-400.woff2',
+            ],
+        ],
+    ];
+
+    /**
+     * @var array<string, string>
+     */
+    private static array $previewFontData = [];
+
+    /**
      * Creates a self-contained SVG data URI for the configuration form.
      *
      * @param array<string, string> $palette
@@ -49,8 +121,9 @@ final class IPSViewThemePreview
         $typography = IPSViewTypography::preview($appearance);
         $shape = IPSViewShape::preview($appearance);
         $fontScale = max(0.75, min(1.45, $typography['baseFontSize'] / 14));
+        $fontDefinition = self::fontDefinition($typography['fontFamily']);
         $fontFamily = htmlspecialchars(
-            $typography['fontFamily'] . ', Arial, sans-serif',
+            self::fontStack($typography['fontFamily']),
             ENT_QUOTES | ENT_XML1,
             'UTF-8'
         );
@@ -94,6 +167,7 @@ final class IPSViewThemePreview
         return <<<SVG
 <svg xmlns="http://www.w3.org/2000/svg" width="920" height="420" viewBox="0 0 920 420">
   <defs>
+    {$fontDefinition}
     <pattern id="checker" width="20" height="20" patternUnits="userSpaceOnUse">
       <rect width="20" height="20" fill="#E5E7EB"/>
       <rect width="10" height="10" fill="#F8FAFC"/>
@@ -152,6 +226,62 @@ final class IPSViewThemePreview
   <circle cx="825" cy="316" r="12" fill="{$inactiveFill}" fill-opacity="{$opacity}"/>
 </svg>
 SVG;
+    }
+
+    private static function fontDefinition(string $fontFamily): string
+    {
+        $font = self::PREVIEW_FONTS[$fontFamily] ?? null;
+        if ($font === null) {
+            return '';
+        }
+
+        $rules = [];
+        foreach ($font['weights'] as $weight => $filename) {
+            $fontData = self::fontData($filename);
+            if ($fontData === '') {
+                continue;
+            }
+
+            $rules[] = sprintf(
+                '@font-face { font-family: "%s"; src: url("data:font/woff2;base64,%s") format("woff2"); font-style: normal; font-weight: %d; font-display: block; }',
+                $font['alias'],
+                $fontData,
+                $weight
+            );
+        }
+
+        if ($rules === []) {
+            return '';
+        }
+
+        return '<style type="text/css"><![CDATA[' . implode("\n", $rules) . ']]></style>';
+    }
+
+    private static function fontStack(string $fontFamily): string
+    {
+        $font = self::PREVIEW_FONTS[$fontFamily] ?? null;
+        if ($font === null) {
+            return $fontFamily . ', Arial, sans-serif';
+        }
+
+        return $font['fallback'] === 'sans-serif'
+            ? $font['alias'] . ', Arial, sans-serif'
+            : $font['alias'] . ', ' . $font['fallback'];
+    }
+
+    private static function fontData(string $filename): string
+    {
+        if (isset(self::$previewFontData[$filename])) {
+            return self::$previewFontData[$filename];
+        }
+
+        $path = dirname(__DIR__) . '/assets/fonts/' . $filename;
+        $contents = is_file($path) ? file_get_contents($path) : false;
+        self::$previewFontData[$filename] = is_string($contents)
+            ? base64_encode($contents)
+            : '';
+
+        return self::$previewFontData[$filename];
     }
 
     /**

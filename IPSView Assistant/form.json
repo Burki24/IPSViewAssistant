@@ -587,7 +587,7 @@
                                         },
                                         {
                                             "type": "Label",
-                                            "caption": "IPSView provides a fixed cross-client font catalogue. Arbitrary system fonts are therefore not offered; the live preview may use a fallback font when an IPSView font is not installed in the browser."
+                                            "caption": "Matching preview fonts for the fixed IPSView catalogue are bundled and work offline. Segment7 uses a compatible seven-segment preview font. Only detected system fonts may still use a browser fallback."
                                         },
                                         {
                                             "type": "RowLayout",

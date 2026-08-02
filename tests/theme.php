@@ -13,6 +13,7 @@ require_once dirname(__DIR__) . '/libs/IPSViewDocument.php';
 use Burki24\IPSViewAssistant\IPSViewDocument;
 use Burki24\IPSViewAssistant\IPSViewTheme;
 use Burki24\IPSViewAssistant\IPSViewThemePreview;
+use Burki24\IPSViewAssistant\IPSViewTypography;
 
 /**
  * Converts one IPSView color object to #RRGGBB.
@@ -220,5 +221,59 @@ assertTest(is_string($svg), 'The SVG preview could not be decoded.');
 assertTest(str_contains($svg, '<svg'), 'The preview does not contain SVG markup.');
 assertTest(str_contains($svg, '#111827'), 'The preview does not contain the selected View background.');
 assertTest(str_contains($svg, '#3B82F6'), 'The preview does not contain the selected accent color.');
+
+$fontSvg = IPSViewThemePreview::createSvg(
+    $darkPalette,
+    [],
+    [
+        'fontFamilyMode' => IPSViewTypography::FONT_ROBOTO,
+    ]
+);
+assertTest(str_contains($fontSvg, '@font-face'), 'The selected catalogue font is not embedded.');
+assertTest(
+    substr_count($fontSvg, 'data:font/woff2;base64,') === 2,
+    'The preview does not embed both available Roboto weights.'
+);
+assertTest(
+    str_contains($fontSvg, 'font-family: "IPSViewPreviewFont01"'),
+    'The embedded preview font does not use its neutral internal family name.'
+);
+assertTest(
+    str_contains($fontSvg, 'font-family="IPSViewPreviewFont01, Arial, sans-serif"'),
+    'The SVG does not select the embedded Roboto preview font.'
+);
+
+$segmentSvg = IPSViewThemePreview::createSvg(
+    $darkPalette,
+    [],
+    [
+        'fontFamilyMode' => IPSViewTypography::FONT_SEGMENT_7,
+    ]
+);
+assertTest(
+    substr_count($segmentSvg, 'data:font/woff2;base64,') === 1,
+    'The seven-segment preview must embed only its available regular weight.'
+);
+assertTest(
+    str_contains($segmentSvg, 'font-family="IPSViewPreviewFont08, monospace"'),
+    'The seven-segment preview does not use the embedded monospace font.'
+);
+
+$customFontSvg = IPSViewThemePreview::createSvg(
+    $darkPalette,
+    [],
+    [
+        'fontFamilyMode'   => IPSViewTypography::FONT_PRESERVE,
+        'customFontFamily' => 'Example System Font',
+    ]
+);
+assertTest(
+    !str_contains($customFontSvg, '@font-face'),
+    'Detected system fonts must not be replaced by an unrelated bundled font.'
+);
+assertTest(
+    str_contains($customFontSvg, 'font-family="Example System Font, Arial, sans-serif"'),
+    'The detected system font is not retained in the preview fallback stack.'
+);
 
 echo "IPSView theme tests passed.\n";

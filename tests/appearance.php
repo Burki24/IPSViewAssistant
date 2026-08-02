@@ -146,7 +146,11 @@ $preview = IPSViewThemePreview::createDataUri(
 $svg = base64_decode(substr($preview, strlen('data:image/svg+xml;base64,')), true);
 
 assertTest(is_string($svg), 'The appearance preview could not be decoded.');
-assertTest(str_contains($svg, 'font-family="RobotoMono, Arial, sans-serif"'), 'The preview does not show the selected font family.');
+assertTest(
+    str_contains($svg, 'font-family="IPSViewPreviewFont02, monospace"'),
+    'The preview does not show the selected embedded font family.'
+);
+assertTest(str_contains($svg, '@font-face'), 'The selected preview font is not embedded offline.');
 assertTest(str_contains($svg, 'rx="18"'), 'The preview does not show the strongly rounded corners.');
 assertTest(str_contains($svg, 'stroke-width="3.0"'), 'The preview does not show the strong border.');
 

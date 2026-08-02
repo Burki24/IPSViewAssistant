@@ -27,6 +27,23 @@ $requiredFiles = [
     'libs/IPSViewCopyFactory.php',
     'libs/IPSViewFactory.php',
     'libs/templates/empty-view.json',
+    'assets/fonts/NOTICE.md',
+    'assets/fonts/Apache-2.0.txt',
+    'assets/fonts/OFL-1.1.txt',
+    'assets/fonts/ParaType-Free-Font-License.txt',
+    'assets/fonts/preview-font-01-400.woff2',
+    'assets/fonts/preview-font-01-700.woff2',
+    'assets/fonts/preview-font-02-400.woff2',
+    'assets/fonts/preview-font-02-700.woff2',
+    'assets/fonts/preview-font-03-400.woff2',
+    'assets/fonts/preview-font-03-700.woff2',
+    'assets/fonts/preview-font-04-400.woff2',
+    'assets/fonts/preview-font-05-400.woff2',
+    'assets/fonts/preview-font-05-700.woff2',
+    'assets/fonts/preview-font-06-400.woff2',
+    'assets/fonts/preview-font-06-700.woff2',
+    'assets/fonts/preview-font-07-400.woff2',
+    'assets/fonts/preview-font-08-400.woff2',
     'tests/theme.php',
     'tests/effects.php',
     'tests/appearance.php',
@@ -37,6 +54,14 @@ $requiredFiles = [
 
 foreach ($requiredFiles as $file) {
     assertTest(file_exists($root . '/' . $file), 'Required repository path is missing: ' . $file);
+}
+
+$previewFonts = glob($root . '/assets/fonts/preview-font-*.woff2');
+assertTest(is_array($previewFonts), 'The bundled preview fonts could not be enumerated.');
+assertTest(count($previewFonts) === 13, 'The bundled preview font set is incomplete.');
+foreach ($previewFonts as $previewFont) {
+    $signature = file_get_contents($previewFont, false, null, 0, 4);
+    assertTest($signature === 'wOF2', 'A bundled preview font is not a valid WOFF2 file.');
 }
 
 $library = json_decode(
