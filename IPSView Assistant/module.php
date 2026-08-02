@@ -201,7 +201,7 @@ class IPSViewAssistant extends IPSModuleStrict
             $status .= ' ' . sprintf(
                 $this->Translate('Current basics: font %s at %d px, corner radius %d px and border width %.1f px.'),
                 $appearanceInspection['fontFamily'] === ''
-                    ? $this->Translate('system default')
+                    ? $this->Translate('IPSView default (Roboto)')
                     : $appearanceInspection['fontFamily'],
                 $appearanceInspection['baseFontSize'],
                 $appearanceInspection['cornerRadius'],

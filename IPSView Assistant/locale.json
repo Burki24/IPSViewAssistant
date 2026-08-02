@@ -99,12 +99,8 @@
             "Standard": "Standard",
             "Large": "Groß",
             "Font family": "Schriftart",
-            "System default": "Systemstandard",
             "Roboto": "Roboto",
-            "Segoe UI": "Segoe UI",
-            "Arial": "Arial",
             "Custom base font size": "Benutzerdefinierte Grundschriftgröße",
-            "Custom font family": "Benutzerdefinierte Schriftart",
             "Corners": "Ecken",
             "Square": "Eckig",
             "Slightly rounded": "Leicht gerundet",
@@ -116,8 +112,17 @@
             "Thin": "Dünn",
             "Custom border width": "Benutzerdefinierte Rahmenbreite",
             "Current basics: font %s at %d px, corner radius %d px and border width %.1f px.": "Aktuelle Grundlagen: Schrift %s mit %d px, Eckenradius %d px und Rahmenbreite %.1f px.",
-            "system default": "Systemstandard",
-            "%d global typography settings and %d control fonts were updated; %d form-language settings were applied.": "%d globale Typografieeinstellungen und %d Schriften von Bedienelementen wurden aktualisiert; %d Einstellungen der Formensprache wurden angewendet."
+            "%d global typography settings and %d control fonts were updated; %d form-language settings were applied.": "%d globale Typografieeinstellungen und %d Schriften von Bedienelementen wurden aktualisiert; %d Einstellungen der Formensprache wurden angewendet.",
+            "RobotoMono": "RobotoMono",
+            "DancingScript": "DancingScript",
+            "IndieFlower": "IndieFlower",
+            "OpenSans": "OpenSans",
+            "PTSans": "PTSans",
+            "BebasNeue": "BebasNeue",
+            "Segment7": "Segment7",
+            "Detected font family": "Erkannte Schriftart",
+            "IPSView default (Roboto)": "IPSView-Standard (Roboto)",
+            "IPSView provides a fixed cross-client font catalogue. Arbitrary system fonts are therefore not offered; the live preview may use a fallback font when an IPSView font is not installed in the browser.": "IPSView stellt einen festen, clientübergreifenden Schriftkatalog bereit. Beliebige Systemschriften werden daher nicht angeboten; falls eine IPSView-Schrift im Browser nicht installiert ist, kann die Live-Vorschau eine Ersatzschrift anzeigen."
         }
     }
 }

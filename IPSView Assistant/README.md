@@ -68,7 +68,7 @@ When working with an existing View, the default **Preserve existing** setting ke
 The Assistant can define a simple global basis for:
 
 - typography size: preserve, compact, standard, large or custom
-- font family: preserve, system default, Roboto, Segoe UI, Arial or custom
+- font family: preserve or one of the IPSView fonts Roboto, RobotoMono, DancingScript, IndieFlower, OpenSans, PTSans, BebasNeue and Segment7
 - corners: preserve, square, slightly rounded, rounded, strongly rounded or custom
 - border width: preserve, none, thin, standard, strong or custom
 
@@ -186,8 +186,7 @@ Typography and form-language basics can be passed as one further optional JSON a
 ```php
 $appearance = json_encode([
     'typographyStyle'  => 2,
-    'fontFamilyMode'   => 3,
-    'customFontFamily' => '',
+    'fontFamilyMode'   => 1,
     'customFontSize'   => 14,
     'cornerStyle'      => 3,
     'customCornerRadius' => 10,

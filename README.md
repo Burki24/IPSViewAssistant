@@ -71,7 +71,7 @@ For existing Views, **Preserve existing** is the safe default. Explicit effect s
 The Assistant also provides a small set of global design basics that remain clearly separated from the actual View construction in IPSView Designer:
 
 - typography size: preserve existing, compact, standard, large or custom
-- font family: preserve existing, system default, Roboto, Segoe UI, Arial or custom
+- font family: preserve existing or one of the IPSView fonts Roboto, RobotoMono, DancingScript, IndieFlower, OpenSans, PTSans, BebasNeue and Segment7
 - corners: preserve existing, square, slightly rounded, rounded, strongly rounded or custom
 - borders: preserve existing, none, thin, standard, strong or custom
 

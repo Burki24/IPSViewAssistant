@@ -318,11 +318,12 @@ assertTest(is_array($appearancePanel), 'The typography and form-language panel i
 assertTest(is_array($typographyStyle), 'The typography size selection is missing.');
 assertTest(count($typographyStyle['options'] ?? []) === 5, 'The typography size selection does not offer all modes.');
 assertTest(is_array($fontFamilyMode), 'The font family selection is missing.');
-assertTest(count($fontFamilyMode['options'] ?? []) === 6, 'The font family selection does not offer all modes.');
+assertTest(count($fontFamilyMode['options'] ?? []) === 9, 'The font family selection does not offer all IPSView fonts.');
 assertTest(is_array($customFontSize), 'The custom base font size is missing.');
 assertTest(($customFontSize['minimum'] ?? null) === 8, 'The custom font size minimum is incorrect.');
 assertTest(($customFontSize['maximum'] ?? null) === 32, 'The custom font size maximum is incorrect.');
-assertTest(is_array($customFontFamily), 'The custom font family field is missing.');
+assertTest(is_array($customFontFamily), 'The detected font family field is missing.');
+assertTest(($customFontFamily['visible'] ?? null) === false, 'The internal detected font family field must remain hidden.');
 assertTest(is_array($cornerStyle), 'The corner style selection is missing.');
 assertTest(count($cornerStyle['options'] ?? []) === 6, 'The corner selection does not offer all modes.');
 assertTest(is_array($customCornerRadius), 'The custom corner radius is missing.');

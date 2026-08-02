@@ -550,28 +550,44 @@
                                                             "value": 0
                                                         },
                                                         {
-                                                            "caption": "System default",
+                                                            "caption": "Roboto",
                                                             "value": 1
                                                         },
                                                         {
-                                                            "caption": "Roboto",
+                                                            "caption": "RobotoMono",
                                                             "value": 2
                                                         },
                                                         {
-                                                            "caption": "Segoe UI",
+                                                            "caption": "DancingScript",
                                                             "value": 3
                                                         },
                                                         {
-                                                            "caption": "Arial",
+                                                            "caption": "IndieFlower",
                                                             "value": 4
                                                         },
                                                         {
-                                                            "caption": "Custom",
+                                                            "caption": "OpenSans",
                                                             "value": 5
+                                                        },
+                                                        {
+                                                            "caption": "PTSans",
+                                                            "value": 6
+                                                        },
+                                                        {
+                                                            "caption": "BebasNeue",
+                                                            "value": 7
+                                                        },
+                                                        {
+                                                            "caption": "Segment7",
+                                                            "value": 8
                                                         }
                                                     ]
                                                 }
                                             ]
+                                        },
+                                        {
+                                            "type": "Label",
+                                            "caption": "IPSView provides a fixed cross-client font catalogue. Arbitrary system fonts are therefore not offered; the live preview may use a fallback font when an IPSView font is not installed in the browser."
                                         },
                                         {
                                             "type": "RowLayout",
@@ -590,10 +606,11 @@
                                                 {
                                                     "type": "ValidationTextBox",
                                                     "name": "CustomFontFamily",
-                                                    "caption": "Custom font family",
+                                                    "caption": "Detected font family",
                                                     "value": "",
                                                     "width": "360px",
-                                                    "onChange": "IPSVIEWA_UpdateAppearancePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));"
+                                                    "onChange": "IPSVIEWA_UpdateAppearancePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));",
+                                                    "visible": false
                                                 }
                                             ]
                                         },

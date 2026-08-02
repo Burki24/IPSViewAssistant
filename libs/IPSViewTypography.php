@@ -16,11 +16,14 @@ final class IPSViewTypography
     public const STYLE_CUSTOM = 4;
 
     public const FONT_PRESERVE = 0;
-    public const FONT_SYSTEM = 1;
-    public const FONT_ROBOTO = 2;
-    public const FONT_SEGOE_UI = 3;
-    public const FONT_ARIAL = 4;
-    public const FONT_CUSTOM = 5;
+    public const FONT_ROBOTO = 1;
+    public const FONT_ROBOTO_MONO = 2;
+    public const FONT_DANCING_SCRIPT = 3;
+    public const FONT_INDIE_FLOWER = 4;
+    public const FONT_OPEN_SANS = 5;
+    public const FONT_PT_SANS = 6;
+    public const FONT_BEBAS_NEUE = 7;
+    public const FONT_SEGMENT_7 = 8;
 
     /**
      * @var list<string>
@@ -86,11 +89,14 @@ final class IPSViewTypography
             $resolved['fontFamilyMode'],
             [
                 self::FONT_PRESERVE,
-                self::FONT_SYSTEM,
                 self::FONT_ROBOTO,
-                self::FONT_SEGOE_UI,
-                self::FONT_ARIAL,
-                self::FONT_CUSTOM,
+                self::FONT_ROBOTO_MONO,
+                self::FONT_DANCING_SCRIPT,
+                self::FONT_INDIE_FLOWER,
+                self::FONT_OPEN_SANS,
+                self::FONT_PT_SANS,
+                self::FONT_BEBAS_NEUE,
+                self::FONT_SEGMENT_7,
             ],
             true
         )) {
@@ -98,14 +104,7 @@ final class IPSViewTypography
         }
 
         if (strlen($resolved['customFontFamily']) > 80) {
-            throw new InvalidArgumentException('The custom font family must not exceed 80 characters.');
-        }
-
-        if (
-            $resolved['fontFamilyMode'] === self::FONT_CUSTOM
-            && $resolved['customFontFamily'] === ''
-        ) {
-            throw new InvalidArgumentException('A custom font family must not be empty.');
+            throw new InvalidArgumentException('The detected font family must not exceed 80 characters.');
         }
 
         return $resolved;
@@ -211,7 +210,7 @@ final class IPSViewTypography
         }
 
         return [
-            'fontFamily'  => $fontFamily === '' ? 'Segoe UI' : $fontFamily,
+            'fontFamily'  => $fontFamily === '' ? 'Roboto' : $fontFamily,
             'baseFontSize'=> $baseFontSize ?? $settings['customFontSize'],
         ];
     }
@@ -236,12 +235,15 @@ final class IPSViewTypography
     private static function resolveFontFamily(array $settings): ?string
     {
         return match ($settings['fontFamilyMode']) {
-            self::FONT_SYSTEM   => '',
-            self::FONT_ROBOTO   => 'Roboto',
-            self::FONT_SEGOE_UI => 'Segoe UI',
-            self::FONT_ARIAL    => 'Arial',
-            self::FONT_CUSTOM   => $settings['customFontFamily'],
-            default             => null,
+            self::FONT_ROBOTO         => 'Roboto',
+            self::FONT_ROBOTO_MONO    => 'RobotoMono',
+            self::FONT_DANCING_SCRIPT => 'DancingScript',
+            self::FONT_INDIE_FLOWER   => 'IndieFlower',
+            self::FONT_OPEN_SANS      => 'OpenSans',
+            self::FONT_PT_SANS        => 'PTSans',
+            self::FONT_BEBAS_NEUE     => 'BebasNeue',
+            self::FONT_SEGMENT_7      => 'Segment7',
+            default                   => null,
         };
     }
 

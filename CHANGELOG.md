@@ -2,10 +2,15 @@
 
 ## Unreleased
 
+### Changed
+
+- Restricted font selection to the eight fonts offered by IPSView so generated Views remain portable across IPSView clients.
+- Removed unsupported system-default, Segoe UI, Arial and arbitrary custom font choices from the visible Assistant form.
+
 ### Added
 
 - A5 global typography presets with preserve, compact, standard, large and custom base-size modes.
-- Selectable font families with preserve, system default, Roboto, Segoe UI, Arial and custom modes.
+- Selectable font families aligned with the fixed IPSView font catalogue: Roboto, RobotoMono, DancingScript, IndieFlower, OpenSans, PTSans, BebasNeue and Segment7.
 - Global form-language presets for square, slightly rounded, rounded, strongly rounded and custom corners.
 - Global border presets with preserve, none, thin, standard, strong and custom widths.
 - Safe typography application that changes only global defaults, matching default control fonts or all control fonts according to the selected design scope.

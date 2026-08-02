@@ -40,6 +40,33 @@ $source->Pages[0]->Controls = [
 ];
 $json = json_encode($source, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
 
+$supportedFonts = [
+    IPSViewTypography::FONT_ROBOTO         => 'Roboto',
+    IPSViewTypography::FONT_ROBOTO_MONO    => 'RobotoMono',
+    IPSViewTypography::FONT_DANCING_SCRIPT => 'DancingScript',
+    IPSViewTypography::FONT_INDIE_FLOWER   => 'IndieFlower',
+    IPSViewTypography::FONT_OPEN_SANS      => 'OpenSans',
+    IPSViewTypography::FONT_PT_SANS        => 'PTSans',
+    IPSViewTypography::FONT_BEBAS_NEUE     => 'BebasNeue',
+    IPSViewTypography::FONT_SEGMENT_7      => 'Segment7',
+];
+
+foreach ($supportedFonts as $fontMode => $fontFamily) {
+    $fontDocument = IPSViewDocument::fromJson($json);
+    $fontDocument->applyThemeWithReport(
+        IPSViewTheme::THEME_STANDARD,
+        [],
+        IPSViewTheme::SCOPE_GLOBAL_DEFAULTS,
+        [],
+        ['fontFamilyMode' => $fontMode]
+    );
+
+    assertTest(
+        $fontDocument->copy()->DefaultFontFamily === $fontFamily,
+        sprintf('The IPSView font %s was not applied correctly.', $fontFamily)
+    );
+}
+
 $matchingDocument = IPSViewDocument::fromJson($json);
 $matchingReport = $matchingDocument->applyThemeWithReport(
     IPSViewTheme::THEME_STANDARD,
@@ -48,20 +75,20 @@ $matchingReport = $matchingDocument->applyThemeWithReport(
     [],
     [
         'typographyStyle' => IPSViewTypography::STYLE_STANDARD,
-        'fontFamilyMode'  => IPSViewTypography::FONT_SEGOE_UI,
+        'fontFamilyMode'  => IPSViewTypography::FONT_ROBOTO_MONO,
         'cornerStyle'     => IPSViewShape::CORNER_ROUNDED,
         'borderStyle'     => IPSViewShape::BORDER_STRONG,
     ]
 );
 $matching = $matchingDocument->copy();
 
-assertTest($matching->DefaultFontFamily === 'Segoe UI', 'The global font family was not updated.');
+assertTest($matching->DefaultFontFamily === 'RobotoMono', 'The global font family was not updated.');
 assertTest($matching->DefaultFontSize === 14, 'The standard base font size is incorrect.');
 assertTest($matching->EventHeaderFontSize === 25, 'The global font hierarchy was not scaled proportionally.');
 assertTest($matching->DefaultBorderRadius === 10, 'The rounded corner preset is incorrect.');
 assertTest(abs($matching->DefaultBorderWidth - 3.0) < 0.001, 'The strong border preset is incorrect.');
 assertTest($matching->CircleTrackEdgesRounded === true, 'Rounded circle tracks were not enabled.');
-assertTest($matching->Pages[0]->Controls[0]->Font->FontFamily === 'Segoe UI', 'A matching default control font family was not updated.');
+assertTest($matching->Pages[0]->Controls[0]->Font->FontFamily === 'RobotoMono', 'A matching default control font family was not updated.');
 assertTest($matching->Pages[0]->Controls[0]->Font->Size === 14, 'A matching default control font size was not updated.');
 assertTest($matching->Pages[0]->Controls[0]->Font->isBold === true, 'The control font weight was changed unexpectedly.');
 assertTest($matching->Pages[0]->Controls[1]->Font->FontFamily === 'Roboto', 'An explicit control font family was changed by the recommended scope.');
@@ -78,7 +105,7 @@ $strongReport = $strongDocument->applyThemeWithReport(
     [],
     [
         'typographyStyle' => IPSViewTypography::STYLE_LARGE,
-        'fontFamilyMode'  => IPSViewTypography::FONT_ARIAL,
+        'fontFamilyMode'  => IPSViewTypography::FONT_SEGMENT_7,
         'cornerStyle'     => IPSViewShape::CORNER_SQUARE,
         'borderStyle'     => IPSViewShape::BORDER_NONE,
     ]
@@ -88,7 +115,7 @@ $strong = $strongDocument->copy();
 assertTest($strong->DefaultFontSize === 18, 'The large base font size is incorrect.');
 assertTest($strong->Pages[0]->Controls[0]->Font->Size === 18, 'The strong scope did not scale a default control font.');
 assertTest($strong->Pages[0]->Controls[1]->Font->Size === 26, 'The strong scope did not preserve the relative control font hierarchy.');
-assertTest($strong->Pages[0]->Controls[1]->Font->FontFamily === 'Arial', 'The strong scope did not standardize an explicit font family.');
+assertTest($strong->Pages[0]->Controls[1]->Font->FontFamily === 'Segment7', 'The strong scope did not standardize an explicit font family.');
 assertTest($strong->DefaultBorderRadius === 0, 'The square corner preset is incorrect.');
 assertTest(abs($strong->DefaultBorderWidth) < 0.001, 'The no-border preset is incorrect.');
 assertTest($strong->CircleTrackEdgesRounded === false, 'Square circle tracks were not applied.');
@@ -111,7 +138,7 @@ $preview = IPSViewThemePreview::createDataUri(
     [],
     [
         'typographyStyle' => IPSViewTypography::STYLE_LARGE,
-        'fontFamilyMode'  => IPSViewTypography::FONT_SEGOE_UI,
+        'fontFamilyMode'  => IPSViewTypography::FONT_ROBOTO_MONO,
         'cornerStyle'     => IPSViewShape::CORNER_STRONG,
         'borderStyle'     => IPSViewShape::BORDER_STRONG,
     ]
@@ -119,12 +146,12 @@ $preview = IPSViewThemePreview::createDataUri(
 $svg = base64_decode(substr($preview, strlen('data:image/svg+xml;base64,')), true);
 
 assertTest(is_string($svg), 'The appearance preview could not be decoded.');
-assertTest(str_contains($svg, 'font-family="Segoe UI, Arial, sans-serif"'), 'The preview does not show the selected font family.');
+assertTest(str_contains($svg, 'font-family="RobotoMono, Arial, sans-serif"'), 'The preview does not show the selected font family.');
 assertTest(str_contains($svg, 'rx="18"'), 'The preview does not show the strongly rounded corners.');
 assertTest(str_contains($svg, 'stroke-width="3.0"'), 'The preview does not show the strong border.');
 
 $extracted = $matchingDocument->extractAppearance();
-assertTest($extracted['fontFamily'] === 'Segoe UI', 'The font family could not be extracted.');
+assertTest($extracted['fontFamily'] === 'RobotoMono', 'The font family could not be extracted.');
 assertTest($extracted['baseFontSize'] === 14, 'The base font size could not be extracted.');
 assertTest($extracted['cornerRadius'] === 10, 'The corner radius could not be extracted.');
 assertTest(abs($extracted['borderWidth'] - 3.0) < 0.001, 'The border width could not be extracted.');
