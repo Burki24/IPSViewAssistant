@@ -18,7 +18,10 @@ final class IPSViewCopyFactory
      *     scope: int,
      *     globalColorsApplied: int,
      *     controlColorsApplied: int,
-     *     controlColorsPreserved: int
+     *     controlColorsPreserved: int,
+     *     globalEffectsApplied: int,
+     *     controlEffectsApplied: int,
+     *     shadowChanged: bool
      * }|null
      */
     private ?array $lastThemeReport = null;
@@ -68,7 +71,8 @@ final class IPSViewCopyFactory
         int $targetCategoryID,
         int $theme,
         array $customPalette = [],
-        int $scope = IPSViewTheme::SCOPE_GLOBAL_DEFAULTS
+        int $scope = IPSViewTheme::SCOPE_GLOBAL_DEFAULTS,
+        array $effects = []
     ): int {
         $copyName = trim($copyName);
 
@@ -92,7 +96,8 @@ final class IPSViewCopyFactory
             $this->lastThemeReport = $document->applyThemeWithReport(
                 $theme,
                 $customPalette,
-                $scope
+                $scope,
+                $effects
             );
 
             $mediaFile = IPS_GetKernelDir()
@@ -133,13 +138,15 @@ final class IPSViewCopyFactory
         int $targetMediaID,
         int $theme,
         array $customPalette = [],
-        int $scope = IPSViewTheme::SCOPE_GLOBAL_DEFAULTS
+        int $scope = IPSViewTheme::SCOPE_GLOBAL_DEFAULTS,
+        array $effects = []
     ): int {
         $document = $this->loadDocument($targetMediaID);
         $this->lastThemeReport = $document->applyThemeWithReport(
             $theme,
             $customPalette,
-            $scope
+            $scope,
+            $effects
         );
 
         if (!IPS_SetMediaContent($targetMediaID, base64_encode($document->toJson()))) {
@@ -159,7 +166,10 @@ final class IPSViewCopyFactory
      *     scope: int,
      *     globalColorsApplied: int,
      *     controlColorsApplied: int,
-     *     controlColorsPreserved: int
+     *     controlColorsPreserved: int,
+     *     globalEffectsApplied: int,
+     *     controlEffectsApplied: int,
+     *     shadowChanged: bool
      * }|null
      */
     public function getLastThemeReport(): ?array

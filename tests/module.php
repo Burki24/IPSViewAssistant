@@ -8,6 +8,7 @@ $root = dirname(__DIR__);
 $moduleSource = file_get_contents($root . '/IPSView Assistant/module.php');
 $factorySource = file_get_contents($root . '/libs/IPSViewFactory.php');
 $copyFactorySource = file_get_contents($root . '/libs/IPSViewCopyFactory.php');
+$effectsSource = file_get_contents($root . '/libs/IPSViewEffects.php');
 $form = json_decode(
     (string) file_get_contents($root . '/IPSView Assistant/form.json'),
     true,
@@ -18,6 +19,7 @@ $form = json_decode(
 assertTest(is_string($moduleSource), 'The module source could not be read.');
 assertTest(is_string($factorySource), 'The IPSView factory source could not be read.');
 assertTest(is_string($copyFactorySource), 'The IPSView copy factory source could not be read.');
+assertTest(is_string($effectsSource), 'The IPSView effects source could not be read.');
 assertTest(str_contains($moduleSource, 'extends IPSModuleStrict'), 'The module does not use IPSModuleStrict.');
 assertTest(str_contains($moduleSource, 'use ConfigurationFormHelper;'), 'The module does not use ConfigurationFormHelper.');
 assertTest(str_contains($moduleSource, 'public function GetConfigurationForm(): string'), 'The dynamic configuration form is missing.');
@@ -31,6 +33,10 @@ assertTest(
 assertTest(
     str_contains($moduleSource, 'public function UpdateThemePreview('),
     'The public UpdateThemePreview method is missing.'
+);
+assertTest(
+    str_contains($moduleSource, 'public function UpdateEffectsPreview('),
+    'The public UpdateEffectsPreview method is missing.'
 );
 assertTest(str_contains($factorySource, 'IPS_CreateMedia(0)'), 'The factory does not create an IPSView media object.');
 assertTest(str_contains($factorySource, 'IPS_SetMediaFile('), 'The factory does not assign a media file.');
@@ -86,6 +92,12 @@ $existingStatus = null;
 $themeSelect = null;
 $designScope = null;
 $preview = null;
+$effectsPanel = null;
+$shadowStyle = null;
+$transparencyMode = null;
+$transparencyPercent = null;
+$gradientStyle = null;
+$gradientDirection = null;
 $colorFields = [];
 
 foreach ($actions as $action) {
@@ -117,6 +129,30 @@ foreach ($actions as $action) {
         $preview = $action;
     }
 
+    if (($action['name'] ?? '') === 'ThemeEffectsPanel') {
+        $effectsPanel = $action;
+    }
+
+    if (($action['name'] ?? '') === 'ShadowStyle') {
+        $shadowStyle = $action;
+    }
+
+    if (($action['name'] ?? '') === 'TransparencyMode') {
+        $transparencyMode = $action;
+    }
+
+    if (($action['name'] ?? '') === 'TransparencyPercent') {
+        $transparencyPercent = $action;
+    }
+
+    if (($action['name'] ?? '') === 'GradientStyle') {
+        $gradientStyle = $action;
+    }
+
+    if (($action['name'] ?? '') === 'GradientDirection') {
+        $gradientDirection = $action;
+    }
+
     if (($action['type'] ?? '') === 'SelectColor') {
         $colorFields[] = $action;
     }
@@ -142,6 +178,10 @@ assertTest(
     str_contains((string) ($sourceView['onChange'] ?? ''), 'IPSVIEWA_LoadExistingView('),
     'Selecting an existing IPSView does not load its design.'
 );
+assertTest(
+    str_contains((string) ($sourceView['onChange'] ?? ''), '$ShadowStyle'),
+    'Loading an existing IPSView does not retain the selected general effects in the preview.'
+);
 assertTest(is_array($existingStatus), 'The existing View status label is missing from the form.');
 assertTest(is_array($designScope), 'The design scope selection is missing from the form.');
 assertTest(
@@ -155,6 +195,14 @@ assertTest(
 assertTest(
     str_contains((string) ($copyButton['onClick'] ?? ''), '$DesignScope'),
     'The styled copy button does not pass the selected design scope.'
+);
+assertTest(
+    str_contains((string) ($copyButton['onClick'] ?? ''), '$GradientStyle'),
+    'The styled copy button does not pass the selected general effects.'
+);
+assertTest(
+    str_contains((string) ($button['onClick'] ?? ''), '$TransparencyMode'),
+    'The Create View button does not pass the selected general effects.'
 );
 assertTest(
     str_contains($copyFactorySource, 'applyThemeWithReport('),
@@ -182,6 +230,25 @@ foreach (['Warm', 'Cool', 'Earthy', 'Water', 'Sunny'] as $caption) {
         sprintf('The additional theme "%s" is missing from the form.', $caption)
     );
 }
+assertTest(is_array($effectsPanel), 'The general effects panel is missing from the form.');
+assertTest(is_array($shadowStyle), 'The shadow style selection is missing from the form.');
+assertTest(count($shadowStyle['options'] ?? []) === 5, 'The shadow selection does not offer all modes.');
+assertTest(is_array($transparencyMode), 'The transparency mode selection is missing from the form.');
+assertTest(count($transparencyMode['options'] ?? []) === 3, 'The transparency selection does not offer all modes.');
+assertTest(is_array($transparencyPercent), 'The transparency amount field is missing from the form.');
+assertTest(($transparencyPercent['minimum'] ?? null) === 0, 'The transparency minimum is incorrect.');
+assertTest(($transparencyPercent['maximum'] ?? null) === 100, 'The transparency maximum is incorrect.');
+assertTest(is_array($gradientStyle), 'The gradient style selection is missing from the form.');
+assertTest(count($gradientStyle['options'] ?? []) === 5, 'The gradient selection does not offer all modes.');
+assertTest(is_array($gradientDirection), 'The gradient direction selection is missing from the form.');
+assertTest(
+    str_contains((string) ($gradientStyle['onChange'] ?? ''), 'IPSVIEWA_UpdateEffectsPreview('),
+    'Changing the gradient does not refresh the effect preview.'
+);
+assertTest(
+    str_contains($effectsSource, 'public static function apply('),
+    'The general IPSView effects cannot be applied.'
+);
 assertTest(is_array($preview), 'The live theme preview is missing from the form.');
 assertTest(($preview['image'] ?? null) === '', 'The dynamic preview placeholder must be empty in form.json.');
 assertTest(($preview['width'] ?? '') === '100%', 'The live preview must fill its responsive panel.');

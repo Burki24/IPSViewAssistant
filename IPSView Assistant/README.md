@@ -49,7 +49,21 @@ Changing any color automatically switches the theme selection to **Custom**. The
 
 Every preset defines all twelve semantic roles and reaches all 107 global IPSView color objects. Theme changes preserve existing alpha values, gradient types, secondary alpha values and patterns. Existing gradients receive a matching second shade without losing their original light-to-dark direction.
 
-## 3. Existing Views and design scope
+## 3. General visual effects
+
+The Assistant provides simple global controls for:
+
+- shadows: preserve, none, subtle, medium or strong
+- transparency: preserve, opaque or a custom percentage
+- gradients: preserve, none, subtle, medium or strong
+- gradient direction: base color to darker or base color to lighter
+
+The selected settings are shown immediately in the live preview. They apply only to fill colors and backgrounds. Text, borders and protected special colors remain unaffected.
+
+When working with an existing View, the default **Preserve existing** setting keeps its current effect structure. An explicit selection applies the effect to the separate design copy.
+
+
+## 4. Existing Views and design scope
 
 An existing IPSView can be selected without changing the original. The Assistant creates a separate design copy and updates the same copy on later saves.
 
@@ -61,16 +75,16 @@ Three design scopes are available:
 
 Association colors and special status colors remain protected unless they match one of the semantic global colors. The form reports detected, applied and preserved color counts.
 
-## 4. Requirements
+## 5. Requirements
 
 - Symcon 9.0 or newer
 - IPSView Designer installed and licensed for normal editing and saving
 
-## 5. Setup
+## 6. Setup
 
 Create one **IPSView Assistant** instance. The instance does not need a parent connection and creates no status variables.
 
-## 6. Creating a View
+## 7. Creating a View
 
 1. Open the instance configuration.
 2. Enter the View name and main page name.
@@ -82,7 +96,7 @@ Create one **IPSView Assistant** instance. The instance does not need a parent c
 
 The assistant does not copy personal IPSView license data. The IPSView Designer supplies the local license information when the View is saved.
 
-## 7. PHP command
+## 8. PHP command
 
 The original A1 call remains valid and creates an IPSView with the standard design:
 
@@ -126,6 +140,31 @@ $result = IPSVIEWA_CreateView(
     'Hauptseite',
     3,
     $palette
+);
+```
+
+General effects can be passed as an optional final JSON argument:
+
+```php
+$effects = json_encode([
+    'shadowStyle'         => 3,
+    'transparencyMode'    => 2,
+    'transparencyPercent' => 20,
+    'gradientStyle'       => 2,
+    'gradientDirection'   => 0,
+], JSON_THROW_ON_ERROR);
+
+$result = IPSVIEWA_CreateView(
+    12345,
+    'Haussteuerung',
+    23456,
+    2,
+    0,
+    0,
+    'Hauptseite',
+    3,
+    $palette,
+    $effects
 );
 ```
 

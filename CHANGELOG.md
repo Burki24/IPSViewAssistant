@@ -4,6 +4,13 @@
 
 ### Added
 
+- General shadow presets with preserve, none, subtle, medium and strong modes.
+- General fill transparency with preserve, opaque and custom percentage modes.
+- Generated color gradients with selectable strength and darker or lighter direction.
+- Live preview support for shadows, transparency and gradients on a checkerboard background.
+- Safe effect application to global fills and matching or basic control backgrounds without changing text, borders or protected association colors.
+- Effect regression tests, including the full 95-page live View.
+
 - Five additional complete design presets: Warm, Cool, Earthy, Water and Sunny.
 - Theme coverage tests for all 107 global IPSView color objects and every semantic palette role.
 - Preservation of IPSView alpha values, gradient types, secondary alpha values and patterns during theme changes.

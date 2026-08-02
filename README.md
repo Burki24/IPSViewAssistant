@@ -53,6 +53,19 @@ Every preset defines all twelve semantic roles and therefore reaches all 107 glo
 
 A live SVG preview updates immediately when a preset or semantic color is changed. Colors and preview share one responsive workspace: they are displayed side by side when enough space is available and flow below one another in narrower configuration windows. The selected roles are mapped consistently to the IPSView defaults for buttons, switches, sliders, dialogs, charts, calendars and other controls.
 
+### General visual effects
+
+The Assistant can optionally apply one consistent effect foundation in addition to the semantic colors:
+
+- shadows: preserve existing, none, subtle, medium or strong
+- transparency: preserve existing, opaque or a freely selected percentage
+- color gradients: preserve existing, none, subtle, medium or strong
+- gradient direction: from the base color to a darker or lighter shade
+
+Effects are limited to global fills and, depending on the selected design scope, matching or basic control backgrounds. Text, borders and special association colors are not made transparent or converted to gradients. The live preview shows the selected shadows, transparency and gradients immediately.
+
+For existing Views, **Preserve existing** is the safe default. Explicit effect settings change only the separate design copy.
+
 ### Safe design transfer from existing Views
 
 An existing IPSView media object can be selected directly in the Assistant. Its current global IPSView colors are translated into the same twelve semantic roles and displayed in the live preview.

@@ -72,7 +72,26 @@
             "All basic control colors (strong)": "Alle Grundfarben der Bedienelemente vereinheitlichen (stark)",
             "The recommended scope updates control colors only when they match an existing global design color. The strong scope also standardizes basic backgrounds, text and borders; association and special status colors remain protected unless they match a semantic global color.": "Die empfohlene Stufe ändert Bedienelementfarben nur dann, wenn sie einer vorhandenen globalen Designfarbe entsprechen. Die starke Stufe vereinheitlicht zusätzlich grundlegende Hintergründe, Texte und Rahmen; Assoziations- und besondere Statusfarben bleiben geschützt, solange sie keiner semantischen globalen Farbe entsprechen.",
             "%d global design values, %d matching control colors and %d individual or special colors were found.": "%d globale Designwerte, %d passende Bedienelementfarben und %d individuelle oder besondere Farben wurden gefunden.",
-            "%d global design values and %d control colors were applied; %d individual or special colors were preserved.": "%d globale Designwerte und %d Bedienelementfarben wurden angewendet; %d individuelle oder besondere Farben blieben erhalten."
+            "%d global design values and %d control colors were applied; %d individual or special colors were preserved.": "%d globale Designwerte und %d Bedienelementfarben wurden angewendet; %d individuelle oder besondere Farben blieben erhalten.",
+            "General effects": "Allgemeine Effekte",
+            "Shadows": "Schatten",
+            "Preserve existing": "Bestehende Einstellung beibehalten",
+            "No shadows": "Keine Schatten",
+            "Subtle": "Dezent",
+            "Medium": "Mittel",
+            "Strong": "Stark",
+            "Transparency": "Transparenz",
+            "Opaque": "Deckend",
+            "Transparency amount": "Transparenzstärke",
+            "Color gradient": "Farbverlauf",
+            "No gradient": "Kein Farbverlauf",
+            "Gradient direction": "Verlaufsrichtung",
+            "Base color to darker": "Grundfarbe zu dunkler",
+            "Base color to lighter": "Grundfarbe zu heller",
+            "Effects apply to global fills and, depending on the design scope, to matching or basic control backgrounds. Text, borders and special association colors remain untouched.": "Die Effekte werden auf globale Flächen und – abhängig vom Gestaltungsumfang – auf passende oder grundlegende Hintergründe von Bedienelementen angewendet. Texte, Rahmen und besondere Assoziationsfarben bleiben unverändert.",
+            "%d global fills and %d control backgrounds received the selected effects; shadow settings were %s.": "%d globale Flächen und %d Hintergründe von Bedienelementen erhielten die gewählten Effekte; die Schatteneinstellungen wurden %s.",
+            "updated": "aktualisiert",
+            "preserved": "beibehalten"
         }
     }
 }

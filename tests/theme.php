@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/bootstrap.php';
 require_once dirname(__DIR__) . '/libs/IPSViewTheme.php';
+require_once dirname(__DIR__) . '/libs/IPSViewEffects.php';
 require_once dirname(__DIR__) . '/libs/IPSViewThemePreview.php';
 require_once dirname(__DIR__) . '/libs/IPSViewDocument.php';
 

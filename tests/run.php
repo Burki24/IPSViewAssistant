@@ -26,6 +26,7 @@ $commands = [
     ['Validate repository structure', 'php tests/validate_structure.php'],
     ['Verify vendored helpers', 'python3 tests/helper_integrity.py'],
     ['Test IPSView theme mapping', 'php tests/theme.php'],
+    ['Test general IPSView effects', 'php tests/effects.php'],
     ['Test IPSView document generation', 'php tests/document.php'],
     ['Test existing IPSView handling', 'php tests/existing_view.php'],
     ['Test module integration', 'php tests/module.php'],

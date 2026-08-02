@@ -141,9 +141,19 @@ final class IPSViewDocument
      *
      * @return array<string, string> Effective palette
      */
-    public function applyTheme(int $theme, array $customPalette = []): array
-    {
-        return IPSViewTheme::apply($this->document, $theme, $customPalette);
+    public function applyTheme(
+        int $theme,
+        array $customPalette = [],
+        array $effects = []
+    ): array {
+        $palette = IPSViewTheme::apply($this->document, $theme, $customPalette);
+        IPSViewEffects::apply(
+            $this->document,
+            $effects,
+            IPSViewTheme::SCOPE_GLOBAL_DEFAULTS
+        );
+
+        return $palette;
     }
 
     /**
@@ -156,20 +166,31 @@ final class IPSViewDocument
      *     scope: int,
      *     globalColorsApplied: int,
      *     controlColorsApplied: int,
-     *     controlColorsPreserved: int
+     *     controlColorsPreserved: int,
+     *     globalEffectsApplied: int,
+     *     controlEffectsApplied: int,
+     *     shadowChanged: bool
      * }
      */
     public function applyThemeWithReport(
         int $theme,
         array $customPalette = [],
-        int $scope = IPSViewTheme::SCOPE_GLOBAL_DEFAULTS
+        int $scope = IPSViewTheme::SCOPE_GLOBAL_DEFAULTS,
+        array $effects = []
     ): array {
-        return IPSViewTheme::applyWithReport(
+        $themeReport = IPSViewTheme::applyWithReport(
             $this->document,
             $theme,
             $customPalette,
             $scope
         );
+        $effectReport = IPSViewEffects::apply(
+            $this->document,
+            $effects,
+            $scope
+        );
+
+        return [...$themeReport, ...$effectReport];
     }
 
     /**
