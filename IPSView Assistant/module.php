@@ -6,6 +6,7 @@ require_once __DIR__ . '/../libs/IPSViewDocument.php';
 require_once __DIR__ . '/../libs/IPSViewFactory.php';
 
 use Burki24\IPSViewAssistant\IPSViewFactory;
+
 class IPSViewAssistant extends IPSModuleStrict
 {
     /**

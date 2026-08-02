@@ -6,6 +6,7 @@ require_once __DIR__ . '/bootstrap.php';
 require_once dirname(__DIR__) . '/libs/IPSViewDocument.php';
 
 use Burki24\IPSViewAssistant\IPSViewDocument;
+
 $templatePath = dirname(__DIR__) . '/libs/templates/empty-view.json';
 $cases = [
     [IPSViewDocument::ASPECT_RATIO_SQUARE, IPSViewDocument::ORIENTATION_LANDSCAPE, 1000, 1000, '1:1'],

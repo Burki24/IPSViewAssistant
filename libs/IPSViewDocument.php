@@ -151,7 +151,7 @@ final class IPSViewDocument
             self::ASPECT_RATIO_SQUARE => ['1:1', 1000, 1000],
             self::ASPECT_RATIO_4_3    => ['4:3', 1024, 768],
             self::ASPECT_RATIO_16_9   => ['16:9', 1360, 765],
-            default                  => throw new InvalidArgumentException('The selected aspect ratio is not supported.'),
+            default                   => throw new InvalidArgumentException('The selected aspect ratio is not supported.'),
         };
     }
 
