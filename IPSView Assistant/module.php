@@ -9,9 +9,9 @@ require_once __DIR__ . '/../libs/IPSViewDocument.php';
 require_once __DIR__ . '/../libs/IPSViewFactory.php';
 
 use Burki24\IPSViewAssistant\IPSViewFactory;
-use Burki24\SymconModuleHelper\ConfigurationFormHelper;
 use Burki24\IPSViewAssistant\IPSViewTheme;
 use Burki24\IPSViewAssistant\IPSViewThemePreview;
+use Burki24\SymconModuleHelper\ConfigurationFormHelper;
 
 class IPSViewAssistant extends IPSModuleStrict
 {
