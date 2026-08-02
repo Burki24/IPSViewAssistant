@@ -10,6 +10,8 @@ use Throwable;
 
 final class IPSViewCopyFactory
 {
+    private const IPSVIEW_MEDIA_TYPE = 0;
+
     /**
      * Reads one existing IPSView and returns its editable design information.
      *
@@ -54,7 +56,7 @@ final class IPSViewCopyFactory
         $this->ensureUniqueViewName($copyName, $targetCategoryID);
 
         $document = $this->loadDocument($sourceMediaID);
-        $mediaID = IPS_CreateMedia(MEDIATYPE_DASHBOARD);
+        $mediaID = IPS_CreateMedia(self::IPSVIEW_MEDIA_TYPE);
 
         try {
             IPS_SetName($mediaID, $copyName);
@@ -96,7 +98,7 @@ final class IPSViewCopyFactory
         }
 
         $media = IPS_GetMedia($sourceMediaID);
-        if ((int) ($media['MediaType'] ?? -1) !== MEDIATYPE_DASHBOARD) {
+        if ((int) ($media['MediaType'] ?? -1) !== self::IPSVIEW_MEDIA_TYPE) {
             throw new InvalidArgumentException('The selected source medium is not an IPSView.');
         }
 

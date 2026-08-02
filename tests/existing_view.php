@@ -81,8 +81,16 @@ assertTest(
     'The copy factory does not decode the selected media content.'
 );
 assertTest(
-    str_contains($copyFactorySource, 'MEDIATYPE_DASHBOARD'),
-    'The copy factory does not validate the IPSView media type.'
+    str_contains($copyFactorySource, 'private const IPSVIEW_MEDIA_TYPE = 0;'),
+    'The copy factory does not define the documented IPSView media type.'
+);
+assertTest(
+    !str_contains($copyFactorySource, 'MEDIATYPE_DASHBOARD'),
+    'The copy factory relies on a media type constant that is not available in every Symcon runtime.'
+);
+assertTest(
+    str_contains($copyFactorySource, 'IPS_CreateMedia(self::IPSVIEW_MEDIA_TYPE)'),
+    'The copy factory does not create an IPSView using its runtime-safe media type.'
 );
 assertTest(
     str_contains($copyFactorySource, 'prepareCopy('),

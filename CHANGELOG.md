@@ -24,6 +24,7 @@
 
 ### Fixed
 
+- Replaced the unavailable `MEDIATYPE_DASHBOARD` runtime constant with the documented IPSView media type `0` when validating and creating design copies.
 - Replaced percentage-based SelectColor widths with stable pixel widths so captions and color bars remain fully readable beside the preview.
 - Reduced and centered the design preview for a more compact configuration form.
 - Enlarged the semantic color controls and fixed truncated captions.

@@ -37,6 +37,14 @@ assertTest(str_contains($factorySource, 'IPS_SetMediaFile('), 'The factory does 
 assertTest(str_contains($factorySource, 'IPS_SetMediaContent('), 'The factory does not write the IPSView content.');
 assertTest(str_contains($factorySource, 'IPS_SendMediaEvent('), 'The factory does not announce the media update.');
 assertTest(str_contains($factorySource, 'applyTheme('), 'The factory does not apply the selected theme.');
+assertTest(
+    str_contains($copyFactorySource, 'private const IPSVIEW_MEDIA_TYPE = 0;'),
+    'The copy factory does not use a runtime-safe IPSView media type.'
+);
+assertTest(
+    !str_contains($copyFactorySource, 'MEDIATYPE_DASHBOARD'),
+    'The copy factory uses an unavailable Symcon media type constant.'
+);
 
 /**
  * @param list<array<string, mixed>> $items
