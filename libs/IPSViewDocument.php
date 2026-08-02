@@ -144,7 +144,8 @@ final class IPSViewDocument
     public function applyTheme(
         int $theme,
         array $customPalette = [],
-        array $effects = []
+        array $effects = [],
+        array $appearance = []
     ): array {
         $palette = IPSViewTheme::apply($this->document, $theme, $customPalette);
         IPSViewEffects::apply(
@@ -152,6 +153,12 @@ final class IPSViewDocument
             $effects,
             IPSViewTheme::SCOPE_GLOBAL_DEFAULTS
         );
+        IPSViewTypography::apply(
+            $this->document,
+            $appearance,
+            IPSViewTheme::SCOPE_GLOBAL_DEFAULTS
+        );
+        IPSViewShape::apply($this->document, $appearance);
 
         return $palette;
     }
@@ -169,14 +176,18 @@ final class IPSViewDocument
      *     controlColorsPreserved: int,
      *     globalEffectsApplied: int,
      *     controlEffectsApplied: int,
-     *     shadowChanged: bool
+     *     shadowChanged: bool,
+     *     globalTypographyApplied: int,
+     *     controlTypographyApplied: int,
+     *     globalShapeApplied: int
      * }
      */
     public function applyThemeWithReport(
         int $theme,
         array $customPalette = [],
         int $scope = IPSViewTheme::SCOPE_GLOBAL_DEFAULTS,
-        array $effects = []
+        array $effects = [],
+        array $appearance = []
     ): array {
         $themeReport = IPSViewTheme::applyWithReport(
             $this->document,
@@ -189,8 +200,14 @@ final class IPSViewDocument
             $effects,
             $scope
         );
+        $typographyReport = IPSViewTypography::apply(
+            $this->document,
+            $appearance,
+            $scope
+        );
+        $shapeReport = IPSViewShape::apply($this->document, $appearance);
 
-        return [...$themeReport, ...$effectReport];
+        return [...$themeReport, ...$effectReport, ...$typographyReport, ...$shapeReport];
     }
 
     /**
@@ -218,6 +235,24 @@ final class IPSViewDocument
     public function extractThemePalette(): array
     {
         return IPSViewTheme::extract($this->document);
+    }
+
+    /**
+     * Reads the current global typography and shape defaults.
+     *
+     * @return array{
+     *     fontFamily: string,
+     *     baseFontSize: int,
+     *     cornerRadius: int,
+     *     borderWidth: float
+     * }
+     */
+    public function extractAppearance(): array
+    {
+        return [
+            ...IPSViewTypography::extract($this->document),
+            ...IPSViewShape::extract($this->document),
+        ];
     }
 
     /**

@@ -20,6 +20,8 @@ $requiredFiles = [
     'libs/helper/manifest.json',
     'libs/IPSViewTheme.php',
     'libs/IPSViewEffects.php',
+    'libs/IPSViewTypography.php',
+    'libs/IPSViewShape.php',
     'libs/IPSViewThemePreview.php',
     'libs/IPSViewDocument.php',
     'libs/IPSViewCopyFactory.php',
@@ -27,6 +29,7 @@ $requiredFiles = [
     'libs/templates/empty-view.json',
     'tests/theme.php',
     'tests/effects.php',
+    'tests/appearance.php',
     'tests/existing_view.php',
     'tests/stubs',
     '.style',
@@ -80,6 +83,8 @@ assertTest(str_contains($formJson, 'IPSVIEWA_ApplyThemePreset'), 'The theme pres
 assertTest(str_contains($formJson, 'IPSVIEWA_UpdateThemePreview'), 'The live preview action is missing.');
 assertTest(str_contains($formJson, 'IPSVIEWA_UpdateEffectsPreview'), 'The general effect preview action is missing.');
 assertTest(str_contains($formJson, 'ThemeEffectsPanel'), 'The general effects panel is missing.');
+assertTest(str_contains($formJson, 'TypographyShapePanel'), 'The typography and form-language panel is missing.');
+assertTest(str_contains($formJson, 'IPSVIEWA_UpdateAppearancePreview'), 'The appearance preview action is missing.');
 assertTest(str_contains($formJson, 'SourceViewID'), 'The existing IPSView selector is missing.');
 assertTest(str_contains($formJson, 'IPSVIEWA_LoadExistingView'), 'The existing View load action is missing.');
 assertTest(str_contains($formJson, 'IPSVIEWA_CreateStyledCopy'), 'The styled copy action is missing.');

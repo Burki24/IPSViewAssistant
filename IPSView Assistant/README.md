@@ -63,7 +63,20 @@ The selected settings are shown immediately in the live preview. They apply only
 When working with an existing View, the default **Preserve existing** setting keeps its current effect structure. An explicit selection applies the effect to the separate design copy.
 
 
-## 4. Existing Views and design scope
+## 4. Typography and form language
+
+The Assistant can define a simple global basis for:
+
+- typography size: preserve, compact, standard, large or custom
+- font family: preserve, system default, Roboto, Segoe UI, Arial or custom
+- corners: preserve, square, slightly rounded, rounded, strongly rounded or custom
+- border width: preserve, none, thin, standard, strong or custom
+
+The global font-size hierarchy is scaled proportionally. With the recommended design scope, only direct control fonts that still match the previous defaults are updated. The strong scope can scale all direct control fonts while preserving their relative hierarchy, bold state and other individual properties.
+
+Corner radius and border width apply only to global IPSView defaults. The Assistant does not change pages, element positions, navigation, actions or individual control logic. Existing Views use **Preserve existing** by default.
+
+## 5. Existing Views and design scope
 
 An existing IPSView can be selected without changing the original. The Assistant creates a separate design copy and updates the same copy on later saves.
 
@@ -75,16 +88,16 @@ Three design scopes are available:
 
 Association colors and special status colors remain protected unless they match one of the semantic global colors. The form reports detected, applied and preserved color counts.
 
-## 5. Requirements
+## 6. Requirements
 
 - Symcon 9.0 or newer
 - IPSView Designer installed and licensed for normal editing and saving
 
-## 6. Setup
+## 7. Setup
 
 Create one **IPSView Assistant** instance. The instance does not need a parent connection and creates no status variables.
 
-## 7. Creating a View
+## 8. Creating a View
 
 1. Open the instance configuration.
 2. Enter the View name and main page name.
@@ -96,7 +109,7 @@ Create one **IPSView Assistant** instance. The instance does not need a parent c
 
 The assistant does not copy personal IPSView license data. The IPSView Designer supplies the local license information when the View is saved.
 
-## 8. PHP command
+## 9. PHP command
 
 The original A1 call remains valid and creates an IPSView with the standard design:
 
@@ -165,6 +178,35 @@ $result = IPSVIEWA_CreateView(
     3,
     $palette,
     $effects
+);
+```
+
+Typography and form-language basics can be passed as one further optional JSON argument:
+
+```php
+$appearance = json_encode([
+    'typographyStyle'  => 2,
+    'fontFamilyMode'   => 3,
+    'customFontFamily' => '',
+    'customFontSize'   => 14,
+    'cornerStyle'      => 3,
+    'customCornerRadius' => 10,
+    'borderStyle'      => 3,
+    'customBorderWidth'=> 1.5,
+], JSON_THROW_ON_ERROR);
+
+$result = IPSVIEWA_CreateView(
+    12345,
+    'Haussteuerung',
+    23456,
+    2,
+    0,
+    0,
+    'Hauptseite',
+    3,
+    $palette,
+    $effects,
+    $appearance
 );
 ```
 

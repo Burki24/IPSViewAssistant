@@ -66,6 +66,19 @@ Effects are limited to global fills and, depending on the selected design scope,
 
 For existing Views, **Preserve existing** is the safe default. Explicit effect settings change only the separate design copy.
 
+### Typography and form language
+
+The Assistant also provides a small set of global design basics that remain clearly separated from the actual View construction in IPSView Designer:
+
+- typography size: preserve existing, compact, standard, large or custom
+- font family: preserve existing, system default, Roboto, Segoe UI, Arial or custom
+- corners: preserve existing, square, slightly rounded, rounded, strongly rounded or custom
+- borders: preserve existing, none, thin, standard, strong or custom
+
+Typography presets scale the global IPSView font hierarchy proportionally instead of flattening all text to one size. Depending on the selected design scope, the Assistant can additionally update only control fonts that still match the previous global default, or proportionally scale all direct control fonts. Bold settings and other individual font details remain unchanged.
+
+Corners and border widths change only the global IPSView defaults and related rounded-track switches. The Assistant does not edit element positions, sizes, page structure, navigation or individual control logic. The live preview shows the selected typography and form language together with colors and effects. For existing Views, **Preserve existing** remains the safe default.
+
 ### Safe design transfer from existing Views
 
 An existing IPSView media object can be selected directly in the Assistant. Its current global IPSView colors are translated into the same twelve semantic roles and displayed in the live preview.
@@ -97,4 +110,4 @@ The first save creates the separate design copy. Later saves with the same copy 
 
 ## Roadmap
 
-The next stages will add reusable design profiles, an optional change preview for strong control-color unification and clearer diagnostics for the colors found in existing Views. Page construction, control placement and object assignment remain tasks of the official IPSView Designer.
+The next stages will add reusable design profiles, profile import and export, and readability or contrast checks. Page construction, control placement, navigation and object assignment remain tasks of the official IPSView Designer.

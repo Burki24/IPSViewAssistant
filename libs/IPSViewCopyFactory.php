@@ -21,7 +21,10 @@ final class IPSViewCopyFactory
      *     controlColorsPreserved: int,
      *     globalEffectsApplied: int,
      *     controlEffectsApplied: int,
-     *     shadowChanged: bool
+     *     shadowChanged: bool,
+     *     globalTypographyApplied: int,
+     *     controlTypographyApplied: int,
+     *     globalShapeApplied: int
      * }|null
      */
     private ?array $lastThemeReport = null;
@@ -35,6 +38,12 @@ final class IPSViewCopyFactory
      *     pageCount: int,
      *     controlCount: int,
      *     palette: array<string, string>,
+     *     appearance: array{
+     *         fontFamily: string,
+     *         baseFontSize: int,
+     *         cornerRadius: int,
+     *         borderWidth: float
+     *     },
      *     designAnalysis: array{
      *         globalColors: int,
      *         controlColorsTotal: int,
@@ -56,6 +65,7 @@ final class IPSViewCopyFactory
             'pageCount'      => $document->getPageCount(),
             'controlCount'   => $document->getControlCount(),
             'palette'        => $document->extractThemePalette(),
+            'appearance'     => $document->extractAppearance(),
             'designAnalysis' => $document->analyzeThemeColors(),
         ];
     }
@@ -72,7 +82,8 @@ final class IPSViewCopyFactory
         int $theme,
         array $customPalette = [],
         int $scope = IPSViewTheme::SCOPE_GLOBAL_DEFAULTS,
-        array $effects = []
+        array $effects = [],
+        array $appearance = []
     ): int {
         $copyName = trim($copyName);
 
@@ -97,7 +108,8 @@ final class IPSViewCopyFactory
                 $theme,
                 $customPalette,
                 $scope,
-                $effects
+                $effects,
+                $appearance
             );
 
             $mediaFile = IPS_GetKernelDir()
@@ -139,14 +151,16 @@ final class IPSViewCopyFactory
         int $theme,
         array $customPalette = [],
         int $scope = IPSViewTheme::SCOPE_GLOBAL_DEFAULTS,
-        array $effects = []
+        array $effects = [],
+        array $appearance = []
     ): int {
         $document = $this->loadDocument($targetMediaID);
         $this->lastThemeReport = $document->applyThemeWithReport(
             $theme,
             $customPalette,
             $scope,
-            $effects
+            $effects,
+            $appearance
         );
 
         if (!IPS_SetMediaContent($targetMediaID, base64_encode($document->toJson()))) {

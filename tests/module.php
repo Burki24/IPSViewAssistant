@@ -9,6 +9,8 @@ $moduleSource = file_get_contents($root . '/IPSView Assistant/module.php');
 $factorySource = file_get_contents($root . '/libs/IPSViewFactory.php');
 $copyFactorySource = file_get_contents($root . '/libs/IPSViewCopyFactory.php');
 $effectsSource = file_get_contents($root . '/libs/IPSViewEffects.php');
+$typographySource = file_get_contents($root . '/libs/IPSViewTypography.php');
+$shapeSource = file_get_contents($root . '/libs/IPSViewShape.php');
 $form = json_decode(
     (string) file_get_contents($root . '/IPSView Assistant/form.json'),
     true,
@@ -20,6 +22,8 @@ assertTest(is_string($moduleSource), 'The module source could not be read.');
 assertTest(is_string($factorySource), 'The IPSView factory source could not be read.');
 assertTest(is_string($copyFactorySource), 'The IPSView copy factory source could not be read.');
 assertTest(is_string($effectsSource), 'The IPSView effects source could not be read.');
+assertTest(is_string($typographySource), 'The IPSView typography source could not be read.');
+assertTest(is_string($shapeSource), 'The IPSView shape source could not be read.');
 assertTest(str_contains($moduleSource, 'extends IPSModuleStrict'), 'The module does not use IPSModuleStrict.');
 assertTest(str_contains($moduleSource, 'use ConfigurationFormHelper;'), 'The module does not use ConfigurationFormHelper.');
 assertTest(str_contains($moduleSource, 'public function GetConfigurationForm(): string'), 'The dynamic configuration form is missing.');
@@ -37,6 +41,10 @@ assertTest(
 assertTest(
     str_contains($moduleSource, 'public function UpdateEffectsPreview('),
     'The public UpdateEffectsPreview method is missing.'
+);
+assertTest(
+    str_contains($moduleSource, 'public function UpdateAppearancePreview('),
+    'The public UpdateAppearancePreview method is missing.'
 );
 assertTest(str_contains($factorySource, 'IPS_CreateMedia(0)'), 'The factory does not create an IPSView media object.');
 assertTest(str_contains($factorySource, 'IPS_SetMediaFile('), 'The factory does not assign a media file.');
@@ -98,6 +106,15 @@ $transparencyMode = null;
 $transparencyPercent = null;
 $gradientStyle = null;
 $gradientDirection = null;
+$appearancePanel = null;
+$typographyStyle = null;
+$fontFamilyMode = null;
+$customFontSize = null;
+$customFontFamily = null;
+$cornerStyle = null;
+$customCornerRadius = null;
+$borderStyle = null;
+$customBorderWidth = null;
 $colorFields = [];
 
 foreach ($actions as $action) {
@@ -153,6 +170,42 @@ foreach ($actions as $action) {
         $gradientDirection = $action;
     }
 
+    if (($action['name'] ?? '') === 'TypographyShapePanel') {
+        $appearancePanel = $action;
+    }
+
+    if (($action['name'] ?? '') === 'TypographyStyle') {
+        $typographyStyle = $action;
+    }
+
+    if (($action['name'] ?? '') === 'FontFamilyMode') {
+        $fontFamilyMode = $action;
+    }
+
+    if (($action['name'] ?? '') === 'CustomFontSize') {
+        $customFontSize = $action;
+    }
+
+    if (($action['name'] ?? '') === 'CustomFontFamily') {
+        $customFontFamily = $action;
+    }
+
+    if (($action['name'] ?? '') === 'CornerStyle') {
+        $cornerStyle = $action;
+    }
+
+    if (($action['name'] ?? '') === 'CustomCornerRadius') {
+        $customCornerRadius = $action;
+    }
+
+    if (($action['name'] ?? '') === 'BorderStyle') {
+        $borderStyle = $action;
+    }
+
+    if (($action['name'] ?? '') === 'CustomBorderWidth') {
+        $customBorderWidth = $action;
+    }
+
     if (($action['type'] ?? '') === 'SelectColor') {
         $colorFields[] = $action;
     }
@@ -205,6 +258,18 @@ assertTest(
     'The Create View button does not pass the selected general effects.'
 );
 assertTest(
+    str_contains((string) ($button['onClick'] ?? ''), '$TypographyStyle'),
+    'The Create View button does not pass the selected typography settings.'
+);
+assertTest(
+    str_contains((string) ($copyButton['onClick'] ?? ''), '$CustomBorderWidth'),
+    'The styled copy button does not pass the selected form-language settings.'
+);
+assertTest(
+    str_contains((string) ($sourceView['onChange'] ?? ''), '$FontFamilyMode'),
+    'Loading an existing IPSView does not retain the appearance settings in the preview.'
+);
+assertTest(
     str_contains($copyFactorySource, 'applyThemeWithReport('),
     'The copy factory does not apply scoped themes with a report.'
 );
@@ -248,6 +313,33 @@ assertTest(
 assertTest(
     str_contains($effectsSource, 'public static function apply('),
     'The general IPSView effects cannot be applied.'
+);
+assertTest(is_array($appearancePanel), 'The typography and form-language panel is missing.');
+assertTest(is_array($typographyStyle), 'The typography size selection is missing.');
+assertTest(count($typographyStyle['options'] ?? []) === 5, 'The typography size selection does not offer all modes.');
+assertTest(is_array($fontFamilyMode), 'The font family selection is missing.');
+assertTest(count($fontFamilyMode['options'] ?? []) === 6, 'The font family selection does not offer all modes.');
+assertTest(is_array($customFontSize), 'The custom base font size is missing.');
+assertTest(($customFontSize['minimum'] ?? null) === 8, 'The custom font size minimum is incorrect.');
+assertTest(($customFontSize['maximum'] ?? null) === 32, 'The custom font size maximum is incorrect.');
+assertTest(is_array($customFontFamily), 'The custom font family field is missing.');
+assertTest(is_array($cornerStyle), 'The corner style selection is missing.');
+assertTest(count($cornerStyle['options'] ?? []) === 6, 'The corner selection does not offer all modes.');
+assertTest(is_array($customCornerRadius), 'The custom corner radius is missing.');
+assertTest(is_array($borderStyle), 'The border style selection is missing.');
+assertTest(count($borderStyle['options'] ?? []) === 6, 'The border selection does not offer all modes.');
+assertTest(is_array($customBorderWidth), 'The custom border width is missing.');
+assertTest(
+    str_contains((string) ($cornerStyle['onChange'] ?? ''), 'IPSVIEWA_UpdateAppearancePreview('),
+    'Changing the corner style does not refresh the appearance preview.'
+);
+assertTest(
+    str_contains($typographySource, 'public static function apply('),
+    'The IPSView typography cannot be applied.'
+);
+assertTest(
+    str_contains($shapeSource, 'public static function apply('),
+    'The IPSView form language cannot be applied.'
 );
 assertTest(is_array($preview), 'The live theme preview is missing from the form.');
 assertTest(($preview['image'] ?? null) === '', 'The dynamic preview placeholder must be empty in form.json.');

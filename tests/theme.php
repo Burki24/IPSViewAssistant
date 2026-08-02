@@ -6,6 +6,8 @@ require_once __DIR__ . '/bootstrap.php';
 require_once dirname(__DIR__) . '/libs/IPSViewTheme.php';
 require_once dirname(__DIR__) . '/libs/IPSViewEffects.php';
 require_once dirname(__DIR__) . '/libs/IPSViewThemePreview.php';
+require_once dirname(__DIR__) . '/libs/IPSViewTypography.php';
+require_once dirname(__DIR__) . '/libs/IPSViewShape.php';
 require_once dirname(__DIR__) . '/libs/IPSViewDocument.php';
 
 use Burki24\IPSViewAssistant\IPSViewDocument;

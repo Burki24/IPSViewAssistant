@@ -4,6 +4,15 @@
 
 ### Added
 
+- A5 global typography presets with preserve, compact, standard, large and custom base-size modes.
+- Selectable font families with preserve, system default, Roboto, Segoe UI, Arial and custom modes.
+- Global form-language presets for square, slightly rounded, rounded, strongly rounded and custom corners.
+- Global border presets with preserve, none, thin, standard, strong and custom widths.
+- Safe typography application that changes only global defaults, matching default control fonts or all control fonts according to the selected design scope.
+- Live preview support for font family, font size, corner radius and border width.
+- Existing View inspection for current font, base size, corner radius and border width.
+- Typography and form-language regression tests, including preservation of explicit fonts and relative size hierarchies.
+
 - General shadow presets with preserve, none, subtle, medium and strong modes.
 - General fill transparency with preserve, opaque and custom percentage modes.
 - Generated color gradients with selectable strength and darker or lighter direction.

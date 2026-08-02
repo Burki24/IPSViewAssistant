@@ -9,12 +9,16 @@ require_once __DIR__ . '/../libs/IPSViewThemePreview.php';
 require_once __DIR__ . '/../libs/IPSViewDocument.php';
 require_once __DIR__ . '/../libs/IPSViewCopyFactory.php';
 require_once __DIR__ . '/../libs/IPSViewFactory.php';
+require_once __DIR__ . '/../libs/IPSViewShape.php';
+require_once __DIR__ . '/../libs/IPSViewTypography.php';
 
 use Burki24\IPSViewAssistant\IPSViewCopyFactory;
 use Burki24\IPSViewAssistant\IPSViewEffects;
 use Burki24\IPSViewAssistant\IPSViewFactory;
+use Burki24\IPSViewAssistant\IPSViewShape;
 use Burki24\IPSViewAssistant\IPSViewTheme;
 use Burki24\IPSViewAssistant\IPSViewThemePreview;
+use Burki24\IPSViewAssistant\IPSViewTypography;
 use Burki24\SymconModuleHelper\ConfigurationFormHelper;
 
 class IPSViewAssistant extends IPSModuleStrict
@@ -81,7 +85,7 @@ class IPSViewAssistant extends IPSModuleStrict
             $form,
             'ThemePreview',
             'image',
-            IPSViewThemePreview::createDataUri($palette, IPSViewEffects::resolve())
+            IPSViewThemePreview::createDataUri($palette, IPSViewEffects::resolve(), [])
         );
 
         return $this->EncodeConfigurationForm($form);
@@ -99,7 +103,8 @@ class IPSViewAssistant extends IPSModuleStrict
         string $MainPageName,
         int $Theme = IPSViewTheme::THEME_STANDARD,
         string $ThemePalette = '',
-        string $Effects = ''
+        string $Effects = '',
+        string $Appearance = ''
     ): string {
         try {
             $factory = new IPSViewFactory(__DIR__ . '/../libs/templates');
@@ -112,7 +117,8 @@ class IPSViewAssistant extends IPSModuleStrict
                 $MainPageName,
                 $Theme,
                 $this->decodePalette($ThemePalette),
-                $this->decodeEffects($Effects)
+                $this->decodeEffects($Effects),
+                $this->decodeAppearance($Appearance)
             );
 
             return sprintf(
@@ -133,7 +139,7 @@ class IPSViewAssistant extends IPSModuleStrict
     /**
      * Loads the design of an existing IPSView into the semantic color fields.
      */
-    public function LoadExistingView(int $SourceViewID, string $Effects = ''): void
+    public function LoadExistingView(int $SourceViewID, string $Effects = '', string $Appearance = ''): void
     {
         try {
             $factory = new IPSViewCopyFactory();
@@ -182,10 +188,38 @@ class IPSViewAssistant extends IPSModuleStrict
                 $analysis['individualControlColors']
             );
 
+            $appearanceInspection = $paletteInspection['appearance'];
+            $appearance = $this->decodeAppearance($Appearance);
+            $appearance['typographyStyle'] = IPSViewTypography::STYLE_PRESERVE;
+            $appearance['fontFamilyMode'] = IPSViewTypography::FONT_PRESERVE;
+            $appearance['customFontFamily'] = $appearanceInspection['fontFamily'];
+            $appearance['customFontSize'] = $appearanceInspection['baseFontSize'];
+            $appearance['cornerStyle'] = IPSViewShape::CORNER_PRESERVE;
+            $appearance['customCornerRadius'] = $appearanceInspection['cornerRadius'];
+            $appearance['borderStyle'] = IPSViewShape::BORDER_PRESERVE;
+            $appearance['customBorderWidth'] = $appearanceInspection['borderWidth'];
+            $status .= ' ' . sprintf(
+                $this->Translate('Current basics: font %s at %d px, corner radius %d px and border width %.1f px.'),
+                $appearanceInspection['fontFamily'] === ''
+                    ? $this->Translate('system default')
+                    : $appearanceInspection['fontFamily'],
+                $appearanceInspection['baseFontSize'],
+                $appearanceInspection['cornerRadius'],
+                $appearanceInspection['borderWidth']
+            );
+
             $palette = $paletteInspection['palette'];
             $this->UpdateFormField('Theme', 'value', IPSViewTheme::THEME_CUSTOM);
+            $this->UpdateFormField('TypographyStyle', 'value', IPSViewTypography::STYLE_PRESERVE);
+            $this->UpdateFormField('FontFamilyMode', 'value', IPSViewTypography::FONT_PRESERVE);
+            $this->UpdateFormField('CustomFontFamily', 'value', $appearanceInspection['fontFamily']);
+            $this->UpdateFormField('CustomFontSize', 'value', $appearanceInspection['baseFontSize']);
+            $this->UpdateFormField('CornerStyle', 'value', IPSViewShape::CORNER_PRESERVE);
+            $this->UpdateFormField('CustomCornerRadius', 'value', $appearanceInspection['cornerRadius']);
+            $this->UpdateFormField('BorderStyle', 'value', IPSViewShape::BORDER_PRESERVE);
+            $this->UpdateFormField('CustomBorderWidth', 'value', $appearanceInspection['borderWidth']);
             $this->updateColorFields($palette);
-            $this->UpdateFormField('ThemePreview', 'image', IPSViewThemePreview::createDataUri($palette, $this->decodeEffects($Effects)));
+            $this->UpdateFormField('ThemePreview', 'image', IPSViewThemePreview::createDataUri($palette, $this->decodeEffects($Effects), $appearance));
             $this->UpdateFormField('CopyViewName', 'value', $copyName);
             $this->UpdateFormField('CopyTargetCategoryID', 'value', $copyTargetCategoryID);
             $this->UpdateFormField('ExistingViewStatus', 'caption', $status);
@@ -209,7 +243,8 @@ class IPSViewAssistant extends IPSModuleStrict
         int $Theme,
         string $ThemePalette = '',
         int $DesignScope = IPSViewTheme::SCOPE_MATCHING_CONTROLS,
-        string $Effects = ''
+        string $Effects = '',
+        string $Appearance = ''
     ): string {
         try {
             $factory = new IPSViewCopyFactory();
@@ -236,7 +271,8 @@ class IPSViewAssistant extends IPSModuleStrict
                     $Theme,
                     $this->decodePalette($ThemePalette),
                     $DesignScope,
-                    $this->decodeEffects($Effects)
+                    $this->decodeEffects($Effects),
+                    $this->decodeAppearance($Appearance)
                 );
                 $this->rememberManagedCopy($SourceViewID, $targetMediaID);
                 $reportText = $this->formatThemeReport($factory->getLastThemeReport());
@@ -264,7 +300,8 @@ class IPSViewAssistant extends IPSModuleStrict
                 $Theme,
                 $this->decodePalette($ThemePalette),
                 $DesignScope,
-                $this->decodeEffects($Effects)
+                $this->decodeEffects($Effects),
+                $this->decodeAppearance($Appearance)
             );
             $this->rememberManagedCopy($SourceViewID, $mediaID);
             $reportText = $this->formatThemeReport($factory->getLastThemeReport());
@@ -296,13 +333,22 @@ class IPSViewAssistant extends IPSModuleStrict
     /**
      * Loads one preset into the semantic color fields and refreshes the preview.
      */
-    public function ApplyThemePreset(int $Theme, string $ThemePalette = '', string $Effects = ''): void
+    public function ApplyThemePreset(
+        int $Theme,
+        string $ThemePalette = '',
+        string $Effects = '',
+        string $Appearance = ''
+    ): void
     {
         try {
             $palette = IPSViewTheme::resolvePalette($Theme, $this->decodePalette($ThemePalette));
             $this->UpdateFormField('Theme', 'value', $Theme);
             $this->updateColorFields($palette);
-            $this->UpdateFormField('ThemePreview', 'image', IPSViewThemePreview::createDataUri($palette, $this->decodeEffects($Effects)));
+            $this->UpdateFormField('ThemePreview', 'image', IPSViewThemePreview::createDataUri(
+                    $palette,
+                    $this->decodeEffects($Effects),
+                    $this->decodeAppearance($Appearance)
+                ));
         } catch (Throwable $exception) {
             $this->SendDebug('ApplyThemePreset', $exception->getMessage(), 0);
         }
@@ -311,7 +357,11 @@ class IPSViewAssistant extends IPSModuleStrict
     /**
      * Switches to a custom theme and refreshes the live preview.
      */
-    public function UpdateThemePreview(string $ThemePalette, string $Effects = ''): void
+    public function UpdateThemePreview(
+        string $ThemePalette,
+        string $Effects = '',
+        string $Appearance = ''
+    ): void
     {
         try {
             $palette = IPSViewTheme::resolvePalette(
@@ -320,7 +370,11 @@ class IPSViewAssistant extends IPSModuleStrict
             );
 
             $this->UpdateFormField('Theme', 'value', IPSViewTheme::THEME_CUSTOM);
-            $this->UpdateFormField('ThemePreview', 'image', IPSViewThemePreview::createDataUri($palette, $this->decodeEffects($Effects)));
+            $this->UpdateFormField('ThemePreview', 'image', IPSViewThemePreview::createDataUri(
+                    $palette,
+                    $this->decodeEffects($Effects),
+                    $this->decodeAppearance($Appearance)
+                ));
         } catch (Throwable $exception) {
             $this->SendDebug('UpdateThemePreview', $exception->getMessage(), 0);
         }
@@ -329,7 +383,11 @@ class IPSViewAssistant extends IPSModuleStrict
     /**
      * Refreshes the preview after changing general visual effects.
      */
-    public function UpdateEffectsPreview(string $ThemePalette, string $Effects = ''): void
+    public function UpdateEffectsPreview(
+        string $ThemePalette,
+        string $Effects = '',
+        string $Appearance = ''
+    ): void
     {
         try {
             $palette = IPSViewTheme::resolvePalette(
@@ -340,10 +398,42 @@ class IPSViewAssistant extends IPSModuleStrict
             $this->UpdateFormField(
                 'ThemePreview',
                 'image',
-                IPSViewThemePreview::createDataUri($palette, $this->decodeEffects($Effects))
+                IPSViewThemePreview::createDataUri(
+                    $palette,
+                    $this->decodeEffects($Effects),
+                    $this->decodeAppearance($Appearance)
+                )
             );
         } catch (Throwable $exception) {
             $this->SendDebug('UpdateEffectsPreview', $exception->getMessage(), 0);
+        }
+    }
+
+    /**
+     * Refreshes the preview after changing typography or form language.
+     */
+    public function UpdateAppearancePreview(
+        string $ThemePalette,
+        string $Effects = '',
+        string $Appearance = ''
+    ): void {
+        try {
+            $palette = IPSViewTheme::resolvePalette(
+                IPSViewTheme::THEME_CUSTOM,
+                $this->decodePalette($ThemePalette)
+            );
+
+            $this->UpdateFormField(
+                'ThemePreview',
+                'image',
+                IPSViewThemePreview::createDataUri(
+                    $palette,
+                    $this->decodeEffects($Effects),
+                    $this->decodeAppearance($Appearance)
+                )
+            );
+        } catch (Throwable $exception) {
+            $this->SendDebug('UpdateAppearancePreview', $exception->getMessage(), 0);
         }
     }
 
@@ -502,7 +592,10 @@ class IPSViewAssistant extends IPSModuleStrict
      *     controlColorsPreserved: int,
      *     globalEffectsApplied: int,
      *     controlEffectsApplied: int,
-     *     shadowChanged: bool
+     *     shadowChanged: bool,
+     *     globalTypographyApplied: int,
+     *     controlTypographyApplied: int,
+     *     globalShapeApplied: int
      * }|null $report
      */
     private function formatThemeReport(?array $report): string
@@ -530,6 +623,19 @@ class IPSViewAssistant extends IPSModuleStrict
                 $report['shadowChanged']
                     ? $this->Translate('updated')
                     : $this->Translate('preserved')
+            );
+        }
+
+        if (
+            $report['globalTypographyApplied'] > 0
+            || $report['controlTypographyApplied'] > 0
+            || $report['globalShapeApplied'] > 0
+        ) {
+            $reportText .= ' ' . sprintf(
+                $this->Translate('%d global typography settings and %d control fonts were updated; %d form-language settings were applied.'),
+                $report['globalTypographyApplied'],
+                $report['controlTypographyApplied'],
+                $report['globalShapeApplied']
             );
         }
 
@@ -570,6 +676,27 @@ class IPSViewAssistant extends IPSModuleStrict
         }
 
         return IPSViewEffects::resolve($effects);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function decodeAppearance(string $appearanceJson): array
+    {
+        if (trim($appearanceJson) === '') {
+            return [...IPSViewTypography::resolve(), ...IPSViewShape::resolve()];
+        }
+
+        $appearance = json_decode($appearanceJson, true, 512, JSON_THROW_ON_ERROR);
+
+        if (!is_array($appearance)) {
+            throw new RuntimeException('The typography and form settings must be a JSON object.');
+        }
+
+        return [
+            ...IPSViewTypography::resolve($appearance),
+            ...IPSViewShape::resolve($appearance),
+        ];
     }
 
     /**

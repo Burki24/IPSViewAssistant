@@ -105,7 +105,7 @@
                             "caption": "Source IPSView",
                             "value": 0,
                             "width": "500px",
-                            "onChange": "IPSVIEWA_LoadExistingView($id, $SourceViewID, json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES));"
+                            "onChange": "IPSVIEWA_LoadExistingView($id, $SourceViewID, json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));"
                         },
                         {
                             "type": "ValidationTextBox",
@@ -165,7 +165,7 @@
                     "name": "Theme",
                     "caption": "Theme",
                     "value": 0,
-                    "onChange": "IPSVIEWA_ApplyThemePreset($id, $Theme, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES));",
+                    "onChange": "IPSVIEWA_ApplyThemePreset($id, $Theme, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));",
                     "options": [
                         {
                             "caption": "IPSView Standard",
@@ -228,7 +228,7 @@
                                             "value": 4210752,
                                             "allowTransparent": false,
                                             "width": "360px",
-                                            "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES));"
+                                            "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));"
                                         },
                                         {
                                             "type": "SelectColor",
@@ -237,7 +237,7 @@
                                             "value": 4210752,
                                             "allowTransparent": false,
                                             "width": "360px",
-                                            "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES));"
+                                            "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));"
                                         }
                                     ]
                                 },
@@ -251,7 +251,7 @@
                                             "value": 6316128,
                                             "allowTransparent": false,
                                             "width": "360px",
-                                            "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES));"
+                                            "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));"
                                         },
                                         {
                                             "type": "SelectColor",
@@ -260,7 +260,7 @@
                                             "value": 16777215,
                                             "allowTransparent": false,
                                             "width": "360px",
-                                            "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES));"
+                                            "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));"
                                         }
                                     ]
                                 },
@@ -274,7 +274,7 @@
                                             "value": 10790052,
                                             "allowTransparent": false,
                                             "width": "360px",
-                                            "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES));"
+                                            "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));"
                                         },
                                         {
                                             "type": "SelectColor",
@@ -283,7 +283,7 @@
                                             "value": 8355711,
                                             "allowTransparent": false,
                                             "width": "360px",
-                                            "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES));"
+                                            "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));"
                                         }
                                     ]
                                 },
@@ -297,7 +297,7 @@
                                             "value": 31487,
                                             "allowTransparent": false,
                                             "width": "360px",
-                                            "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES));"
+                                            "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));"
                                         },
                                         {
                                             "type": "SelectColor",
@@ -306,7 +306,7 @@
                                             "value": 704010,
                                             "allowTransparent": false,
                                             "width": "360px",
-                                            "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES));"
+                                            "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));"
                                         }
                                     ]
                                 },
@@ -320,7 +320,7 @@
                                             "value": 12454410,
                                             "allowTransparent": false,
                                             "width": "360px",
-                                            "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES));"
+                                            "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));"
                                         },
                                         {
                                             "type": "SelectColor",
@@ -329,7 +329,7 @@
                                             "value": 704010,
                                             "allowTransparent": false,
                                             "width": "360px",
-                                            "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES));"
+                                            "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));"
                                         }
                                     ]
                                 },
@@ -343,7 +343,7 @@
                                             "value": 16711680,
                                             "allowTransparent": false,
                                             "width": "360px",
-                                            "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES));"
+                                            "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));"
                                         },
                                         {
                                             "type": "SelectColor",
@@ -352,7 +352,7 @@
                                             "value": 12454410,
                                             "allowTransparent": false,
                                             "width": "360px",
-                                            "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES));"
+                                            "onChange": "IPSVIEWA_UpdateThemePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));"
                                         }
                                     ]
                                 },
@@ -371,7 +371,7 @@
                                                     "caption": "Shadows",
                                                     "value": 0,
                                                     "width": "360px",
-                                                    "onChange": "IPSVIEWA_UpdateEffectsPreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES));",
+                                                    "onChange": "IPSVIEWA_UpdateEffectsPreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));",
                                                     "options": [
                                                         {
                                                             "caption": "Preserve existing",
@@ -401,7 +401,7 @@
                                                     "caption": "Transparency",
                                                     "value": 0,
                                                     "width": "360px",
-                                                    "onChange": "IPSVIEWA_UpdateEffectsPreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES));",
+                                                    "onChange": "IPSVIEWA_UpdateEffectsPreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));",
                                                     "options": [
                                                         {
                                                             "caption": "Preserve existing",
@@ -431,7 +431,7 @@
                                                     "minimum": 0,
                                                     "maximum": 100,
                                                     "width": "360px",
-                                                    "onChange": "IPSVIEWA_UpdateEffectsPreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES));"
+                                                    "onChange": "IPSVIEWA_UpdateEffectsPreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));"
                                                 },
                                                 {
                                                     "type": "Select",
@@ -439,7 +439,7 @@
                                                     "caption": "Color gradient",
                                                     "value": 0,
                                                     "width": "360px",
-                                                    "onChange": "IPSVIEWA_UpdateEffectsPreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES));",
+                                                    "onChange": "IPSVIEWA_UpdateEffectsPreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));",
                                                     "options": [
                                                         {
                                                             "caption": "Preserve existing",
@@ -474,7 +474,7 @@
                                                     "caption": "Gradient direction",
                                                     "value": 0,
                                                     "width": "360px",
-                                                    "onChange": "IPSVIEWA_UpdateEffectsPreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES));",
+                                                    "onChange": "IPSVIEWA_UpdateEffectsPreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));",
                                                     "options": [
                                                         {
                                                             "caption": "Base color to darker",
@@ -489,6 +489,212 @@
                                                 {
                                                     "type": "Label",
                                                     "caption": "Effects apply to global fills and, depending on the design scope, to matching or basic control backgrounds. Text, borders and special association colors remain untouched."
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "ExpansionPanel",
+                                    "name": "TypographyShapePanel",
+                                    "caption": "Typography and form language",
+                                    "expanded": true,
+                                    "items": [
+                                        {
+                                            "type": "Label",
+                                            "caption": "These settings define only global typography, corner and border basics. Pages, element placement and individual detail settings remain in IPSView Designer."
+                                        },
+                                        {
+                                            "type": "RowLayout",
+                                            "items": [
+                                                {
+                                                    "type": "Select",
+                                                    "name": "TypographyStyle",
+                                                    "caption": "Typography size",
+                                                    "value": 0,
+                                                    "width": "360px",
+                                                    "onChange": "IPSVIEWA_UpdateAppearancePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));",
+                                                    "options": [
+                                                        {
+                                                            "caption": "Preserve existing",
+                                                            "value": 0
+                                                        },
+                                                        {
+                                                            "caption": "Compact",
+                                                            "value": 1
+                                                        },
+                                                        {
+                                                            "caption": "Standard",
+                                                            "value": 2
+                                                        },
+                                                        {
+                                                            "caption": "Large",
+                                                            "value": 3
+                                                        },
+                                                        {
+                                                            "caption": "Custom",
+                                                            "value": 4
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "Select",
+                                                    "name": "FontFamilyMode",
+                                                    "caption": "Font family",
+                                                    "value": 0,
+                                                    "width": "360px",
+                                                    "onChange": "IPSVIEWA_UpdateAppearancePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));",
+                                                    "options": [
+                                                        {
+                                                            "caption": "Preserve existing",
+                                                            "value": 0
+                                                        },
+                                                        {
+                                                            "caption": "System default",
+                                                            "value": 1
+                                                        },
+                                                        {
+                                                            "caption": "Roboto",
+                                                            "value": 2
+                                                        },
+                                                        {
+                                                            "caption": "Segoe UI",
+                                                            "value": 3
+                                                        },
+                                                        {
+                                                            "caption": "Arial",
+                                                            "value": 4
+                                                        },
+                                                        {
+                                                            "caption": "Custom",
+                                                            "value": 5
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "type": "RowLayout",
+                                            "items": [
+                                                {
+                                                    "type": "NumberSpinner",
+                                                    "name": "CustomFontSize",
+                                                    "caption": "Custom base font size",
+                                                    "value": 11,
+                                                    "suffix": " px",
+                                                    "minimum": 8,
+                                                    "maximum": 32,
+                                                    "width": "360px",
+                                                    "onChange": "IPSVIEWA_UpdateAppearancePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));"
+                                                },
+                                                {
+                                                    "type": "ValidationTextBox",
+                                                    "name": "CustomFontFamily",
+                                                    "caption": "Custom font family",
+                                                    "value": "",
+                                                    "width": "360px",
+                                                    "onChange": "IPSVIEWA_UpdateAppearancePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "type": "RowLayout",
+                                            "items": [
+                                                {
+                                                    "type": "Select",
+                                                    "name": "CornerStyle",
+                                                    "caption": "Corners",
+                                                    "value": 0,
+                                                    "width": "360px",
+                                                    "onChange": "IPSVIEWA_UpdateAppearancePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));",
+                                                    "options": [
+                                                        {
+                                                            "caption": "Preserve existing",
+                                                            "value": 0
+                                                        },
+                                                        {
+                                                            "caption": "Square",
+                                                            "value": 1
+                                                        },
+                                                        {
+                                                            "caption": "Slightly rounded",
+                                                            "value": 2
+                                                        },
+                                                        {
+                                                            "caption": "Rounded",
+                                                            "value": 3
+                                                        },
+                                                        {
+                                                            "caption": "Strongly rounded",
+                                                            "value": 4
+                                                        },
+                                                        {
+                                                            "caption": "Custom",
+                                                            "value": 5
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "NumberSpinner",
+                                                    "name": "CustomCornerRadius",
+                                                    "caption": "Custom corner radius",
+                                                    "value": 6,
+                                                    "suffix": " px",
+                                                    "minimum": 0,
+                                                    "maximum": 40,
+                                                    "width": "360px",
+                                                    "onChange": "IPSVIEWA_UpdateAppearancePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "type": "RowLayout",
+                                            "items": [
+                                                {
+                                                    "type": "Select",
+                                                    "name": "BorderStyle",
+                                                    "caption": "Border strength",
+                                                    "value": 0,
+                                                    "width": "360px",
+                                                    "onChange": "IPSVIEWA_UpdateAppearancePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));",
+                                                    "options": [
+                                                        {
+                                                            "caption": "Preserve existing",
+                                                            "value": 0
+                                                        },
+                                                        {
+                                                            "caption": "No border",
+                                                            "value": 1
+                                                        },
+                                                        {
+                                                            "caption": "Thin",
+                                                            "value": 2
+                                                        },
+                                                        {
+                                                            "caption": "Standard",
+                                                            "value": 3
+                                                        },
+                                                        {
+                                                            "caption": "Strong",
+                                                            "value": 4
+                                                        },
+                                                        {
+                                                            "caption": "Custom",
+                                                            "value": 5
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "NumberSpinner",
+                                                    "name": "CustomBorderWidth",
+                                                    "caption": "Custom border width",
+                                                    "value": 1.5,
+                                                    "suffix": " px",
+                                                    "minimum": 0,
+                                                    "maximum": 8,
+                                                    "digits": 1,
+                                                    "width": "360px",
+                                                    "onChange": "IPSVIEWA_UpdateAppearancePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));"
                                                 }
                                             ]
                                         }
@@ -524,12 +730,12 @@
                 {
                     "type": "Button",
                     "caption": "Create View",
-                    "onClick": "echo IPSVIEWA_CreateView($id, $ViewName, $TargetCategoryID, $AspectRatio, $Orientation, $Template, $MainPageName, $Theme, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES));"
+                    "onClick": "echo IPSVIEWA_CreateView($id, $ViewName, $TargetCategoryID, $AspectRatio, $Orientation, $Template, $MainPageName, $Theme, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));"
                 },
                 {
                     "type": "Button",
                     "caption": "Save styled copy",
-                    "onClick": "echo IPSVIEWA_CreateStyledCopy($id, $SourceViewID, $CopyViewName, $CopyTargetCategoryID, $Theme, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), $DesignScope, json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES));",
+                    "onClick": "echo IPSVIEWA_CreateStyledCopy($id, $SourceViewID, $CopyViewName, $CopyTargetCategoryID, $Theme, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), $DesignScope, json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));",
                     "name": "SaveStyledCopyButton"
                 }
             ]
