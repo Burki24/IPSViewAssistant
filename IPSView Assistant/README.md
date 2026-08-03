@@ -174,9 +174,36 @@ Zur Auswahl stehen:
 - BebasNeue
 - Segment7
 
-Die Vorschau dieser Schriftarten funktioniert offline. Für **Segment7** wird in der Vorschau eine kompatible Sieben-Segment-Schrift verwendet. Bei einer aus einer bestehenden View erkannten zusätzlichen Systemschrift kann die Vorschau ersatzweise eine im Browser vorhandene Schrift anzeigen.
+Die Vorschau dieser Schriftarten funktioniert offline. Für **Segment7** wird die originale Schrift **G7 Segment 7 S5** verwendet. Bei einer aus einer bestehenden View erkannten zusätzlichen Systemschrift kann die Vorschau ersatzweise eine im Browser vorhandene Schrift anzeigen.
 
 Bei einer bestehenden View ist **Bestehende Einstellung beibehalten** die sicherste Auswahl, wenn deren bisherige Schriftart nicht verändert werden soll.
+
+##### Schriftformatierung
+
+Für vorhandene Bedienelemente können zusätzlich **Schriftstärke**, **Schriftstil** und **Unterstreichung** festgelegt werden:
+
+| Einstellung | Auswahl |
+|---|---|
+| **Schriftstärke** | Bestehende Einstellung beibehalten, Normal oder Fett |
+| **Schriftstil** | Bestehende Einstellung beibehalten, Normal oder Kursiv |
+| **Unterstreichung** | Bestehende Einstellung beibehalten, Nicht unterstrichen oder Unterstrichen |
+
+Fett und Kursiv werden nur angeboten, wenn IPSView den passenden echten Schriftschnitt mitliefert:
+
+| Schriftart | Fett | Kursiv | Fett und kursiv | Unterstrichen |
+|---|:---:|:---:|:---:|:---:|
+| Roboto | ✓ | ✓ | ✓ | ✓ |
+| RobotoMono | ✓ | ✓ | ✓ | ✓ |
+| OpenSans | ✓ | ✓ | ✓ | ✓ |
+| PTSans | ✓ | ✓ | ✓ | ✓ |
+| DancingScript | ✓ | – | – | ✓ |
+| IndieFlower | – | – | – | ✓ |
+| BebasNeue | – | – | – | ✓ |
+| Segment7 | – | – | – | ✓ |
+
+Wird eine Schriftart ohne fetten oder kursiven Schnitt gewählt, stellt der Assistant die betreffende Auswahl automatisch auf **Normal** und deaktiviert das Auswahlfeld. Unterstreichen ist unabhängig von der Schriftart möglich.
+
+Die Schriftformatierung wirkt nur auf bereits vorhandene Bedienelemente einer Designkopie. Welche Bedienelemente angepasst werden, richtet sich nach dem gewählten **Gestaltungsumfang**. Eine neu angelegte leere View enthält noch keine Bedienelemente, auf die Fett, Kursiv oder Unterstrichen angewendet werden könnten.
 
 #### 6.5 Ecken
 

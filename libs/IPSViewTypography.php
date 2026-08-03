@@ -25,6 +25,48 @@ final class IPSViewTypography
     public const FONT_BEBAS_NEUE = 7;
     public const FONT_SEGMENT_7 = 8;
 
+    public const FORMAT_PRESERVE = 0;
+    public const FORMAT_OFF = 1;
+    public const FORMAT_ON = 2;
+
+    /**
+     * @var array<string, array{bold: bool, italic: bool}>
+     */
+    private const FONT_CAPABILITIES = [
+        'Roboto'        => [
+            'bold'   => true,
+            'italic' => true,
+        ],
+        'RobotoMono'    => [
+            'bold'   => true,
+            'italic' => true,
+        ],
+        'DancingScript' => [
+            'bold'   => true,
+            'italic' => false,
+        ],
+        'IndieFlower'   => [
+            'bold'   => false,
+            'italic' => false,
+        ],
+        'OpenSans'      => [
+            'bold'   => true,
+            'italic' => true,
+        ],
+        'PTSans'        => [
+            'bold'   => true,
+            'italic' => true,
+        ],
+        'BebasNeue'     => [
+            'bold'   => false,
+            'italic' => false,
+        ],
+        'Segment7'      => [
+            'bold'   => false,
+            'italic' => false,
+        ],
+    ];
+
     /**
      * @var list<string>
      */
@@ -59,16 +101,22 @@ final class IPSViewTypography
      *     typographyStyle: int,
      *     fontFamilyMode: int,
      *     customFontFamily: string,
-     *     customFontSize: int
+     *     customFontSize: int,
+     *     fontBoldMode: int,
+     *     fontItalicMode: int,
+     *     fontUnderlineMode: int
      * }
      */
     public static function resolve(array $settings = []): array
     {
         $resolved = [
-            'typographyStyle' => (int) ($settings['typographyStyle'] ?? self::STYLE_PRESERVE),
-            'fontFamilyMode'  => (int) ($settings['fontFamilyMode'] ?? self::FONT_PRESERVE),
-            'customFontFamily'=> trim((string) ($settings['customFontFamily'] ?? '')),
-            'customFontSize'  => max(8, min(32, (int) ($settings['customFontSize'] ?? 11))),
+            'typographyStyle'   => (int) ($settings['typographyStyle'] ?? self::STYLE_PRESERVE),
+            'fontFamilyMode'    => (int) ($settings['fontFamilyMode'] ?? self::FONT_PRESERVE),
+            'customFontFamily'  => trim((string) ($settings['customFontFamily'] ?? '')),
+            'customFontSize'    => max(8, min(32, (int) ($settings['customFontSize'] ?? 11))),
+            'fontBoldMode'      => (int) ($settings['fontBoldMode'] ?? self::FORMAT_PRESERVE),
+            'fontItalicMode'    => (int) ($settings['fontItalicMode'] ?? self::FORMAT_PRESERVE),
+            'fontUnderlineMode' => (int) ($settings['fontUnderlineMode'] ?? self::FORMAT_PRESERVE),
         ];
 
         if (!in_array(
@@ -103,8 +151,31 @@ final class IPSViewTypography
             throw new InvalidArgumentException('The selected font family mode is not supported.');
         }
 
+        foreach (['fontBoldMode', 'fontItalicMode', 'fontUnderlineMode'] as $formatMode) {
+            if (!in_array(
+                $resolved[$formatMode],
+                [self::FORMAT_PRESERVE, self::FORMAT_OFF, self::FORMAT_ON],
+                true
+            )) {
+                throw new InvalidArgumentException('The selected font formatting mode is not supported.');
+            }
+        }
+
         if (strlen($resolved['customFontFamily']) > 80) {
             throw new InvalidArgumentException('The detected font family must not exceed 80 characters.');
+        }
+
+        $selectedFontFamily = self::resolveFontFamily($resolved);
+        if ($selectedFontFamily !== null) {
+            $capabilities = self::capabilitiesForFamily($selectedFontFamily);
+
+            if (!$capabilities['bold']) {
+                $resolved['fontBoldMode'] = self::FORMAT_OFF;
+            }
+
+            if (!$capabilities['italic']) {
+                $resolved['fontItalicMode'] = self::FORMAT_OFF;
+            }
         }
 
         return $resolved;
@@ -127,6 +198,9 @@ final class IPSViewTypography
         $previousFontFamily = (string) ($document->DefaultFontFamily ?? '');
         $targetBaseSize = self::resolveBaseSize($settings);
         $targetFontFamily = self::resolveFontFamily($settings);
+        $targetBold = self::resolveFormatValue($settings['fontBoldMode']);
+        $targetItalic = self::resolveFormatValue($settings['fontItalicMode']);
+        $targetUnderline = self::resolveFormatValue($settings['fontUnderlineMode']);
         $scale = $targetBaseSize === null ? 1.0 : $targetBaseSize / $previousBaseSize;
         $globalChanges = 0;
 
@@ -160,7 +234,13 @@ final class IPSViewTypography
         $controlChanges = 0;
         if (
             $scope !== IPSViewTheme::SCOPE_GLOBAL_DEFAULTS
-            && ($targetBaseSize !== null || $targetFontFamily !== null)
+            && (
+                $targetBaseSize !== null
+                || $targetFontFamily !== null
+                || $targetBold !== null
+                || $targetItalic !== null
+                || $targetUnderline !== null
+            )
         ) {
             $controlChanges = self::applyControlTypography(
                 $document,
@@ -169,6 +249,9 @@ final class IPSViewTypography
                 $previousFontFamily,
                 $targetBaseSize,
                 $targetFontFamily,
+                $targetBold,
+                $targetItalic,
+                $targetUnderline,
                 $scale
             );
         }
@@ -187,8 +270,8 @@ final class IPSViewTypography
     public static function extract(stdClass $document): array
     {
         return [
-            'fontFamily'  => (string) ($document->DefaultFontFamily ?? ''),
-            'baseFontSize'=> max(8, min(32, (int) ($document->DefaultFontSize ?? 11))),
+            'fontFamily'   => (string) ($document->DefaultFontFamily ?? ''),
+            'baseFontSize' => max(8, min(32, (int) ($document->DefaultFontSize ?? 11))),
         ];
     }
 
@@ -197,7 +280,13 @@ final class IPSViewTypography
      *
      * @param array<string, mixed> $settings
      *
-     * @return array{fontFamily: string, baseFontSize: int}
+     * @return array{
+     *     fontFamily: string,
+     *     baseFontSize: int,
+     *     isBold: bool,
+     *     isItalic: bool,
+     *     isUnderline: bool
+     * }
      */
     public static function preview(array $settings = []): array
     {
@@ -210,8 +299,42 @@ final class IPSViewTypography
         }
 
         return [
-            'fontFamily'  => $fontFamily === '' ? 'Roboto' : $fontFamily,
-            'baseFontSize'=> $baseFontSize ?? $settings['customFontSize'],
+            'fontFamily'   => $fontFamily === '' ? 'Roboto' : $fontFamily,
+            'baseFontSize' => $baseFontSize ?? $settings['customFontSize'],
+            'isBold'       => self::resolveFormatValue($settings['fontBoldMode']) ?? false,
+            'isItalic'     => self::resolveFormatValue($settings['fontItalicMode']) ?? false,
+            'isUnderline'  => self::resolveFormatValue($settings['fontUnderlineMode']) ?? false,
+        ];
+    }
+
+    /**
+     * Returns the formatting options supported by the selected fixed IPSView font.
+     * Unknown or preserved fonts remain unrestricted because their installed cuts are not known.
+     *
+     * @param array<string, mixed> $settings
+     *
+     * @return array{bold: bool, italic: bool, underline: bool}
+     */
+    public static function selectedCapabilities(array $settings = []): array
+    {
+        $fontFamilyMode = (int) ($settings['fontFamilyMode'] ?? self::FONT_PRESERVE);
+        if ($fontFamilyMode === self::FONT_PRESERVE) {
+            return [
+                'bold'      => true,
+                'italic'    => true,
+                'underline' => true,
+            ];
+        }
+
+        $resolved = self::resolve($settings);
+        $fontFamily = self::resolveFontFamily($resolved);
+        $capabilities = $fontFamily === null
+            ? ['bold' => true, 'italic' => true]
+            : self::capabilitiesForFamily($fontFamily);
+
+        return [
+            ...$capabilities,
+            'underline' => true,
         ];
     }
 
@@ -247,6 +370,26 @@ final class IPSViewTypography
         };
     }
 
+    /**
+     * @return array{bold: bool, italic: bool}
+     */
+    private static function capabilitiesForFamily(string $fontFamily): array
+    {
+        return self::FONT_CAPABILITIES[$fontFamily] ?? [
+            'bold'   => true,
+            'italic' => true,
+        ];
+    }
+
+    private static function resolveFormatValue(int $mode): ?bool
+    {
+        return match ($mode) {
+            self::FORMAT_OFF => false,
+            self::FORMAT_ON  => true,
+            default          => null,
+        };
+    }
+
     private static function scaleFontSize(int $size, float $scale): int
     {
         return max(6, min(72, (int) round($size * $scale)));
@@ -259,6 +402,9 @@ final class IPSViewTypography
         string $previousFontFamily,
         ?int $targetBaseSize,
         ?string $targetFontFamily,
+        ?bool $targetBold,
+        ?bool $targetItalic,
+        ?bool $targetUnderline,
         float $scale
     ): int {
         if (is_array($value)) {
@@ -272,6 +418,9 @@ final class IPSViewTypography
                     $previousFontFamily,
                     $targetBaseSize,
                     $targetFontFamily,
+                    $targetBold,
+                    $targetItalic,
+                    $targetUnderline,
                     $scale
                 );
             }
@@ -294,6 +443,9 @@ final class IPSViewTypography
                 $previousFontFamily,
                 $targetBaseSize,
                 $targetFontFamily,
+                $targetBold,
+                $targetItalic,
+                $targetUnderline,
                 $scale
             );
 
@@ -314,6 +466,9 @@ final class IPSViewTypography
                 $previousFontFamily,
                 $targetBaseSize,
                 $targetFontFamily,
+                $targetBold,
+                $targetItalic,
+                $targetUnderline,
                 $scale
             );
         }
@@ -328,6 +483,9 @@ final class IPSViewTypography
         string $previousFontFamily,
         ?int $targetBaseSize,
         ?string $targetFontFamily,
+        ?bool $targetBold,
+        ?bool $targetItalic,
+        ?bool $targetUnderline,
         float $scale
     ): bool {
         $changed = false;
@@ -335,6 +493,7 @@ final class IPSViewTypography
         $currentSize = isset($font->Size) && is_numeric($font->Size)
             ? (int) $font->Size
             : null;
+        $matchesDefaultFamily = $currentFamily === '' || $currentFamily === $previousFontFamily;
 
         if ($scope === IPSViewTheme::SCOPE_ALL_CONTROL_DEFAULTS) {
             if ($targetFontFamily !== null && $currentFamily !== $targetFontFamily) {
@@ -350,10 +509,14 @@ final class IPSViewTypography
                 }
             }
 
-            return $changed;
+            return self::applyFontFormatting(
+                $font,
+                $targetBold,
+                $targetItalic,
+                $targetUnderline
+            ) || $changed;
         }
 
-        $matchesDefaultFamily = $currentFamily === '' || $currentFamily === $previousFontFamily;
         if (
             $targetFontFamily !== null
             && $matchesDefaultFamily
@@ -369,6 +532,41 @@ final class IPSViewTypography
             && $currentSize !== $targetBaseSize
         ) {
             $font->Size = $targetBaseSize;
+            $changed = true;
+        }
+
+        if ($matchesDefaultFamily) {
+            $changed = self::applyFontFormatting(
+                $font,
+                $targetBold,
+                $targetItalic,
+                $targetUnderline
+            ) || $changed;
+        }
+
+        return $changed;
+    }
+
+    private static function applyFontFormatting(
+        stdClass $font,
+        ?bool $targetBold,
+        ?bool $targetItalic,
+        ?bool $targetUnderline
+    ): bool {
+        $changed = false;
+
+        foreach (
+            [
+                'isBold'      => $targetBold,
+                'isItalic'    => $targetItalic,
+                'isUnderline' => $targetUnderline,
+            ] as $property => $targetValue
+        ) {
+            if ($targetValue === null || (bool) ($font->{$property} ?? false) === $targetValue) {
+                continue;
+            }
+
+            $font->{$property} = $targetValue;
             $changed = true;
         }
 

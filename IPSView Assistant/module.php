@@ -194,6 +194,9 @@ class IPSViewAssistant extends IPSModuleStrict
             $appearance['fontFamilyMode'] = IPSViewTypography::FONT_PRESERVE;
             $appearance['customFontFamily'] = $appearanceInspection['fontFamily'];
             $appearance['customFontSize'] = $appearanceInspection['baseFontSize'];
+            $appearance['fontBoldMode'] = IPSViewTypography::FORMAT_PRESERVE;
+            $appearance['fontItalicMode'] = IPSViewTypography::FORMAT_PRESERVE;
+            $appearance['fontUnderlineMode'] = IPSViewTypography::FORMAT_PRESERVE;
             $appearance['cornerStyle'] = IPSViewShape::CORNER_PRESERVE;
             $appearance['customCornerRadius'] = $appearanceInspection['cornerRadius'];
             $appearance['borderStyle'] = IPSViewShape::BORDER_PRESERVE;
@@ -214,6 +217,7 @@ class IPSViewAssistant extends IPSModuleStrict
             $this->UpdateFormField('FontFamilyMode', 'value', IPSViewTypography::FONT_PRESERVE);
             $this->UpdateFormField('CustomFontFamily', 'value', $appearanceInspection['fontFamily']);
             $this->UpdateFormField('CustomFontSize', 'value', $appearanceInspection['baseFontSize']);
+            $this->updateFontStyleFields($appearance);
             $this->UpdateFormField('CornerStyle', 'value', IPSViewShape::CORNER_PRESERVE);
             $this->UpdateFormField('CustomCornerRadius', 'value', $appearanceInspection['cornerRadius']);
             $this->UpdateFormField('BorderStyle', 'value', IPSViewShape::BORDER_PRESERVE);
@@ -427,6 +431,8 @@ class IPSViewAssistant extends IPSModuleStrict
                 IPSViewTheme::THEME_CUSTOM,
                 $this->decodePalette($ThemePalette)
             );
+            $appearance = $this->decodeAppearance($Appearance);
+            $this->updateFontStyleFields($appearance);
 
             $this->UpdateFormField(
                 'ThemePreview',
@@ -434,12 +440,30 @@ class IPSViewAssistant extends IPSModuleStrict
                 IPSViewThemePreview::createDataUri(
                     $palette,
                     $this->decodeEffects($Effects),
-                    $this->decodeAppearance($Appearance)
+                    $appearance
                 )
             );
         } catch (Throwable $exception) {
             $this->SendDebug('UpdateAppearancePreview', $exception->getMessage(), 0);
         }
+    }
+
+    /**
+     * Updates the font-format fields for the selected IPSView font family.
+     *
+     * @param array<string, mixed> $appearance
+     */
+    private function updateFontStyleFields(array $appearance): void
+    {
+        $appearance = IPSViewTypography::resolve($appearance);
+        $capabilities = IPSViewTypography::selectedCapabilities($appearance);
+
+        $this->UpdateFormField('FontBoldMode', 'value', $appearance['fontBoldMode']);
+        $this->UpdateFormField('FontBoldMode', 'enabled', $capabilities['bold']);
+        $this->UpdateFormField('FontItalicMode', 'value', $appearance['fontItalicMode']);
+        $this->UpdateFormField('FontItalicMode', 'enabled', $capabilities['italic']);
+        $this->UpdateFormField('FontUnderlineMode', 'value', $appearance['fontUnderlineMode']);
+        $this->UpdateFormField('FontUnderlineMode', 'enabled', $capabilities['underline']);
     }
 
     /**

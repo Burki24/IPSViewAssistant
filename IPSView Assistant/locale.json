@@ -93,7 +93,6 @@
             "updated": "aktualisiert",
             "preserved": "beibehalten",
             "Typography and form language": "Typografie und Formensprache",
-            "These settings define only global typography, corner and border basics. Pages, element placement and individual detail settings remain in IPSView Designer.": "Diese Einstellungen definieren nur globale Grundlagen für Typografie, Ecken und Rahmen. Seiten, Platzierung der Elemente und individuelle Detaileinstellungen bleiben Aufgabe des IPSView Designers.",
             "Typography size": "Schriftgrößen",
             "Compact": "Kompakt",
             "Standard": "Standard",
@@ -122,7 +121,17 @@
             "Segment7": "Segment7",
             "Detected font family": "Erkannte Schriftart",
             "IPSView default (Roboto)": "IPSView-Standard (Roboto)",
-            "Matching preview fonts for the fixed IPSView catalogue are bundled and work offline. Segment7 uses a compatible seven-segment preview font. Only detected system fonts may still use a browser fallback.": "Passende Vorschauschriften für den festen IPSView-Katalog werden mitgeliefert und funktionieren offline. Segment7 verwendet eine kompatible Sieben-Segment-Vorschauschrift. Nur erkannte Systemschriften können weiterhin durch eine Browser-Ersatzschrift dargestellt werden."
+            "Font weight": "Schriftstärke",
+            "Normal": "Normal",
+            "Bold": "Fett",
+            "Font style": "Schriftstil",
+            "Italic": "Kursiv",
+            "Underline": "Unterstreichung",
+            "Not underlined": "Nicht unterstrichen",
+            "Underlined": "Unterstrichen",
+            "Bold and italic are available only when IPSView provides the matching font cut. Underlining is available for every font. Font formatting is applied to existing controls according to the selected design scope.": "Fett und Kursiv stehen nur zur Verfügung, wenn IPSView den passenden Schriftschnitt mitliefert. Unterstreichen ist bei jeder Schrift möglich. Die Schriftformatierung wird entsprechend dem gewählten Gestaltungsumfang auf vorhandene Bedienelemente angewendet.",
+            "The fixed IPSView font catalogue and its available font cuts are bundled for the offline preview. Segment7 uses the original G7 Segment 7 S5 font. Only detected system fonts may still use a browser fallback.": "Der feste IPSView-Schriftkatalog und seine verfügbaren Schriftschnitte werden für die Offline-Vorschau mitgeliefert. Segment7 verwendet die originale Schrift G7 Segment 7 S5. Nur erkannte Systemschriften können weiterhin durch eine Browser-Ersatzschrift dargestellt werden.",
+            "These settings define the global font family and size, the formatting of existing control fonts, and basic corner and border styles. Pages, element placement and individual detail settings remain in IPSView Designer.": "Diese Einstellungen definieren die globale Schriftart und Schriftgröße, die Formatierung vorhandener Bedienelementschriften sowie grundlegende Ecken- und Rahmenformen. Seiten, Platzierung der Elemente und individuelle Detaileinstellungen bleiben Aufgabe des IPSView Designers."
         }
     }
 }

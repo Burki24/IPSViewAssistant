@@ -231,8 +231,8 @@ $fontSvg = IPSViewThemePreview::createSvg(
 );
 assertTest(str_contains($fontSvg, '@font-face'), 'The selected catalogue font is not embedded.');
 assertTest(
-    substr_count($fontSvg, 'data:font/woff2;base64,') === 2,
-    'The preview does not embed both available Roboto weights.'
+    substr_count($fontSvg, 'data:font/woff2;base64,') === 1,
+    'The preview must embed only the selected Roboto cut.'
 );
 assertTest(
     str_contains($fontSvg, 'font-family: "IPSViewPreviewFont01"'),
@@ -251,8 +251,8 @@ $segmentSvg = IPSViewThemePreview::createSvg(
     ]
 );
 assertTest(
-    substr_count($segmentSvg, 'data:font/woff2;base64,') === 1,
-    'The seven-segment preview must embed only its available regular weight.'
+    substr_count($segmentSvg, 'data:font/ttf;base64,') === 1,
+    'The seven-segment preview must embed the original regular TTF cut.'
 );
 assertTest(
     str_contains($segmentSvg, 'font-family="IPSViewPreviewFont08, monospace"'),

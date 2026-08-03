@@ -44,6 +44,15 @@ $requiredFiles = [
     'libs/fonts/preview-font-06-700.woff2',
     'libs/fonts/preview-font-07-400.woff2',
     'libs/fonts/preview-font-08-400.woff2',
+    'libs/fonts/Roboto-RegularItalic.ttf',
+    'libs/fonts/Roboto-BoldItalic.ttf',
+    'libs/fonts/RobotoMono-RegularItalic.ttf',
+    'libs/fonts/RobotoMono-BoldItalic.ttf',
+    'libs/fonts/OpenSans-RegularItalic.ttf',
+    'libs/fonts/OpenSans-BoldItalic.ttf',
+    'libs/fonts/PTSans-RegularItalic.ttf',
+    'libs/fonts/PTSans-BoldItalic.ttf',
+    'libs/fonts/Segment7-Regular.ttf',
     'tests/theme.php',
     'tests/effects.php',
     'tests/appearance.php',
@@ -64,6 +73,14 @@ assertTest(count($previewFonts) === 13, 'The bundled preview font set is incompl
 foreach ($previewFonts as $previewFont) {
     $signature = file_get_contents($previewFont, false, null, 0, 4);
     assertTest($signature === 'wOF2', 'A bundled preview font is not a valid WOFF2 file.');
+}
+
+$previewTrueTypeFonts = glob($root . '/libs/fonts/*.ttf');
+assertTest(is_array($previewTrueTypeFonts), 'The original preview font cuts could not be enumerated.');
+assertTest(count($previewTrueTypeFonts) >= 9, 'The original preview font-cut set is incomplete.');
+foreach ($previewTrueTypeFonts as $previewTrueTypeFont) {
+    $signature = file_get_contents($previewTrueTypeFont, false, null, 0, 4);
+    assertTest($signature === "\x00\x01\x00\x00", 'A bundled preview font is not a valid TrueType file.');
 }
 
 $library = json_decode(

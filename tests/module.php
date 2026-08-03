@@ -46,6 +46,10 @@ assertTest(
     str_contains($moduleSource, 'public function UpdateAppearancePreview('),
     'The public UpdateAppearancePreview method is missing.'
 );
+assertTest(
+    str_contains($moduleSource, 'updateFontStyleFields('),
+    'The module does not adapt font-format controls to the selected font family.'
+);
 assertTest(str_contains($factorySource, 'IPS_CreateMedia(0)'), 'The factory does not create an IPSView media object.');
 assertTest(str_contains($factorySource, 'IPS_SetMediaFile('), 'The factory does not assign a media file.');
 assertTest(str_contains($factorySource, 'IPS_SetMediaContent('), 'The factory does not write the IPSView content.');
@@ -109,6 +113,9 @@ $gradientDirection = null;
 $appearancePanel = null;
 $typographyStyle = null;
 $fontFamilyMode = null;
+$fontBoldMode = null;
+$fontItalicMode = null;
+$fontUnderlineMode = null;
 $customFontSize = null;
 $customFontFamily = null;
 $cornerStyle = null;
@@ -180,6 +187,18 @@ foreach ($actions as $action) {
 
     if (($action['name'] ?? '') === 'FontFamilyMode') {
         $fontFamilyMode = $action;
+    }
+
+    if (($action['name'] ?? '') === 'FontBoldMode') {
+        $fontBoldMode = $action;
+    }
+
+    if (($action['name'] ?? '') === 'FontItalicMode') {
+        $fontItalicMode = $action;
+    }
+
+    if (($action['name'] ?? '') === 'FontUnderlineMode') {
+        $fontUnderlineMode = $action;
     }
 
     if (($action['name'] ?? '') === 'CustomFontSize') {
@@ -266,6 +285,18 @@ assertTest(
     'The styled copy button does not pass the selected form-language settings.'
 );
 assertTest(
+    str_contains((string) ($copyButton['onClick'] ?? ''), '$FontBoldMode'),
+    'The styled copy button does not pass the selected font weight.'
+);
+assertTest(
+    str_contains((string) ($button['onClick'] ?? ''), '$FontItalicMode'),
+    'The Create View button does not pass the selected font style.'
+);
+assertTest(
+    str_contains((string) ($sourceView['onChange'] ?? ''), '$FontUnderlineMode'),
+    'Loading an existing IPSView does not retain the underline setting in the preview.'
+);
+assertTest(
     str_contains((string) ($sourceView['onChange'] ?? ''), '$FontFamilyMode'),
     'Loading an existing IPSView does not retain the appearance settings in the preview.'
 );
@@ -319,6 +350,16 @@ assertTest(is_array($typographyStyle), 'The typography size selection is missing
 assertTest(count($typographyStyle['options'] ?? []) === 5, 'The typography size selection does not offer all modes.');
 assertTest(is_array($fontFamilyMode), 'The font family selection is missing.');
 assertTest(count($fontFamilyMode['options'] ?? []) === 9, 'The font family selection does not offer all IPSView fonts.');
+assertTest(is_array($fontBoldMode), 'The font weight selection is missing.');
+assertTest(count($fontBoldMode['options'] ?? []) === 3, 'The font weight selection does not offer all modes.');
+assertTest(is_array($fontItalicMode), 'The font style selection is missing.');
+assertTest(count($fontItalicMode['options'] ?? []) === 3, 'The font style selection does not offer all modes.');
+assertTest(is_array($fontUnderlineMode), 'The underline selection is missing.');
+assertTest(count($fontUnderlineMode['options'] ?? []) === 3, 'The underline selection does not offer all modes.');
+assertTest(
+    str_contains((string) ($fontBoldMode['onChange'] ?? ''), 'IPSVIEWA_UpdateAppearancePreview('),
+    'Changing the font weight does not refresh the appearance preview.'
+);
 assertTest(is_array($customFontSize), 'The custom base font size is missing.');
 assertTest(($customFontSize['minimum'] ?? null) === 8, 'The custom font size minimum is incorrect.');
 assertTest(($customFontSize['maximum'] ?? null) === 32, 'The custom font size maximum is incorrect.');

@@ -7,68 +7,174 @@ namespace Burki24\IPSViewAssistant;
 final class IPSViewThemePreview
 {
     /**
-     * @var array<string, array{alias: string, fallback: string, weights: array<int, string>}>
+     * @var array<string, array{
+     *     alias: string,
+     *     fallback: string,
+     *     faces: array<string, array{
+     *         filename: string,
+     *         mime: string,
+     *         format: string,
+     *         fallbackFilename?: string,
+     *         fallbackMime?: string,
+     *         fallbackFormat?: string
+     *     }>
+     * }>
      */
     private const PREVIEW_FONTS = [
-        'Roboto' => [
+        'Roboto'        => [
             'alias'    => 'IPSViewPreviewFont01',
             'fallback' => 'sans-serif',
-            'weights'  => [
-                400 => 'preview-font-01-400.woff2',
-                700 => 'preview-font-01-700.woff2',
+            'faces'    => [
+                '400-normal' => [
+                    'filename' => 'preview-font-01-400.woff2',
+                    'mime'     => 'font/woff2',
+                    'format'   => 'woff2',
+                ],
+                '400-italic' => [
+                    'filename' => 'Roboto-RegularItalic.ttf',
+                    'mime'     => 'font/ttf',
+                    'format'   => 'truetype',
+                ],
+                '700-normal' => [
+                    'filename' => 'preview-font-01-700.woff2',
+                    'mime'     => 'font/woff2',
+                    'format'   => 'woff2',
+                ],
+                '700-italic' => [
+                    'filename' => 'Roboto-BoldItalic.ttf',
+                    'mime'     => 'font/ttf',
+                    'format'   => 'truetype',
+                ],
             ],
         ],
-        'RobotoMono' => [
+        'RobotoMono'    => [
             'alias'    => 'IPSViewPreviewFont02',
             'fallback' => 'monospace',
-            'weights'  => [
-                400 => 'preview-font-02-400.woff2',
-                700 => 'preview-font-02-700.woff2',
+            'faces'    => [
+                '400-normal' => [
+                    'filename' => 'preview-font-02-400.woff2',
+                    'mime'     => 'font/woff2',
+                    'format'   => 'woff2',
+                ],
+                '400-italic' => [
+                    'filename' => 'RobotoMono-RegularItalic.ttf',
+                    'mime'     => 'font/ttf',
+                    'format'   => 'truetype',
+                ],
+                '700-normal' => [
+                    'filename' => 'preview-font-02-700.woff2',
+                    'mime'     => 'font/woff2',
+                    'format'   => 'woff2',
+                ],
+                '700-italic' => [
+                    'filename' => 'RobotoMono-BoldItalic.ttf',
+                    'mime'     => 'font/ttf',
+                    'format'   => 'truetype',
+                ],
             ],
         ],
         'DancingScript' => [
             'alias'    => 'IPSViewPreviewFont03',
             'fallback' => 'cursive',
-            'weights'  => [
-                400 => 'preview-font-03-400.woff2',
-                700 => 'preview-font-03-700.woff2',
+            'faces'    => [
+                '400-normal' => [
+                    'filename' => 'preview-font-03-400.woff2',
+                    'mime'     => 'font/woff2',
+                    'format'   => 'woff2',
+                ],
+                '700-normal' => [
+                    'filename' => 'preview-font-03-700.woff2',
+                    'mime'     => 'font/woff2',
+                    'format'   => 'woff2',
+                ],
             ],
         ],
-        'IndieFlower' => [
+        'IndieFlower'   => [
             'alias'    => 'IPSViewPreviewFont04',
             'fallback' => 'cursive',
-            'weights'  => [
-                400 => 'preview-font-04-400.woff2',
+            'faces'    => [
+                '400-normal' => [
+                    'filename' => 'preview-font-04-400.woff2',
+                    'mime'     => 'font/woff2',
+                    'format'   => 'woff2',
+                ],
             ],
         ],
-        'OpenSans' => [
+        'OpenSans'      => [
             'alias'    => 'IPSViewPreviewFont05',
             'fallback' => 'sans-serif',
-            'weights'  => [
-                400 => 'preview-font-05-400.woff2',
-                700 => 'preview-font-05-700.woff2',
+            'faces'    => [
+                '400-normal' => [
+                    'filename' => 'preview-font-05-400.woff2',
+                    'mime'     => 'font/woff2',
+                    'format'   => 'woff2',
+                ],
+                '400-italic' => [
+                    'filename' => 'OpenSans-RegularItalic.ttf',
+                    'mime'     => 'font/ttf',
+                    'format'   => 'truetype',
+                ],
+                '700-normal' => [
+                    'filename' => 'preview-font-05-700.woff2',
+                    'mime'     => 'font/woff2',
+                    'format'   => 'woff2',
+                ],
+                '700-italic' => [
+                    'filename' => 'OpenSans-BoldItalic.ttf',
+                    'mime'     => 'font/ttf',
+                    'format'   => 'truetype',
+                ],
             ],
         ],
-        'PTSans' => [
+        'PTSans'        => [
             'alias'    => 'IPSViewPreviewFont06',
             'fallback' => 'sans-serif',
-            'weights'  => [
-                400 => 'preview-font-06-400.woff2',
-                700 => 'preview-font-06-700.woff2',
+            'faces'    => [
+                '400-normal' => [
+                    'filename' => 'preview-font-06-400.woff2',
+                    'mime'     => 'font/woff2',
+                    'format'   => 'woff2',
+                ],
+                '400-italic' => [
+                    'filename' => 'PTSans-RegularItalic.ttf',
+                    'mime'     => 'font/ttf',
+                    'format'   => 'truetype',
+                ],
+                '700-normal' => [
+                    'filename' => 'preview-font-06-700.woff2',
+                    'mime'     => 'font/woff2',
+                    'format'   => 'woff2',
+                ],
+                '700-italic' => [
+                    'filename' => 'PTSans-BoldItalic.ttf',
+                    'mime'     => 'font/ttf',
+                    'format'   => 'truetype',
+                ],
             ],
         ],
-        'BebasNeue' => [
+        'BebasNeue'     => [
             'alias'    => 'IPSViewPreviewFont07',
             'fallback' => 'sans-serif',
-            'weights'  => [
-                400 => 'preview-font-07-400.woff2',
+            'faces'    => [
+                '400-normal' => [
+                    'filename' => 'preview-font-07-400.woff2',
+                    'mime'     => 'font/woff2',
+                    'format'   => 'woff2',
+                ],
             ],
         ],
-        'Segment7' => [
+        'Segment7'      => [
             'alias'    => 'IPSViewPreviewFont08',
             'fallback' => 'monospace',
-            'weights'  => [
-                400 => 'preview-font-08-400.woff2',
+            'faces'    => [
+                '400-normal' => [
+                    'filename'         => 'Segment7-Regular.ttf',
+                    'mime'             => 'font/ttf',
+                    'format'           => 'truetype',
+                    'fallbackFilename' => 'preview-font-08-400.woff2',
+                    'fallbackMime'     => 'font/woff2',
+                    'fallbackFormat'   => 'woff2',
+                ],
             ],
         ],
     ];
@@ -121,11 +227,25 @@ final class IPSViewThemePreview
         $typography = IPSViewTypography::preview($appearance);
         $shape = IPSViewShape::preview($appearance);
         $fontScale = max(0.75, min(1.45, $typography['baseFontSize'] / 14));
-        $fontDefinition = self::fontDefinition($typography['fontFamily']);
+        $fontDefinition = self::fontDefinition(
+            $typography['fontFamily'],
+            $typography['isBold'],
+            $typography['isItalic']
+        );
         $fontFamily = htmlspecialchars(
             self::fontStack($typography['fontFamily']),
             ENT_QUOTES | ENT_XML1,
             'UTF-8'
+        );
+        $fontWeight = $typography['isBold'] ? 700 : 400;
+        $fontStyle = $typography['isItalic'] ? 'italic' : 'normal';
+        $textDecoration = $typography['isUnderline'] ? 'underline' : 'none';
+        $fontAttributes = sprintf(
+            'font-family="%s" font-weight="%d" font-style="%s" text-decoration="%s"',
+            $fontFamily,
+            $fontWeight,
+            $fontStyle,
+            $textDecoration
         );
         $cornerRadius = max(0, min(24, $shape['cornerRadius']));
         $smallRadius = $cornerRadius === 0 ? 0 : max(2, min(12, $cornerRadius));
@@ -185,23 +305,23 @@ final class IPSViewThemePreview
   <rect x="22" y="72" width="876" height="18" fill="{$surfaceFill}" fill-opacity="{$opacity}"/>
   <circle cx="60" cy="56" r="17" fill="{$accentFill}" fill-opacity="{$opacity}"/>
   <path d="M52 56h16M60 48v16" stroke="{$primary}" stroke-width="3" stroke-linecap="round"/>
-  <text x="90" y="52" fill="{$primary}" font-family="{$fontFamily}" font-size="{$titleSize}" font-weight="700">Design preview</text>
-  <text x="90" y="73" fill="{$secondary}" font-family="{$fontFamily}" font-size="{$subtitleSize}">Colors, typography, shapes and effects</text>
-  <text x="824" y="62" fill="{$primary}" font-family="{$fontFamily}" font-size="{$sectionSize}" font-weight="700">21.5 °C</text>
+  <text x="90" y="52" fill="{$primary}" {$fontAttributes} font-size="{$titleSize}">Design preview</text>
+  <text x="90" y="73" fill="{$secondary}" {$fontAttributes} font-size="{$subtitleSize}">Colors, typography, shapes and effects</text>
+  <text x="824" y="62" fill="{$primary}" {$fontAttributes} font-size="{$sectionSize}">21.5 °C</text>
 
   <g filter="url(#shadow)">
     <rect x="48" y="118" width="250" height="116" rx="{$cornerRadius}" fill="{$surfaceFill}" fill-opacity="{$opacity}" stroke="{$border}" stroke-width="{$borderWidth}"/>
-    <text x="70" y="150" fill="{$secondary}" font-family="{$fontFamily}" font-size="{$subtitleSize}">LIGHTS</text>
-    <text x="70" y="181" fill="{$primary}" font-family="{$fontFamily}" font-size="{$valueSize}" font-weight="700">Living room</text>
+    <text x="70" y="150" fill="{$secondary}" {$fontAttributes} font-size="{$subtitleSize}">LIGHTS</text>
+    <text x="70" y="181" fill="{$primary}" {$fontAttributes} font-size="{$valueSize}">Living room</text>
     <rect x="218" y="164" width="54" height="30" rx="{$smallRadius}" fill="{$activeFill}" fill-opacity="{$opacity}"/>
     <circle cx="257" cy="179" r="11" fill="{$primary}"/>
-    <text x="70" y="213" fill="{$success}" font-family="{$fontFamily}" font-size="{$subtitleSize}" font-weight="700">Active</text>
+    <text x="70" y="213" fill="{$success}" {$fontAttributes} font-size="{$subtitleSize}">Active</text>
   </g>
 
   <g filter="url(#shadow)">
     <rect x="335" y="118" width="250" height="116" rx="{$cornerRadius}" fill="{$surfaceFill}" fill-opacity="{$opacity}" stroke="{$border}" stroke-width="{$borderWidth}"/>
-    <text x="357" y="150" fill="{$secondary}" font-family="{$fontFamily}" font-size="{$subtitleSize}">SHUTTERS</text>
-    <text x="357" y="181" fill="{$primary}" font-family="{$fontFamily}" font-size="{$valueSize}" font-weight="700">65 %</text>
+    <text x="357" y="150" fill="{$secondary}" {$fontAttributes} font-size="{$subtitleSize}">SHUTTERS</text>
+    <text x="357" y="181" fill="{$primary}" {$fontAttributes} font-size="{$valueSize}">65 %</text>
     <rect x="357" y="202" width="198" height="8" rx="{$smallRadius}" fill="{$inactiveFill}" fill-opacity="{$opacity}"/>
     <rect x="357" y="202" width="129" height="8" rx="{$smallRadius}" fill="{$accentFill}" fill-opacity="{$opacity}"/>
     <circle cx="486" cy="206" r="11" fill="{$accentFill}" fill-opacity="{$opacity}" stroke="{$surface}" stroke-width="4"/>
@@ -209,17 +329,17 @@ final class IPSViewThemePreview
 
   <g filter="url(#shadow)">
     <rect x="622" y="118" width="250" height="116" rx="{$cornerRadius}" fill="{$surfaceFill}" fill-opacity="{$opacity}" stroke="{$border}" stroke-width="{$borderWidth}"/>
-    <text x="644" y="150" fill="{$secondary}" font-family="{$fontFamily}" font-size="{$subtitleSize}">SECURITY</text>
-    <text x="644" y="181" fill="{$primary}" font-family="{$fontFamily}" font-size="{$valueSize}" font-weight="700">Home</text>
+    <text x="644" y="150" fill="{$secondary}" {$fontAttributes} font-size="{$subtitleSize}">SECURITY</text>
+    <text x="644" y="181" fill="{$primary}" {$fontAttributes} font-size="{$valueSize}">Home</text>
     <rect x="644" y="199" width="82" height="24" rx="{$smallRadius}" fill="{$successFill}" fill-opacity="{$opacity}"/>
-    <text x="685" y="216" text-anchor="middle" fill="{$primary}" font-family="{$fontFamily}" font-size="{$statusSize}" font-weight="700">OK</text>
+    <text x="685" y="216" text-anchor="middle" fill="{$primary}" {$fontAttributes} font-size="{$statusSize}">OK</text>
     <rect x="736" y="199" width="106" height="24" rx="{$smallRadius}" fill="{$warningFill}" fill-opacity="{$opacity}"/>
-    <text x="789" y="216" text-anchor="middle" fill="{$primary}" font-family="{$fontFamily}" font-size="{$statusSize}" font-weight="700">NOTICE</text>
+    <text x="789" y="216" text-anchor="middle" fill="{$primary}" {$fontAttributes} font-size="{$statusSize}">NOTICE</text>
   </g>
 
   <rect x="48" y="268" width="824" height="96" rx="{$cornerRadius}" fill="{$surfaceFill}" fill-opacity="{$opacity}" stroke="{$border}" stroke-width="{$borderWidth}"/>
-  <text x="70" y="299" fill="{$primary}" font-family="{$fontFamily}" font-size="{$sectionSize}" font-weight="700">Typography and form language</text>
-  <text x="70" y="325" fill="{$secondary}" font-family="{$fontFamily}" font-size="{$subtitleSize}">The Assistant prepares global basics; detailed layout remains in IPSView Designer.</text>
+  <text x="70" y="299" fill="{$primary}" {$fontAttributes} font-size="{$sectionSize}">Typography and form language</text>
+  <text x="70" y="325" fill="{$secondary}" {$fontAttributes} font-size="{$subtitleSize}">The Assistant prepares global basics; detailed layout remains in IPSView Designer.</text>
   <circle cx="690" cy="316" r="12" fill="{$successFill}" fill-opacity="{$opacity}"/>
   <circle cx="735" cy="316" r="12" fill="{$warningFill}" fill-opacity="{$opacity}"/>
   <circle cx="780" cy="316" r="12" fill="{$errorFill}" fill-opacity="{$opacity}"/>
@@ -228,33 +348,124 @@ final class IPSViewThemePreview
 SVG;
     }
 
-    private static function fontDefinition(string $fontFamily): string
-    {
+    private static function fontDefinition(
+        string $fontFamily,
+        bool $isBold,
+        bool $isItalic
+    ): string {
         $font = self::PREVIEW_FONTS[$fontFamily] ?? null;
         if ($font === null) {
             return '';
         }
 
-        $rules = [];
-        foreach ($font['weights'] as $weight => $filename) {
-            $fontData = self::fontData($filename);
-            if ($fontData === '') {
-                continue;
-            }
-
-            $rules[] = sprintf(
-                '@font-face { font-family: "%s"; src: url("data:font/woff2;base64,%s") format("woff2"); font-style: normal; font-weight: %d; font-display: block; }',
-                $font['alias'],
-                $fontData,
-                $weight
-            );
-        }
-
-        if ($rules === []) {
+        $requestedWeight = $isBold ? 700 : 400;
+        $requestedStyle = $isItalic ? 'italic' : 'normal';
+        $face = self::resolveFontFace($font['faces'], $requestedWeight, $requestedStyle);
+        if ($face === null) {
             return '';
         }
 
-        return '<style type="text/css"><![CDATA[' . implode("\n", $rules) . ']]></style>';
+        $rule = sprintf(
+            '@font-face { font-family: "%s"; src: url("data:%s;base64,%s") format("%s"); font-style: %s; font-weight: %d; font-display: block; }',
+            $font['alias'],
+            $face['source']['mime'],
+            $face['source']['data'],
+            $face['source']['format'],
+            $face['style'],
+            $face['weight']
+        );
+
+        return '<style type="text/css"><![CDATA[' . $rule . ']]></style>';
+    }
+
+    /**
+     * @param array<string, array{
+     *     filename: string,
+     *     mime: string,
+     *     format: string,
+     *     fallbackFilename?: string,
+     *     fallbackMime?: string,
+     *     fallbackFormat?: string
+     * }> $faces
+     *
+     * @return array{
+     *     source: array{data: string, mime: string, format: string},
+     *     weight: int,
+     *     style: string
+     * }|null
+     */
+    private static function resolveFontFace(
+        array $faces,
+        int $requestedWeight,
+        string $requestedStyle
+    ): ?array {
+        $keys = [
+            $requestedWeight . '-' . $requestedStyle,
+            $requestedWeight . '-normal',
+            '400-' . $requestedStyle,
+            '400-normal',
+        ];
+
+        foreach (array_unique($keys) as $key) {
+            if (!isset($faces[$key])) {
+                continue;
+            }
+
+            $source = self::resolveFontSource($faces[$key]);
+            if ($source === null) {
+                continue;
+            }
+
+            [$weight, $style] = explode('-', $key, 2);
+
+            return [
+                'source' => $source,
+                'weight' => (int) $weight,
+                'style'  => $style,
+            ];
+        }
+
+        return null;
+    }
+
+    /**
+     * @param array{
+     *     filename: string,
+     *     mime: string,
+     *     format: string,
+     *     fallbackFilename?: string,
+     *     fallbackMime?: string,
+     *     fallbackFormat?: string
+     * } $face
+     *
+     * @return array{data: string, mime: string, format: string}|null
+     */
+    private static function resolveFontSource(array $face): ?array
+    {
+        $fontData = self::fontData($face['filename']);
+        if ($fontData !== '') {
+            return [
+                'data'   => $fontData,
+                'mime'   => $face['mime'],
+                'format' => $face['format'],
+            ];
+        }
+
+        $fallbackFilename = (string) ($face['fallbackFilename'] ?? '');
+        if ($fallbackFilename === '') {
+            return null;
+        }
+
+        $fontData = self::fontData($fallbackFilename);
+        if ($fontData === '') {
+            return null;
+        }
+
+        return [
+            'data'   => $fontData,
+            'mime'   => (string) ($face['fallbackMime'] ?? 'font/woff2'),
+            'format' => (string) ($face['fallbackFormat'] ?? 'woff2'),
+        ];
     }
 
     private static function fontStack(string $fontFamily): string
