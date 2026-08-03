@@ -18,6 +18,7 @@ require_once __DIR__ . '/../libs/IPSViewUsageProfile.php';
 use Burki24\IPSViewAssistant\IPSViewBackground;
 use Burki24\IPSViewAssistant\IPSViewCopyFactory;
 use Burki24\IPSViewAssistant\IPSViewDesignerHandover;
+use Burki24\IPSViewAssistant\IPSViewDocument;
 use Burki24\IPSViewAssistant\IPSViewEffects;
 use Burki24\IPSViewAssistant\IPSViewFactory;
 use Burki24\IPSViewAssistant\IPSViewShape;
@@ -214,7 +215,8 @@ class IPSViewAssistant extends IPSModuleStrict
         string $ThemePalette = '',
         string $Effects = '',
         string $Appearance = '',
-        bool $FullScreen = false
+        bool $FullScreen = false,
+        int $StartGrid = IPSViewDocument::START_GRID_NONE
     ): string {
         try {
             $factory = new IPSViewFactory(__DIR__ . '/../libs/templates');
@@ -230,7 +232,8 @@ class IPSViewAssistant extends IPSModuleStrict
                 $this->decodeEffects($Effects),
                 $this->decodeAppearance($Appearance),
                 $this->backgroundSettings(),
-                $FullScreen
+                $FullScreen,
+                $StartGrid
             );
             $this->WriteAttributeInteger(self::ATTRIBUTE_LAST_CREATED_VIEW_ID, $mediaID);
             $this->WriteAttributeInteger(self::ATTRIBUTE_DESIGNER_OBJECT_ID, 1);

@@ -168,6 +168,37 @@
                     ]
                 },
                 {
+                    "type": "RowLayout",
+                    "items": [
+                        {
+                            "type": "Select",
+                            "name": "StartGrid",
+                            "caption": "Start grid",
+                            "value": 0,
+                            "width": "360px",
+                            "options": [
+                                {
+                                    "caption": "No grid",
+                                    "value": 0
+                                },
+                                {
+                                    "caption": "2 columns",
+                                    "value": 2
+                                },
+                                {
+                                    "caption": "3 columns",
+                                    "value": 3
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Label",
+                            "name": "StartGridInfo",
+                            "caption": "Optional: Creates a grid-enabled content page with 2 or 3 columns and embeds it in the main page. Controls are still added later in IPSView Designer."
+                        }
+                    ]
+                },
+                {
                     "type": "Select",
                     "name": "Template",
                     "caption": "Template",
@@ -1010,7 +1041,7 @@
                     "type": "Button",
                     "name": "CreateViewButton",
                     "caption": "Create View",
-                    "onClick": "echo IPSVIEWA_CreateView($id, $ViewName, $TargetCategoryID, $AspectRatio, $Orientation, $Template, $MainPageName, $Theme, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"fontBoldMode\" => $FontBoldMode, \"fontItalicMode\" => $FontItalicMode, \"fontUnderlineMode\" => $FontUnderlineMode, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES), $FullScreen);"
+                    "onClick": "echo IPSVIEWA_CreateView($id, $ViewName, $TargetCategoryID, $AspectRatio, $Orientation, $Template, $MainPageName, $Theme, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"fontBoldMode\" => $FontBoldMode, \"fontItalicMode\" => $FontItalicMode, \"fontUnderlineMode\" => $FontUnderlineMode, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES), $FullScreen, $StartGrid);"
                 },
                 {
                     "type": "Button",
@@ -1061,7 +1092,7 @@
                 },
                 {
                     "type": "Label",
-                    "caption": "3. In the Designer Repository, enter the object ID in the filter or use the ID search. Drag one of the matching controls onto the main page."
+                    "caption": "3. In the Designer Repository, enter the object ID in the filter or use the ID search. With a start grid, drag a matching control onto the generated content page; without a grid, use the main page."
                 },
                 {
                     "type": "Label",

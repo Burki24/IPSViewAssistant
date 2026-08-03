@@ -22,6 +22,10 @@ final class IPSViewDocument
     public const ORIENTATION_LANDSCAPE = 0;
     public const ORIENTATION_PORTRAIT = 1;
 
+    public const START_GRID_NONE = 0;
+    public const START_GRID_TWO_COLUMNS = 2;
+    public const START_GRID_THREE_COLUMNS = 3;
+
     private stdClass $document;
 
     private function __construct(stdClass $document)
@@ -69,7 +73,8 @@ final class IPSViewDocument
         int $aspectRatio,
         int $orientation,
         string $mainPageName,
-        bool $fullScreen = false
+        bool $fullScreen = false,
+        int $startGrid = self::START_GRID_NONE
     ): void {
         $viewName = trim($viewName);
         $mainPageName = trim($mainPageName);
@@ -118,6 +123,7 @@ final class IPSViewDocument
         $pages[0]->PageName = $mainPageName;
         $pages[0]->PageTitle = '';
         $pages[0]->Controls = [];
+        $pages = $this->configureStartGrid($pages, $mainPageName, $width, $height, $startGrid);
         $this->document->Pages = $pages;
     }
 
@@ -355,6 +361,101 @@ final class IPSViewDocument
             self::ORIENTATION_PORTRAIT  => ['Portrait', $height, $width],
             default                     => throw new InvalidArgumentException('The selected orientation is not supported.'),
         };
+    }
+
+    /**
+     * Creates an optional grid-enabled content page and embeds it in the main page.
+     *
+     * IPSView supports its native grid mode on standard and popup pages, but not
+     * directly on a main page. A page container is therefore the smallest valid
+     * scaffold that makes the grid content visible without placeholder controls.
+     *
+     * @param list<stdClass> $pages
+     *
+     * @return list<stdClass>
+     */
+    private function configureStartGrid(
+        array $pages,
+        string $mainPageName,
+        int $width,
+        int $height,
+        int $startGrid
+    ): array {
+        $cellWidth = match ($startGrid) {
+            self::START_GRID_NONE          => '',
+            self::START_GRID_TWO_COLUMNS   => '50%',
+            self::START_GRID_THREE_COLUMNS => '33.333333%',
+            default                        => throw new InvalidArgumentException('The selected start grid is not supported.'),
+        };
+
+        $pages[0]->GridEnabled = false;
+        $pages[0]->GridCellWidth = '';
+
+        if ($startGrid === self::START_GRID_NONE) {
+            return $pages;
+        }
+
+        $contentPageName = $mainPageName . ' - Grid';
+        $contentPage = clone $pages[0];
+        $contentPage->PageName = $contentPageName;
+        $contentPage->PageTitle = $contentPageName;
+        $contentPage->Position = 10;
+        $contentPage->IsMainPage = false;
+        $contentPage->IsInline = true;
+        $contentPage->PopupWidth = $width;
+        $contentPage->PopupHeight = $height;
+        $contentPage->GridEnabled = true;
+        $contentPage->GridCellWidth = $cellWidth;
+        $contentPage->Controls = [];
+
+        $pages[0]->Controls = [self::createPageContainer($contentPageName, $width, $height)];
+        $pages[] = $contentPage;
+        $this->document->ItemID = 1;
+
+        return $pages;
+    }
+
+    /**
+     * Creates the single page container required to display the grid page.
+     */
+    private static function createPageContainer(string $pageName, int $width, int $height): stdClass
+    {
+        return (object) [
+            'Type'           => 'IPSInlinePage',
+            'ID'             => 0,
+            'Name'           => '',
+            'Text1'          => $pageName,
+            'Image1'         => 0,
+            'Image2'         => 0,
+            'AutoSize'       => false,
+            'Readonly'       => false,
+            'AllowZoom'      => false,
+            'Reverse'        => false,
+            'Synchronize'    => false,
+            'Digits'         => 0,
+            'Associations'   => [],
+            'WidgetDetail'   => '',
+            'Width'          => $width,
+            'Height'         => $height,
+            'LocationX'      => 0,
+            'LocationY'      => 0,
+            'CR1'            => 0,
+            'CR2'            => 0,
+            'CR3'            => 0,
+            'CR4'            => 0,
+            'Font'           => (object) [
+                'FontFamily' => '',
+                'Size'       => 11,
+            ],
+            'Widget'         => (object) ['anchor_auto' => 'false'],
+            'ItemID'         => 1,
+            'ItemParentID'   => 0,
+            'ItemName'       => 'IPSInlinePage1',
+            'ItemIdx'        => 0,
+            'ItemExpanded'   => false,
+            'ItemLayer'      => 2,
+            'ItemVisibility' => 0,
+        ];
     }
 
     private static function countControls(mixed $value): int

@@ -20,6 +20,7 @@ Der **IPSView Assistant** erleichtert das Erstellen und Gestalten von IPSView-Pr
 - Zwischen einem übersichtlichen Schnellstart und dem vollständigen Expertenmodus wechseln
 - Einsatzprofile für Wandtablet, Tablet, Smartphone und Browser verwenden
 - Seitenverhältnis und Ausrichtung festlegen
+- Optional ein zwei- oder dreispaltiges Start-Raster für die Hauptseite vorbereiten
 - Vorgefertigte Farbdesigns auswählen und individuell anpassen
 - Farben, Schatten, Transparenz und Farbverläufe einstellen
 - Schriftgröße, Schriftart, Ecken und Rahmen festlegen
@@ -74,9 +75,12 @@ Das **Einsatzprofil** belegt Seitenverhältnis, Ausrichtung und Vollbildmodus ge
 | **Seitenverhältnis** | Auswahl zwischen 1:1, 4:3, 8:5, 9:5, 13:6, 16:9 und 2:1. |
 | **Ausrichtung** | Querformat oder Hochformat. |
 | **Vollbild** | Nutzt am Client die gesamte Anzeige ohne Fensterrahmen. |
+| **Start-Raster** | Erstellt optional eine leere Raster-Inhaltsseite mit zwei oder drei Spalten und bindet sie über einen Seiten-Container in die Hauptseite ein. |
 | **Vorlage** | Grundlage der neuen View. Derzeit steht eine leere View zur Verfügung. Diese technische Auswahl wird nur im Expertenmodus angezeigt. |
 
 Der Assistant verwendet für jedes Verhältnis eine exakt proportionale logische Startgröße. Im Hochformat werden Breite und Höhe vertauscht.
+
+Das optionale **Start-Raster** bereitet eine leere Inhaltsseite für einen geordneten Einstieg im IPSView Designer vor. Da IPSView den nativen Rastermodus nur auf Standard- und Popup-Seiten unterstützt, legt der Assistant zusätzlich zur Hauptseite eine Standard-Inhaltsseite an und bindet sie über einen vollflächigen Seiten-Container ein. Die Auswahl **2 Spalten** bzw. **3 Spalten** verwendet dort eine relative Zellbreite von 50 % bzw. 33,333333 %. Außer dem für die Anzeige notwendigen Seiten-Container werden keine Platzhalter oder Bedienelemente erzeugt. Später auf der Inhaltsseite hinzugefügte Bedienelemente werden durch den Rastermodus automatisch angeordnet; Reihenfolge und weitere Rasterwerte lassen sich dort über die Seiteneigenschaften ändern. Die IPSView-6.5-Dokumentation beschreibt den [Rastermodus in den Seiteneigenschaften](https://docu.brownson.at/viewdesigner/WebHelp/DesignerPropertiesPage.html) und die Einbindung von Standardseiten über einen [Seiten-Container](https://docu.brownson.at/viewdesigner/WebHelp/DesignerRepositoryTypePageContainer.html).
 
 | Seitenverhältnis | Logische Größe im Querformat |
 |---|---:|
@@ -301,7 +305,7 @@ Nach dem Erstellen einer neuen View erscheint im Assistant automatisch der Berei
 
 1. Das im Assistant mit Name, Objekt-ID und vollständigem Pfad angezeigte Medienobjekt im Symcon-Objektbaum suchen und doppelt anklicken. Nur der Doppelklick führt die spezielle Medienaktion aus, die den IPSView Designer direkt mit dieser View öffnet.
 2. Optional unter **Erstes Symcon-Objekt** eine Variable, ein Skript oder ein Medienobjekt auswählen. Der Assistant zeigt dessen Objekt-ID und schlägt einen geeigneten Typ für das erste Bedienelement vor.
-3. Im Repository des IPSView Designers die Objekt-ID in den Filter eingeben oder die ID-Suche verwenden. IPSView zeigt daraufhin die geeigneten normalen und kombinierten Bedienelemente an. Eines davon per Drag-and-drop auf die Hauptseite ziehen.
+3. Im Repository des IPSView Designers die Objekt-ID in den Filter eingeben oder die ID-Suche verwenden. IPSView zeigt daraufhin die geeigneten normalen und kombinierten Bedienelemente an. Mit Start-Raster eines davon per Drag-and-drop auf die erzeugte Inhaltsseite ziehen; ohne Raster wird die Hauptseite verwendet.
 4. Die View im IPSView Designer einmal speichern.
 
 Die Objektauswahl im Assistant dient nur als verständliche Hilfestellung. Sie erzeugt weder ein Bedienelement noch eine automatische Objektverknüpfung. Die offizielle IPSView-Dokumentation beschreibt die [ID-Suche und kombinierten Bedienelemente im Repository](https://docu.brownson.at/viewdesigner/WebHelpMobile/ViewDesignerRepository.html).

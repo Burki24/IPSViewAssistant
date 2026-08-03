@@ -122,6 +122,8 @@ $usageProfileInfo = null;
 $aspectRatio = null;
 $orientation = null;
 $fullScreen = null;
+$startGrid = null;
+$startGridInfo = null;
 $designerHandoverPanel = null;
 $designerHandoverTitle = null;
 $designerObject = null;
@@ -187,6 +189,14 @@ foreach ($actions as $action) {
 
     if (($action['name'] ?? '') === 'FullScreen') {
         $fullScreen = $action;
+    }
+
+    if (($action['name'] ?? '') === 'StartGrid') {
+        $startGrid = $action;
+    }
+
+    if (($action['name'] ?? '') === 'StartGridInfo') {
+        $startGridInfo = $action;
     }
 
     if (($action['name'] ?? '') === 'DesignerHandoverPanel') {
@@ -428,10 +438,26 @@ assertTest(
     str_contains((string) ($button['onClick'] ?? ''), '$FullScreen'),
     'The Create View button does not pass the selected full-screen mode.'
 );
+assertTest(is_array($startGrid), 'The optional start grid selection is missing.');
+assertTest(($startGrid['value'] ?? null) === 0, 'The start grid must be disabled by default.');
+assertTest(
+    array_column($startGrid['options'] ?? [], 'value') === [0, 2, 3],
+    'The start grid does not offer the expected two- and three-column modes.'
+);
+assertTest(is_array($startGridInfo), 'The start grid explanation is missing.');
+assertTest(
+    str_contains((string) ($button['onClick'] ?? ''), '$StartGrid'),
+    'The Create View button does not pass the selected start grid.'
+);
 assertTest(
     str_contains($factorySource, '$fullScreen')
         && str_contains($factorySource, '$document->configure('),
     'The View factory does not forward the selected full-screen mode.'
+);
+assertTest(
+    str_contains($factorySource, '$startGrid')
+        && str_contains($moduleSource, '$StartGrid'),
+    'The selected start grid is not forwarded to the IPSView document.'
 );
 assertTest(is_array($copyButton), 'The Save styled copy button is missing from the form.');
 assertTest(($copyButton['name'] ?? '') === 'SaveStyledCopyButton', 'The styled copy button has no stable form name.');

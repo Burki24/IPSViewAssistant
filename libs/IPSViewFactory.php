@@ -31,7 +31,8 @@ final class IPSViewFactory
         array $effects = [],
         array $appearance = [],
         array $background = [],
-        bool $fullScreen = false
+        bool $fullScreen = false,
+        int $startGrid = IPSViewDocument::START_GRID_NONE
     ): int {
         $viewName = trim($viewName);
         $mainPageName = trim($mainPageName);
@@ -52,7 +53,15 @@ final class IPSViewFactory
             IPS_SetParent($mediaID, $targetCategoryID);
 
             $document = IPSViewDocument::fromTemplate($this->templateDirectory . '/empty-view.json');
-            $document->configure($viewName, $mediaID, $aspectRatio, $orientation, $mainPageName, $fullScreen);
+            $document->configure(
+                $viewName,
+                $mediaID,
+                $aspectRatio,
+                $orientation,
+                $mainPageName,
+                $fullScreen,
+                $startGrid
+            );
             $document->applyTheme($theme, $customPalette, $effects, $appearance, $background);
 
             $mediaFile = IPS_GetKernelDir()
