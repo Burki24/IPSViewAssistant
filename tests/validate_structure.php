@@ -136,7 +136,8 @@ assertTest(str_contains($formJson, 'IPSVIEWA_UpdateUsageProfile'), 'The usage pr
 assertTest(str_contains($formJson, 'IPSVIEWA_MarkUsageProfileCustom'), 'The custom usage profile action is missing.');
 assertTest(str_contains($formJson, 'UsageProfileInfo'), 'The usage profile explanation is missing.');
 assertTest(str_contains($formJson, 'DesignerHandoverPanel'), 'The guided Designer handover is missing.');
-assertTest(str_contains($formJson, 'OpenObjectButton'), 'The button for opening a created IPSView is missing.');
+assertTest(!str_contains($formJson, 'OpenObjectButton'), 'The Designer handover must not open the generic media edit dialog.');
+assertTest(str_contains($formJson, 'double-click'), 'The Designer handover does not explain the required object-tree double-click.');
 assertTest(str_contains($formJson, 'IPSVIEWA_UpdateDesignerHandover'), 'The Designer object recommendation action is missing.');
 
 $gitmodules = (string) file_get_contents($root . '/.gitmodules');

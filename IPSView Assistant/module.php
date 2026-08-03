@@ -778,8 +778,6 @@ class IPSViewAssistant extends IPSModuleStrict
 
         $this->setConfigurationFormField($form, 'DesignerHandoverPanel', 'visible', $visible);
         $this->setConfigurationFormField($form, 'DesignerHandoverInitialInfo', 'visible', !$visible);
-        $this->setConfigurationFormField($form, 'OpenCreatedViewButton', 'visible', $visible);
-        $this->setConfigurationFormField($form, 'OpenCreatedViewButton', 'objectID', $visible ? $mediaID : 0);
 
         if (!$visible) {
             return;
@@ -811,8 +809,6 @@ class IPSViewAssistant extends IPSModuleStrict
         $this->UpdateFormField('DesignerHandoverPanel', 'expanded', true);
         $this->UpdateFormField('DesignerHandoverInitialInfo', 'visible', false);
         $this->UpdateFormField('DesignerHandoverTitle', 'caption', $this->designerHandoverTitle($mediaID));
-        $this->UpdateFormField('OpenCreatedViewButton', 'objectID', $mediaID);
-        $this->UpdateFormField('OpenCreatedViewButton', 'visible', true);
         $this->UpdateFormField('DesignerObjectID', 'value', 1);
         $this->UpdateFormField('DesignerObjectHint', 'caption', $this->designerObjectHint(1));
     }
@@ -822,9 +818,10 @@ class IPSViewAssistant extends IPSModuleStrict
         $object = IPS_GetObject($mediaID);
 
         return sprintf(
-            $this->Translate('Created IPSView "%s" (object ID %d). Use the button to open it directly from this Assistant.'),
+            $this->Translate('Created IPSView "%s" (object ID %d) at "%s".'),
             (string) ($object['ObjectName'] ?? ''),
-            $mediaID
+            $mediaID,
+            IPS_GetLocation($mediaID)
         );
     }
 

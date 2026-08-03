@@ -124,7 +124,6 @@ $orientation = null;
 $fullScreen = null;
 $designerHandoverPanel = null;
 $designerHandoverTitle = null;
-$openCreatedViewButton = null;
 $designerObject = null;
 $designerObjectHint = null;
 $designerHandoverInitialInfo = null;
@@ -196,10 +195,6 @@ foreach ($actions as $action) {
 
     if (($action['name'] ?? '') === 'DesignerHandoverTitle') {
         $designerHandoverTitle = $action;
-    }
-
-    if (($action['name'] ?? '') === 'OpenCreatedViewButton') {
-        $openCreatedViewButton = $action;
     }
 
     if (($action['name'] ?? '') === 'DesignerObjectID') {
@@ -386,10 +381,6 @@ assertTest(is_array($designerHandoverPanel), 'The guided Designer handover panel
 assertTest(($designerHandoverPanel['visible'] ?? true) === false, 'The Designer handover must stay hidden before creation.');
 assertTest(($designerHandoverPanel['expanded'] ?? false) === true, 'The Designer handover must open expanded.');
 assertTest(is_array($designerHandoverTitle), 'The created View information is missing from the Designer handover.');
-assertTest(is_array($openCreatedViewButton), 'The button for opening the created View is missing.');
-assertTest(($openCreatedViewButton['type'] ?? '') === 'OpenObjectButton', 'The created View is not opened with the native Symcon button.');
-assertTest(($openCreatedViewButton['objectID'] ?? -1) === 0, 'The initial Designer button contains an unexpected object ID.');
-assertTest(($openCreatedViewButton['visible'] ?? true) === false, 'The Designer button must stay hidden before creation.');
 assertTest(is_array($designerObject), 'The optional first Symcon object selection is missing.');
 assertTest(($designerObject['value'] ?? null) === 1, 'An optional Symcon object selection must start with nothing selected.');
 assertTest(

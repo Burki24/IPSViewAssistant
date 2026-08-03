@@ -1041,14 +1041,7 @@
                 },
                 {
                     "type": "Label",
-                    "caption": "1. Open the created IPSView and wait until the IPSView Designer is fully loaded."
-                },
-                {
-                    "type": "OpenObjectButton",
-                    "name": "OpenCreatedViewButton",
-                    "caption": "Open created IPSView",
-                    "objectID": 0,
-                    "visible": false
+                    "caption": "1. Locate the media object shown above in the Symcon object tree and double-click it. The double-click opens the IPSView Designer directly."
                 },
                 {
                     "type": "Label",

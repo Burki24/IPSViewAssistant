@@ -299,7 +299,7 @@ Für eine bestehende, bereits sorgfältig gestaltete View empfiehlt sich zunäch
 
 Nach dem Erstellen einer neuen View erscheint im Assistant automatisch der Bereich **Nächste Schritte im IPSView Designer**. Er bleibt auch nach dem erneuten Öffnen der Instanz verfügbar, solange das zuletzt erstellte Medienobjekt noch existiert.
 
-1. Mit **Erstellte IPSView öffnen** das neue Medienobjekt direkt aus dem Assistant öffnen.
+1. Das im Assistant mit Name, Objekt-ID und vollständigem Pfad angezeigte Medienobjekt im Symcon-Objektbaum suchen und doppelt anklicken. Nur der Doppelklick führt die spezielle Medienaktion aus, die den IPSView Designer direkt mit dieser View öffnet.
 2. Optional unter **Erstes Symcon-Objekt** eine Variable, ein Skript oder ein Medienobjekt auswählen. Der Assistant zeigt dessen Objekt-ID und schlägt einen geeigneten Typ für das erste Bedienelement vor.
 3. Im Repository des IPSView Designers die Objekt-ID in den Filter eingeben oder die ID-Suche verwenden. IPSView zeigt daraufhin die geeigneten normalen und kombinierten Bedienelemente an. Eines davon per Drag-and-drop auf die Hauptseite ziehen.
 4. Die View im IPSView Designer einmal speichern.
