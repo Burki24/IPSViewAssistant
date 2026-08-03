@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Burki24\IPSViewAssistant;
 
+use InvalidArgumentException;
+
 final class IPSViewThemePreview
 {
     /**
@@ -189,9 +191,10 @@ final class IPSViewThemePreview
         array $palette,
         array $effects = [],
         array $appearance = [],
-        array $background = []
+        array $background = [],
+        int $startGrid = 0
     ): string {
-        $svg = self::createSvg($palette, $effects, $appearance, $background);
+        $svg = self::createSvg($palette, $effects, $appearance, $background, $startGrid);
 
         return 'data:image/svg+xml;base64,' . base64_encode($svg);
     }
@@ -205,7 +208,8 @@ final class IPSViewThemePreview
         array $palette,
         array $effects = [],
         array $appearance = [],
-        array $background = []
+        array $background = [],
+        int $startGrid = 0
     ): string {
         $view = self::color($palette, IPSViewTheme::ROLE_VIEW_BACKGROUND);
         $page = self::color($palette, IPSViewTheme::ROLE_PAGE_BACKGROUND);
@@ -282,9 +286,71 @@ final class IPSViewThemePreview
         $valueSize = self::fontSize(22, $fontScale);
         $statusSize = self::fontSize(12, $fontScale);
         $sectionSize = self::fontSize(18, $fontScale);
+        $layout = self::previewLayout($startGrid);
+        [$lightsX, $lightsY, $lightsWidth, $lightsHeight] = $layout['lights'];
+        [$shuttersX, $shuttersY, $shuttersWidth, $shuttersHeight] = $layout['shutters'];
+        [$securityX, $securityY, $securityWidth, $securityHeight] = $layout['security'];
+        [$typographyX, $typographyY, $typographyWidth, $typographyHeight] = $layout['typography'];
+
+        $lightsTextX = $lightsX + 22;
+        $lightsLabelY = $lightsY + 32;
+        $lightsValueY = $lightsY + 63;
+        $lightsSwitchX = $lightsX + $lightsWidth - 80;
+        $lightsSwitchY = $lightsY + 46;
+        $lightsSwitchCircleX = $lightsSwitchX + 39;
+        $lightsSwitchCircleY = $lightsSwitchY + 15;
+        $lightsStatusY = $lightsY + $lightsHeight - 21;
+
+        $shuttersTextX = $shuttersX + 22;
+        $shuttersLabelY = $shuttersY + 32;
+        $shuttersValueY = $shuttersY + 63;
+        $shuttersProgressY = $shuttersY + 82;
+        $shuttersProgressWidth = $shuttersWidth - 52;
+        $shuttersActiveWidth = round($shuttersProgressWidth * 0.65, 1);
+        $shuttersHandleX = $shuttersTextX + $shuttersActiveWidth;
+        $shuttersHandleY = $shuttersProgressY + 4;
+
+        $securityTextX = $securityX + 22;
+        $securityLabelY = $securityY + 32;
+        $securityValueY = $securityY + 63;
+        $securityButtonY = $securityY + $securityHeight - 35;
+        $securityButtonTotalWidth = $securityWidth - 54;
+        $securitySuccessWidth = (int) round($securityButtonTotalWidth * 0.42);
+        $securityWarningWidth = $securityButtonTotalWidth - $securitySuccessWidth;
+        $securityWarningX = $securityTextX + $securitySuccessWidth + 10;
+        $securitySuccessTextX = $securityTextX + ($securitySuccessWidth / 2);
+        $securityWarningTextX = $securityWarningX + ($securityWarningWidth / 2);
+        $securityButtonTextY = $securityButtonY + 17;
+
+        $typographyTextX = $typographyX + 22;
+        $typographyTitleY = $typographyY + 31;
+        $typographyDescriptionY = $typographyY + 57;
+        $compactTypography = $typographyWidth < 500;
+        $typographyDescription = $compactTypography
+            ? 'Global design basics'
+            : 'The Assistant prepares global basics; detailed layout remains in IPSView Designer.';
+        $typographyCircleSpacing = $compactTypography ? 30 : 45;
+        $typographyCircleRadius = $compactTypography ? 10 : 12;
+        $typographyCircleY = $compactTypography
+            ? $typographyY + $typographyHeight - 22
+            : $typographyY + 48;
+        $typographyCircle4X = $typographyX + $typographyWidth - 47;
+        $typographyCircle3X = $typographyCircle4X - $typographyCircleSpacing;
+        $typographyCircle2X = $typographyCircle3X - $typographyCircleSpacing;
+        $typographyCircle1X = $typographyCircle2X - $typographyCircleSpacing;
+        $gridGuides = self::gridGuides($startGrid, $accent);
+        $gridBadge = $startGrid === 0
+            ? ''
+            : sprintf(
+                '<text x="590" y="62" text-anchor="middle" fill="%s" %s font-size="%s">%d-COLUMN START GRID</text>',
+                $secondary,
+                $fontAttributes,
+                $subtitleSize,
+                $startGrid
+            );
 
         return <<<SVG
-<svg xmlns="http://www.w3.org/2000/svg" width="920" height="420" viewBox="0 0 920 420">
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="420" viewBox="0 0 920 420" data-start-grid="{$startGrid}">
   <defs>
     {$fontDefinition}
     {$backgroundDefinition}
@@ -302,51 +368,111 @@ final class IPSViewThemePreview
   <rect width="920" height="420" rx="{$cornerRadius}" fill="{$viewFill}" fill-opacity="{$opacity}"/>
   <rect x="22" y="22" width="876" height="376" rx="{$cornerRadius}" fill="{$pageFill}" fill-opacity="{$opacity}" stroke="{$border}" stroke-width="{$borderWidth}"/>
   {$backgroundElement}
+  {$gridGuides}
   <rect x="22" y="22" width="876" height="68" rx="{$cornerRadius}" fill="{$surfaceFill}" fill-opacity="{$opacity}"/>
   <rect x="22" y="72" width="876" height="18" fill="{$surfaceFill}" fill-opacity="{$opacity}"/>
   <circle cx="60" cy="56" r="17" fill="{$accentFill}" fill-opacity="{$opacity}"/>
   <path d="M52 56h16M60 48v16" stroke="{$primary}" stroke-width="3" stroke-linecap="round"/>
   <text x="90" y="52" fill="{$primary}" {$fontAttributes} font-size="{$titleSize}">Design preview</text>
   <text x="90" y="73" fill="{$secondary}" {$fontAttributes} font-size="{$subtitleSize}">Colors, typography, shapes and effects</text>
+  {$gridBadge}
   <text x="824" y="62" fill="{$primary}" {$fontAttributes} font-size="{$sectionSize}">21.5 °C</text>
 
   <g filter="url(#shadow)">
-    <rect x="48" y="118" width="250" height="116" rx="{$cornerRadius}" fill="{$surfaceFill}" fill-opacity="{$opacity}" stroke="{$border}" stroke-width="{$borderWidth}"/>
-    <text x="70" y="150" fill="{$secondary}" {$fontAttributes} font-size="{$subtitleSize}">LIGHTS</text>
-    <text x="70" y="181" fill="{$primary}" {$fontAttributes} font-size="{$valueSize}">Living room</text>
-    <rect x="218" y="164" width="54" height="30" rx="{$smallRadius}" fill="{$activeFill}" fill-opacity="{$opacity}"/>
-    <circle cx="257" cy="179" r="11" fill="{$primary}"/>
-    <text x="70" y="213" fill="{$success}" {$fontAttributes} font-size="{$subtitleSize}">Active</text>
+    <rect x="{$lightsX}" y="{$lightsY}" width="{$lightsWidth}" height="{$lightsHeight}" rx="{$cornerRadius}" fill="{$surfaceFill}" fill-opacity="{$opacity}" stroke="{$border}" stroke-width="{$borderWidth}"/>
+    <text x="{$lightsTextX}" y="{$lightsLabelY}" fill="{$secondary}" {$fontAttributes} font-size="{$subtitleSize}">LIGHTS</text>
+    <text x="{$lightsTextX}" y="{$lightsValueY}" fill="{$primary}" {$fontAttributes} font-size="{$valueSize}">Living room</text>
+    <rect x="{$lightsSwitchX}" y="{$lightsSwitchY}" width="54" height="30" rx="{$smallRadius}" fill="{$activeFill}" fill-opacity="{$opacity}"/>
+    <circle cx="{$lightsSwitchCircleX}" cy="{$lightsSwitchCircleY}" r="11" fill="{$primary}"/>
+    <text x="{$lightsTextX}" y="{$lightsStatusY}" fill="{$success}" {$fontAttributes} font-size="{$subtitleSize}">Active</text>
   </g>
 
   <g filter="url(#shadow)">
-    <rect x="335" y="118" width="250" height="116" rx="{$cornerRadius}" fill="{$surfaceFill}" fill-opacity="{$opacity}" stroke="{$border}" stroke-width="{$borderWidth}"/>
-    <text x="357" y="150" fill="{$secondary}" {$fontAttributes} font-size="{$subtitleSize}">SHUTTERS</text>
-    <text x="357" y="181" fill="{$primary}" {$fontAttributes} font-size="{$valueSize}">65 %</text>
-    <rect x="357" y="202" width="198" height="8" rx="{$smallRadius}" fill="{$inactiveFill}" fill-opacity="{$opacity}"/>
-    <rect x="357" y="202" width="129" height="8" rx="{$smallRadius}" fill="{$accentFill}" fill-opacity="{$opacity}"/>
-    <circle cx="486" cy="206" r="11" fill="{$accentFill}" fill-opacity="{$opacity}" stroke="{$surface}" stroke-width="4"/>
+    <rect x="{$shuttersX}" y="{$shuttersY}" width="{$shuttersWidth}" height="{$shuttersHeight}" rx="{$cornerRadius}" fill="{$surfaceFill}" fill-opacity="{$opacity}" stroke="{$border}" stroke-width="{$borderWidth}"/>
+    <text x="{$shuttersTextX}" y="{$shuttersLabelY}" fill="{$secondary}" {$fontAttributes} font-size="{$subtitleSize}">SHUTTERS</text>
+    <text x="{$shuttersTextX}" y="{$shuttersValueY}" fill="{$primary}" {$fontAttributes} font-size="{$valueSize}">65 %</text>
+    <rect x="{$shuttersTextX}" y="{$shuttersProgressY}" width="{$shuttersProgressWidth}" height="8" rx="{$smallRadius}" fill="{$inactiveFill}" fill-opacity="{$opacity}"/>
+    <rect x="{$shuttersTextX}" y="{$shuttersProgressY}" width="{$shuttersActiveWidth}" height="8" rx="{$smallRadius}" fill="{$accentFill}" fill-opacity="{$opacity}"/>
+    <circle cx="{$shuttersHandleX}" cy="{$shuttersHandleY}" r="11" fill="{$accentFill}" fill-opacity="{$opacity}" stroke="{$surface}" stroke-width="4"/>
   </g>
 
   <g filter="url(#shadow)">
-    <rect x="622" y="118" width="250" height="116" rx="{$cornerRadius}" fill="{$surfaceFill}" fill-opacity="{$opacity}" stroke="{$border}" stroke-width="{$borderWidth}"/>
-    <text x="644" y="150" fill="{$secondary}" {$fontAttributes} font-size="{$subtitleSize}">SECURITY</text>
-    <text x="644" y="181" fill="{$primary}" {$fontAttributes} font-size="{$valueSize}">Home</text>
-    <rect x="644" y="199" width="82" height="24" rx="{$smallRadius}" fill="{$successFill}" fill-opacity="{$opacity}"/>
-    <text x="685" y="216" text-anchor="middle" fill="{$primary}" {$fontAttributes} font-size="{$statusSize}">OK</text>
-    <rect x="736" y="199" width="106" height="24" rx="{$smallRadius}" fill="{$warningFill}" fill-opacity="{$opacity}"/>
-    <text x="789" y="216" text-anchor="middle" fill="{$primary}" {$fontAttributes} font-size="{$statusSize}">NOTICE</text>
+    <rect x="{$securityX}" y="{$securityY}" width="{$securityWidth}" height="{$securityHeight}" rx="{$cornerRadius}" fill="{$surfaceFill}" fill-opacity="{$opacity}" stroke="{$border}" stroke-width="{$borderWidth}"/>
+    <text x="{$securityTextX}" y="{$securityLabelY}" fill="{$secondary}" {$fontAttributes} font-size="{$subtitleSize}">SECURITY</text>
+    <text x="{$securityTextX}" y="{$securityValueY}" fill="{$primary}" {$fontAttributes} font-size="{$valueSize}">Home</text>
+    <rect x="{$securityTextX}" y="{$securityButtonY}" width="{$securitySuccessWidth}" height="24" rx="{$smallRadius}" fill="{$successFill}" fill-opacity="{$opacity}"/>
+    <text x="{$securitySuccessTextX}" y="{$securityButtonTextY}" text-anchor="middle" fill="{$primary}" {$fontAttributes} font-size="{$statusSize}">OK</text>
+    <rect x="{$securityWarningX}" y="{$securityButtonY}" width="{$securityWarningWidth}" height="24" rx="{$smallRadius}" fill="{$warningFill}" fill-opacity="{$opacity}"/>
+    <text x="{$securityWarningTextX}" y="{$securityButtonTextY}" text-anchor="middle" fill="{$primary}" {$fontAttributes} font-size="{$statusSize}">NOTICE</text>
   </g>
 
-  <rect x="48" y="268" width="824" height="96" rx="{$cornerRadius}" fill="{$surfaceFill}" fill-opacity="{$opacity}" stroke="{$border}" stroke-width="{$borderWidth}"/>
-  <text x="70" y="299" fill="{$primary}" {$fontAttributes} font-size="{$sectionSize}">Typography and form language</text>
-  <text x="70" y="325" fill="{$secondary}" {$fontAttributes} font-size="{$subtitleSize}">The Assistant prepares global basics; detailed layout remains in IPSView Designer.</text>
-  <circle cx="690" cy="316" r="12" fill="{$successFill}" fill-opacity="{$opacity}"/>
-  <circle cx="735" cy="316" r="12" fill="{$warningFill}" fill-opacity="{$opacity}"/>
-  <circle cx="780" cy="316" r="12" fill="{$errorFill}" fill-opacity="{$opacity}"/>
-  <circle cx="825" cy="316" r="12" fill="{$inactiveFill}" fill-opacity="{$opacity}"/>
+  <rect x="{$typographyX}" y="{$typographyY}" width="{$typographyWidth}" height="{$typographyHeight}" rx="{$cornerRadius}" fill="{$surfaceFill}" fill-opacity="{$opacity}" stroke="{$border}" stroke-width="{$borderWidth}"/>
+  <text x="{$typographyTextX}" y="{$typographyTitleY}" fill="{$primary}" {$fontAttributes} font-size="{$sectionSize}">Typography and form language</text>
+  <text x="{$typographyTextX}" y="{$typographyDescriptionY}" fill="{$secondary}" {$fontAttributes} font-size="{$subtitleSize}">{$typographyDescription}</text>
+  <circle cx="{$typographyCircle1X}" cy="{$typographyCircleY}" r="{$typographyCircleRadius}" fill="{$successFill}" fill-opacity="{$opacity}"/>
+  <circle cx="{$typographyCircle2X}" cy="{$typographyCircleY}" r="{$typographyCircleRadius}" fill="{$warningFill}" fill-opacity="{$opacity}"/>
+  <circle cx="{$typographyCircle3X}" cy="{$typographyCircleY}" r="{$typographyCircleRadius}" fill="{$errorFill}" fill-opacity="{$opacity}"/>
+  <circle cx="{$typographyCircle4X}" cy="{$typographyCircleY}" r="{$typographyCircleRadius}" fill="{$inactiveFill}" fill-opacity="{$opacity}"/>
 </svg>
 SVG;
+    }
+
+    /**
+     * @return array{
+     *     lights: array{int, int, int, int},
+     *     shutters: array{int, int, int, int},
+     *     security: array{int, int, int, int},
+     *     typography: array{int, int, int, int}
+     * }
+     */
+    private static function previewLayout(int $startGrid): array
+    {
+        return match ($startGrid) {
+            0 => [
+                'lights'     => [48, 118, 250, 116],
+                'shutters'   => [335, 118, 250, 116],
+                'security'   => [622, 118, 250, 116],
+                'typography' => [48, 268, 824, 96],
+            ],
+            2 => [
+                'lights'     => [48, 118, 404, 105],
+                'shutters'   => [468, 118, 404, 105],
+                'security'   => [48, 244, 404, 105],
+                'typography' => [468, 244, 404, 105],
+            ],
+            3 => [
+                'lights'     => [48, 118, 264, 116],
+                'shutters'   => [328, 118, 264, 116],
+                'security'   => [608, 118, 264, 116],
+                'typography' => [48, 268, 824, 96],
+            ],
+            default => throw new InvalidArgumentException('The selected preview start grid is not supported.'),
+        };
+    }
+
+    private static function gridGuides(int $startGrid, string $accent): string
+    {
+        if ($startGrid === 0) {
+            return '';
+        }
+
+        $columnWidth = $startGrid === 2 ? 404 : 264;
+        $guides = [];
+        for ($column = 0; $column < $startGrid; ++$column) {
+            $x = 48 + ($column * ($columnWidth + 16));
+            $guides[] = sprintf(
+                '<rect x="%d" y="106" width="%d" height="258" rx="6"/>',
+                $x,
+                $columnWidth
+            );
+        }
+
+        return sprintf(
+            '<g id="startGridGuides" data-columns="%d" fill="none" stroke="%s" stroke-width="2" stroke-dasharray="7 6" opacity="0.42">%s</g>',
+            $startGrid,
+            $accent,
+            implode('', $guides)
+        );
     }
 
     /**

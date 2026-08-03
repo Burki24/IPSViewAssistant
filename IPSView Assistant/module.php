@@ -41,6 +41,7 @@ class IPSViewAssistant extends IPSModuleStrict
     private const ATTRIBUTE_BACKGROUND_MODE = 'BackgroundMode';
     private const ATTRIBUTE_BACKGROUND_LAYOUT = 'BackgroundLayout';
     private const ATTRIBUTE_BACKGROUND_SCOPE = 'BackgroundScope';
+    private const ATTRIBUTE_PREVIEW_START_GRID = 'PreviewStartGrid';
     private const ATTRIBUTE_LAST_CREATED_VIEW_ID = 'LastCreatedViewID';
     private const ATTRIBUTE_DESIGNER_OBJECT_ID = 'DesignerObjectID';
 
@@ -75,6 +76,7 @@ class IPSViewAssistant extends IPSModuleStrict
         $this->RegisterAttributeInteger(self::ATTRIBUTE_BACKGROUND_MODE, IPSViewBackground::MODE_PRESERVE);
         $this->RegisterAttributeString(self::ATTRIBUTE_BACKGROUND_LAYOUT, IPSViewBackground::LAYOUT_STRETCH);
         $this->RegisterAttributeInteger(self::ATTRIBUTE_BACKGROUND_SCOPE, IPSViewBackground::SCOPE_MAIN_PAGE);
+        $this->RegisterAttributeInteger(self::ATTRIBUTE_PREVIEW_START_GRID, IPSViewDocument::START_GRID_NONE);
         $this->RegisterAttributeInteger(self::ATTRIBUTE_LAST_CREATED_VIEW_ID, 0);
         $this->RegisterAttributeInteger(self::ATTRIBUTE_DESIGNER_OBJECT_ID, 1);
     }
@@ -95,6 +97,7 @@ class IPSViewAssistant extends IPSModuleStrict
     {
         $form = $this->LoadConfigurationForm();
         $palette = IPSViewTheme::preset(IPSViewTheme::THEME_STANDARD);
+        $startGrid = $this->previewStartGrid();
 
         foreach (self::FORM_COLOR_FIELDS as $role => $field) {
             $this->setConfigurationFormField(
@@ -109,8 +112,15 @@ class IPSViewAssistant extends IPSModuleStrict
             $form,
             'ThemePreview',
             'image',
-            IPSViewThemePreview::createDataUri($palette, IPSViewEffects::resolve(), [], $this->backgroundSettings())
+            IPSViewThemePreview::createDataUri(
+                $palette,
+                IPSViewEffects::resolve(),
+                [],
+                $this->backgroundSettings(),
+                $startGrid
+            )
         );
+        $this->setConfigurationFormField($form, 'StartGrid', 'value', $startGrid);
         $background = $this->backgroundSettings();
         $this->setConfigurationFormField($form, 'BackgroundImageMode', 'value', $background['mode']);
         $this->setConfigurationFormField($form, 'BackgroundImageLayout', 'value', $background['layout']);
@@ -235,6 +245,7 @@ class IPSViewAssistant extends IPSModuleStrict
                 $FullScreen,
                 $StartGrid
             );
+            $this->WriteAttributeInteger(self::ATTRIBUTE_PREVIEW_START_GRID, $StartGrid);
             $this->WriteAttributeInteger(self::ATTRIBUTE_LAST_CREATED_VIEW_ID, $mediaID);
             $this->WriteAttributeInteger(self::ATTRIBUTE_DESIGNER_OBJECT_ID, 1);
             $this->showDesignerHandover($mediaID);
@@ -352,7 +363,17 @@ class IPSViewAssistant extends IPSModuleStrict
             $this->UpdateFormField('BackgroundImageLayout', 'visible', false);
             $this->UpdateFormField('BackgroundImageScope', 'value', IPSViewBackground::SCOPE_MAIN_PAGE);
             $this->UpdateFormField('BackgroundImageScope', 'visible', false);
-            $this->UpdateFormField('ThemePreview', 'image', IPSViewThemePreview::createDataUri($palette, $this->decodeEffects($Effects), $appearance, $this->backgroundSettings()));
+            $this->UpdateFormField(
+                'ThemePreview',
+                'image',
+                IPSViewThemePreview::createDataUri(
+                    $palette,
+                    $this->decodeEffects($Effects),
+                    $appearance,
+                    $this->backgroundSettings(),
+                    $this->previewStartGrid()
+                )
+            );
             $this->UpdateFormField('CopyViewName', 'value', $copyName);
             $this->UpdateFormField('CopyTargetCategoryID', 'value', $copyTargetCategoryID);
             $this->UpdateFormField('ExistingViewStatus', 'caption', $status);
@@ -485,7 +506,8 @@ class IPSViewAssistant extends IPSModuleStrict
                     $palette,
                     $this->decodeEffects($Effects),
                     $this->decodeAppearance($Appearance),
-                    $this->backgroundSettings()
+                    $this->backgroundSettings(),
+                    $this->previewStartGrid()
                 )
             );
         } catch (Throwable $exception) {
@@ -515,7 +537,8 @@ class IPSViewAssistant extends IPSModuleStrict
                     $palette,
                     $this->decodeEffects($Effects),
                     $this->decodeAppearance($Appearance),
-                    $this->backgroundSettings()
+                    $this->backgroundSettings(),
+                    $this->previewStartGrid()
                 )
             );
         } catch (Throwable $exception) {
@@ -544,7 +567,8 @@ class IPSViewAssistant extends IPSModuleStrict
                     $palette,
                     $this->decodeEffects($Effects),
                     $this->decodeAppearance($Appearance),
-                    $this->backgroundSettings()
+                    $this->backgroundSettings(),
+                    $this->previewStartGrid()
                 )
             );
         } catch (Throwable $exception) {
@@ -575,11 +599,42 @@ class IPSViewAssistant extends IPSModuleStrict
                     $palette,
                     $this->decodeEffects($Effects),
                     $appearance,
-                    $this->backgroundSettings()
+                    $this->backgroundSettings(),
+                    $this->previewStartGrid()
                 )
             );
         } catch (Throwable $exception) {
             $this->SendDebug('UpdateAppearancePreview', $exception->getMessage(), 0);
+        }
+    }
+
+    /**
+     * Changes the sample-card arrangement to match the selected start grid.
+     */
+    public function UpdateStartGridPreview(
+        int $StartGrid,
+        string $ThemePalette = '',
+        string $Effects = '',
+        string $Appearance = ''
+    ): void {
+        try {
+            $startGrid = $this->normalizeStartGrid($StartGrid);
+            $palette = IPSViewTheme::resolvePalette(
+                IPSViewTheme::THEME_CUSTOM,
+                $this->decodePalette($ThemePalette)
+            );
+            $preview = IPSViewThemePreview::createDataUri(
+                $palette,
+                $this->decodeEffects($Effects),
+                $this->decodeAppearance($Appearance),
+                $this->backgroundSettings(),
+                $startGrid
+            );
+
+            $this->WriteAttributeInteger(self::ATTRIBUTE_PREVIEW_START_GRID, $startGrid);
+            $this->UpdateFormField('ThemePreview', 'image', $preview);
+        } catch (Throwable $exception) {
+            $this->SendDebug('UpdateStartGridPreview', $exception->getMessage(), 0);
         }
     }
 
@@ -644,7 +699,8 @@ class IPSViewAssistant extends IPSModuleStrict
                     IPSViewTheme::resolvePalette(IPSViewTheme::THEME_CUSTOM, $this->decodePalette($ThemePalette)),
                     $this->decodeEffects($Effects),
                     $this->decodeAppearance($Appearance),
-                    $settings
+                    $settings,
+                    $this->previewStartGrid()
                 )
             );
         } catch (Throwable $exception) {
@@ -756,6 +812,26 @@ class IPSViewAssistant extends IPSModuleStrict
         return IPSViewUsageProfile::isSelectable($profile)
             ? $profile
             : IPSViewUsageProfile::PROFILE_WALL_TABLET;
+    }
+
+    private function previewStartGrid(): int
+    {
+        return $this->normalizeStartGrid(
+            $this->ReadAttributeInteger(self::ATTRIBUTE_PREVIEW_START_GRID)
+        );
+    }
+
+    private function normalizeStartGrid(int $startGrid): int
+    {
+        return in_array(
+            $startGrid,
+            [
+                IPSViewDocument::START_GRID_NONE,
+                IPSViewDocument::START_GRID_TWO_COLUMNS,
+                IPSViewDocument::START_GRID_THREE_COLUMNS,
+            ],
+            true
+        ) ? $startGrid : IPSViewDocument::START_GRID_NONE;
     }
 
     private function usageProfileInfo(int $profile): string

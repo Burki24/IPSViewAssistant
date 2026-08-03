@@ -63,6 +63,10 @@ assertTest(
     'The public UpdateAppearancePreview method is missing.'
 );
 assertTest(
+    str_contains($moduleSource, 'public function UpdateStartGridPreview('),
+    'The public start-grid preview method is missing.'
+);
+assertTest(
     str_contains($moduleSource, 'updateFontStyleFields('),
     'The module does not adapt font-format controls to the selected font family.'
 );
@@ -446,6 +450,10 @@ assertTest(
 );
 assertTest(is_array($startGridInfo), 'The start grid explanation is missing.');
 assertTest(
+    str_contains((string) ($startGrid['onChange'] ?? ''), 'IPSVIEWA_UpdateStartGridPreview('),
+    'Changing the start grid does not refresh the live preview.'
+);
+assertTest(
     str_contains((string) ($button['onClick'] ?? ''), '$StartGrid'),
     'The Create View button does not pass the selected start grid.'
 );
@@ -458,6 +466,11 @@ assertTest(
     str_contains($factorySource, '$startGrid')
         && str_contains($moduleSource, '$StartGrid'),
     'The selected start grid is not forwarded to the IPSView document.'
+);
+assertTest(
+    str_contains($moduleSource, 'RegisterAttributeInteger(self::ATTRIBUTE_PREVIEW_START_GRID')
+        && str_contains($moduleSource, '$this->previewStartGrid()'),
+    'The selected grid arrangement is not retained across preview updates.'
 );
 assertTest(is_array($copyButton), 'The Save styled copy button is missing from the form.');
 assertTest(($copyButton['name'] ?? '') === 'SaveStyledCopyButton', 'The styled copy button has no stable form name.');

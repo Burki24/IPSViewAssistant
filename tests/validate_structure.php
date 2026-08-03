@@ -136,6 +136,7 @@ assertTest(str_contains($formJson, 'IPSVIEWA_UpdateUsageProfile'), 'The usage pr
 assertTest(str_contains($formJson, 'IPSVIEWA_MarkUsageProfileCustom'), 'The custom usage profile action is missing.');
 assertTest(str_contains($formJson, 'UsageProfileInfo'), 'The usage profile explanation is missing.');
 assertTest(str_contains($formJson, 'StartGrid'), 'The optional start grid selection is missing.');
+assertTest(str_contains($formJson, 'IPSVIEWA_UpdateStartGridPreview'), 'The live start-grid preview action is missing.');
 assertTest(str_contains($formJson, 'DesignerHandoverPanel'), 'The guided Designer handover is missing.');
 assertTest(!str_contains($formJson, 'OpenObjectButton'), 'The Designer handover must not open the generic media edit dialog.');
 assertTest(str_contains($formJson, 'double-click'), 'The Designer handover does not explain the required object-tree double-click.');

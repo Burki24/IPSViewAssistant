@@ -223,6 +223,43 @@ assertTest(str_contains($svg, '<svg'), 'The preview does not contain SVG markup.
 assertTest(str_contains($svg, '#111827'), 'The preview does not contain the selected View background.');
 assertTest(str_contains($svg, '#3B82F6'), 'The preview does not contain the selected accent color.');
 
+$twoColumnSvg = IPSViewThemePreview::createSvg($darkPalette, [], [], [], 2);
+assertTest(
+    str_contains($twoColumnSvg, 'data-start-grid="2"'),
+    'The preview does not expose the selected two-column start grid.'
+);
+assertTest(
+    str_contains($twoColumnSvg, 'id="startGridGuides" data-columns="2"'),
+    'The preview does not draw two-column grid guides.'
+);
+assertTest(
+    str_contains($twoColumnSvg, '<rect x="468" y="244" width="404" height="105"'),
+    'The sample cards are not arranged in a two-column grid.'
+);
+
+$threeColumnSvg = IPSViewThemePreview::createSvg($darkPalette, [], [], [], 3);
+assertTest(
+    str_contains($threeColumnSvg, 'data-start-grid="3"'),
+    'The preview does not expose the selected three-column start grid.'
+);
+assertTest(
+    str_contains($threeColumnSvg, 'id="startGridGuides" data-columns="3"'),
+    'The preview does not draw three-column grid guides.'
+);
+assertTest(
+    str_contains($threeColumnSvg, '<rect x="608" y="118" width="264" height="116"'),
+    'The sample cards are not arranged in a three-column grid.'
+);
+assertTest(!str_contains($svg, 'id="startGridGuides"'), 'The preview draws grid guides when no grid is selected.');
+
+$invalidPreviewGridRejected = false;
+try {
+    IPSViewThemePreview::createSvg($darkPalette, [], [], [], 99);
+} catch (InvalidArgumentException) {
+    $invalidPreviewGridRejected = true;
+}
+assertTest($invalidPreviewGridRejected, 'An unsupported preview start grid was accepted.');
+
 $fontSvg = IPSViewThemePreview::createSvg(
     $darkPalette,
     [],
