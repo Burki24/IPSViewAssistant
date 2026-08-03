@@ -28,6 +28,10 @@ assertTest(str_contains($moduleSource, 'extends IPSModuleStrict'), 'The module d
 assertTest(str_contains($moduleSource, 'use ConfigurationFormHelper;'), 'The module does not use ConfigurationFormHelper.');
 assertTest(str_contains($moduleSource, 'public function GetConfigurationForm(): string'), 'The dynamic configuration form is missing.');
 assertTest(str_contains($moduleSource, 'public function CreateView('), 'The public CreateView method is missing.');
+assertTest(
+    str_contains($moduleSource, 'public function UpdateAssistantMode('),
+    'The public assistant mode method is missing.'
+);
 assertTest(str_contains($moduleSource, 'public function LoadExistingView('), 'The public LoadExistingView method is missing.');
 assertTest(str_contains($moduleSource, 'public function CreateStyledCopy('), 'The public CreateStyledCopy method is missing.');
 assertTest(
@@ -99,6 +103,11 @@ function flattenFormItems(array $items): array
 $actions = flattenFormItems($form['actions'] ?? []);
 $button = null;
 $copyButton = null;
+$assistantMode = null;
+$assistantModeInfo = null;
+$existingViewPanel = null;
+$templateSelect = null;
+$styledCopyInfo = null;
 $sourceView = null;
 $existingStatus = null;
 $themeSelect = null;
@@ -130,6 +139,26 @@ $backgroundScope = null;
 $colorFields = [];
 
 foreach ($actions as $action) {
+    if (($action['name'] ?? '') === 'AssistantMode') {
+        $assistantMode = $action;
+    }
+
+    if (($action['name'] ?? '') === 'AssistantModeInfo') {
+        $assistantModeInfo = $action;
+    }
+
+    if (($action['name'] ?? '') === 'ExistingViewPanel') {
+        $existingViewPanel = $action;
+    }
+
+    if (($action['name'] ?? '') === 'Template') {
+        $templateSelect = $action;
+    }
+
+    if (($action['name'] ?? '') === 'StyledCopyInfo') {
+        $styledCopyInfo = $action;
+    }
+
     if (($action['type'] ?? '') === 'Button' && ($action['caption'] ?? '') === 'Create View') {
         $button = $action;
     }
@@ -256,6 +285,31 @@ foreach ($actions as $action) {
 }
 
 assertTest(is_array($button), 'The Create View button is missing from the form.');
+assertTest(is_array($assistantMode), 'The assistant mode selection is missing from the form.');
+assertTest(($assistantMode['value'] ?? null) === 0, 'Quick start must be the default assistant mode.');
+assertTest(count($assistantMode['options'] ?? []) === 2, 'Both assistant modes must be available.');
+assertTest(
+    str_contains((string) ($assistantMode['onChange'] ?? ''), 'IPSVIEWA_UpdateAssistantMode('),
+    'Changing the assistant mode does not call the public module method.'
+);
+assertTest(is_array($assistantModeInfo), 'The assistant mode explanation is missing from the form.');
+assertTest(is_array($existingViewPanel), 'The existing View panel has no stable form name.');
+assertTest(($existingViewPanel['visible'] ?? true) === false, 'Existing Views must be hidden in quick start.');
+assertTest(($existingViewPanel['expanded'] ?? true) === false, 'The existing View panel must start collapsed.');
+assertTest(is_array($templateSelect), 'The internal template selection is missing from the form.');
+assertTest(($templateSelect['visible'] ?? true) === false, 'The internal template selection must be hidden in quick start.');
+assertTest(is_array($styledCopyInfo), 'The styled copy explanation has no stable form name.');
+assertTest(($styledCopyInfo['visible'] ?? true) === false, 'The styled copy explanation must be hidden in quick start.');
+assertTest(
+    str_contains($moduleSource, 'RegisterAttributeInteger(self::ATTRIBUTE_ASSISTANT_MODE'),
+    'The selected assistant mode is not persisted.'
+);
+assertTest(
+    str_contains($moduleSource, "'ExistingViewPanel'")
+        && str_contains($moduleSource, "'ThemeColorsPanel'")
+        && str_contains($moduleSource, "'SaveStyledCopyButton'"),
+    'The advanced mode does not control all advanced form areas.'
+);
 assertTest(
     str_contains((string) ($button['onClick'] ?? ''), 'IPSVIEWA_CreateView('),
     'The Create View button does not call the public module method.'
@@ -266,6 +320,7 @@ assertTest(
 );
 assertTest(is_array($copyButton), 'The Save styled copy button is missing from the form.');
 assertTest(($copyButton['name'] ?? '') === 'SaveStyledCopyButton', 'The styled copy button has no stable form name.');
+assertTest(($copyButton['visible'] ?? true) === false, 'The styled copy button must be hidden in quick start.');
 assertTest(
     str_contains((string) ($copyButton['onClick'] ?? ''), 'IPSVIEWA_CreateStyledCopy('),
     'The styled copy button does not call the public module method.'
@@ -460,6 +515,7 @@ foreach ($actions as $position => $action) {
 }
 assertTest(is_array($workspace) && ($workspace['type'] ?? '') === 'RowLayout', 'The responsive theme workspace is missing.');
 assertTest(($colorsPanel['width'] ?? '') === '820px', 'The color panel must have a readable responsive base width.');
+assertTest(($colorsPanel['visible'] ?? true) === false, 'Detailed design colors must be hidden in quick start.');
 assertTest(($previewPanel['width'] ?? '') === '700px', 'The preview panel must have a compact responsive base width.');
 assertTest(
     is_int($previewPanelPosition)

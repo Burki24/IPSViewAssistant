@@ -1,6 +1,6 @@
 # IPSView Assistant
 
-`IPSView Assistant` erleichtert das Erstellen und Gestalten von IPSView-Projekten direkt in Symcon. Neue Views werden mit den grundlegenden Einstellungen und einem wählbaren Design angelegt. Bestehende Views können als separate Designkopie neu gestaltet werden; das Original bleibt unverändert.
+`IPSView Assistant` erleichtert das Erstellen und Gestalten von IPSView-Projekten direkt in Symcon. Ein übersichtlicher Schnellstart führt durch die grundlegenden Einstellungen und ein wählbares Design; im Expertenmodus können bestehende Views als separate Designkopie neu gestaltet werden. Das Original bleibt unverändert.
 
 Folgende Module enthält die Bibliothek:
 

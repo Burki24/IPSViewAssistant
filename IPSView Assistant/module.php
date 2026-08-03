@@ -27,6 +27,10 @@ class IPSViewAssistant extends IPSModuleStrict
 {
     use ConfigurationFormHelper;
 
+    private const ASSISTANT_MODE_QUICK_START = 0;
+    private const ASSISTANT_MODE_ADVANCED = 1;
+
+    private const ATTRIBUTE_ASSISTANT_MODE = 'AssistantMode';
     private const ATTRIBUTE_MANAGED_COPIES = 'ManagedCopies';
     private const ATTRIBUTE_BACKGROUND_IMAGE = 'BackgroundImage';
     private const ATTRIBUTE_BACKGROUND_MODE = 'BackgroundMode';
@@ -58,6 +62,7 @@ class IPSViewAssistant extends IPSModuleStrict
     {
         parent::Create();
 
+        $this->RegisterAttributeInteger(self::ATTRIBUTE_ASSISTANT_MODE, self::ASSISTANT_MODE_QUICK_START);
         $this->RegisterAttributeString(self::ATTRIBUTE_MANAGED_COPIES, '[]');
         $this->RegisterAttributeString(self::ATTRIBUTE_BACKGROUND_IMAGE, '');
         $this->RegisterAttributeInteger(self::ATTRIBUTE_BACKGROUND_MODE, IPSViewBackground::MODE_PRESERVE);
@@ -119,8 +124,31 @@ class IPSViewAssistant extends IPSModuleStrict
             'visible',
             $background['mode'] !== IPSViewBackground::MODE_PRESERVE
         );
+        $assistantMode = $this->normalizeAssistantMode(
+            $this->ReadAttributeInteger(self::ATTRIBUTE_ASSISTANT_MODE)
+        );
+        $this->setConfigurationFormField($form, 'AssistantMode', 'value', $assistantMode);
+        $this->applyAssistantModeToForm($form, $assistantMode);
 
         return $this->EncodeConfigurationForm($form);
+    }
+
+    /**
+     * Switches between the reduced quick-start form and all advanced functions.
+     */
+    public function UpdateAssistantMode(int $Mode): void
+    {
+        $mode = $this->normalizeAssistantMode($Mode);
+        $advanced = $mode === self::ASSISTANT_MODE_ADVANCED;
+        $this->WriteAttributeInteger(self::ATTRIBUTE_ASSISTANT_MODE, $mode);
+
+        foreach ($this->advancedModeFields() as $field) {
+            $this->UpdateFormField($field, 'visible', $advanced);
+        }
+
+        $this->UpdateFormField('AssistantMode', 'value', $mode);
+        $this->UpdateFormField('AssistantModeInfo', 'caption', $this->assistantModeInfo($mode));
+        $this->UpdateFormField('ThemeDescription', 'caption', $this->themeDescription($mode));
     }
 
     /**
@@ -598,6 +626,72 @@ class IPSViewAssistant extends IPSModuleStrict
         $this->UpdateFormField('FontItalicMode', 'enabled', $capabilities['italic']);
         $this->UpdateFormField('FontUnderlineMode', 'value', $appearance['fontUnderlineMode']);
         $this->UpdateFormField('FontUnderlineMode', 'enabled', $capabilities['underline']);
+    }
+
+    /**
+     * Applies the selected assistant mode to the initially rendered form.
+     *
+     * @param array<string, mixed> $form
+     */
+    private function applyAssistantModeToForm(array &$form, int $mode): void
+    {
+        $advanced = $mode === self::ASSISTANT_MODE_ADVANCED;
+
+        foreach ($this->advancedModeFields() as $field) {
+            $this->setConfigurationFormField($form, $field, 'visible', $advanced);
+        }
+
+        $this->setConfigurationFormField(
+            $form,
+            'AssistantModeInfo',
+            'caption',
+            $this->assistantModeInfo($mode)
+        );
+        $this->setConfigurationFormField(
+            $form,
+            'ThemeDescription',
+            'caption',
+            $this->themeDescription($mode)
+        );
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function advancedModeFields(): array
+    {
+        return [
+            'Template',
+            'ExistingViewPanel',
+            'ThemeColorsPanel',
+            'SaveStyledCopyButton',
+            'StyledCopyInfo',
+        ];
+    }
+
+    private function normalizeAssistantMode(int $mode): int
+    {
+        return $mode === self::ASSISTANT_MODE_ADVANCED
+            ? self::ASSISTANT_MODE_ADVANCED
+            : self::ASSISTANT_MODE_QUICK_START;
+    }
+
+    private function assistantModeInfo(int $mode): string
+    {
+        if ($mode === self::ASSISTANT_MODE_ADVANCED) {
+            return $this->Translate('Advanced mode shows all design details and the functions for existing IPSViews.');
+        }
+
+        return $this->Translate('Quick start shows only the settings needed for a first IPSView. All detailed design and copy functions remain available in Advanced mode.');
+    }
+
+    private function themeDescription(int $mode): string
+    {
+        if ($mode === self::ASSISTANT_MODE_ADVANCED) {
+            return $this->Translate('Choose a preset or adjust the semantic colors below. A manual color change automatically switches the theme to Custom.');
+        }
+
+        return $this->Translate('Choose a ready-made design preset. Detailed colors, effects and typography are available in Advanced mode.');
     }
 
     /**

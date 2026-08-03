@@ -17,6 +17,7 @@ Der **IPSView Assistant** erleichtert das Erstellen und Gestalten von IPSView-Pr
 ### 1. Funktionsumfang
 
 - Neue IPSView als Medienobjekt mit Hauptseite erstellen
+- Zwischen einem übersichtlichen Schnellstart und dem vollständigen Expertenmodus wechseln
 - Seitenverhältnis und Ausrichtung festlegen
 - Vorgefertigte Farbdesigns auswählen und individuell anpassen
 - Farben, Schatten, Transparenz und Farbverläufe einstellen
@@ -42,9 +43,15 @@ Der **IPSView Assistant** erleichtert das Erstellen und Gestalten von IPSView-Pr
 2. Anschließend eine Instanz **IPSView Assistant** erstellen.
 3. Die Instanzkonfiguration öffnen.
 
+#### 3.1 Assistentenmodus
+
+Beim ersten Öffnen ist der **Schnellstart** aktiv. Er zeigt nur die grundlegenden View-Einstellungen, eine fertige Designvorlage, die Vorschau und das optionale Hintergrundbild. Detailfarben, Effekte, Typografie, Formensprache und die Bearbeitung bestehender Views bleiben ausgeblendet.
+
+Der **Expertenmodus** stellt sämtliche Funktionen des Assistants bereit. Der zuletzt gewählte Modus wird in der Instanz gespeichert und beim nächsten Öffnen wiederhergestellt.
+
 ### 4. Neue View erstellen
 
-Im Bereich **View-Einstellungen** werden die grundlegenden Eigenschaften der neuen View festgelegt.
+Im Bereich **View-Einstellungen** werden die grundlegenden Eigenschaften der neuen View festgelegt. Für die erste View reicht der Schnellstart vollständig aus.
 
 | Einstellung | Bedeutung |
 |---|---|
@@ -53,13 +60,13 @@ Im Bereich **View-Einstellungen** werden die grundlegenden Eigenschaften der neu
 | **Name der Hauptseite** | Bezeichnung der ersten Seite innerhalb der neuen View. |
 | **Seitenverhältnis** | Auswahl zwischen quadratisch (1:1), klassisch (4:3) und Breitbild (16:9). |
 | **Ausrichtung** | Querformat oder Hochformat. |
-| **Vorlage** | Grundlage der neuen View. Derzeit steht eine leere View zur Verfügung. |
+| **Vorlage** | Grundlage der neuen View. Derzeit steht eine leere View zur Verfügung. Diese technische Auswahl wird nur im Expertenmodus angezeigt. |
 
 Danach im Bereich **Design** die gewünschte Gestaltung auswählen. Mit **View erstellen** wird das neue IPSView-Medienobjekt angelegt.
 
 ### 5. Bestehende View gestalten
 
-Der Bereich **Bestehende View** dient dazu, das Design eines vorhandenen IPSView-Projekts zu übernehmen und auf einer Kopie zu verändern.
+Der nur im Expertenmodus sichtbare Bereich **Bestehende View** dient dazu, das Design eines vorhandenen IPSView-Projekts zu übernehmen und auf einer Kopie zu verändern.
 
 1. Unter **Quell-IPSView** das vorhandene IPSView-Medienobjekt auswählen.
 2. Der Assistant liest das bestehende Design ein und überträgt die erkannten Farben in die Designfelder.

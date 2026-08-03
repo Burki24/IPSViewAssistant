@@ -1,11 +1,40 @@
 {
     "actions": [
         {
+            "type": "RowLayout",
+            "items": [
+                {
+                    "type": "Select",
+                    "name": "AssistantMode",
+                    "caption": "Assistant mode",
+                    "value": 0,
+                    "width": "360px",
+                    "onChange": "IPSVIEWA_UpdateAssistantMode($id, $AssistantMode);",
+                    "options": [
+                        {
+                            "caption": "Quick start",
+                            "value": 0
+                        },
+                        {
+                            "caption": "Advanced",
+                            "value": 1
+                        }
+                    ]
+                },
+                {
+                    "type": "Label",
+                    "name": "AssistantModeInfo",
+                    "caption": "Quick start shows only the settings needed for a first IPSView. All detailed design and copy functions remain available in Advanced mode."
+                }
+            ]
+        },
+        {
             "type": "Label",
             "caption": "Create a new IPSView without using the technical IPSView creation dialog."
         },
         {
             "type": "ExpansionPanel",
+            "name": "ViewSettingsPanel",
             "caption": "View settings",
             "expanded": true,
             "items": [
@@ -78,6 +107,7 @@
                     "name": "Template",
                     "caption": "Template",
                     "value": 0,
+                    "visible": false,
                     "options": [
                         {
                             "caption": "Empty View",
@@ -89,8 +119,10 @@
         },
         {
             "type": "ExpansionPanel",
+            "name": "ExistingViewPanel",
             "caption": "Existing View",
-            "expanded": true,
+            "expanded": false,
+            "visible": false,
             "items": [
                 {
                     "type": "Label",
@@ -157,6 +189,7 @@
         },
         {
             "type": "ExpansionPanel",
+            "name": "DesignPanel",
             "caption": "Design",
             "expanded": true,
             "items": [
@@ -207,6 +240,7 @@
                 },
                 {
                     "type": "Label",
+                    "name": "ThemeDescription",
                     "caption": "Choose a preset or adjust the semantic colors below. A manual color change automatically switches the theme to Custom."
                 },
                 {
@@ -794,6 +828,7 @@
                                 }
                             ],
                             "name": "ThemeColorsPanel",
+                            "visible": false,
                             "width": "820px"
                         },
                         {
@@ -908,6 +943,7 @@
             "items": [
                 {
                     "type": "Button",
+                    "name": "CreateViewButton",
                     "caption": "Create View",
                     "onClick": "echo IPSVIEWA_CreateView($id, $ViewName, $TargetCategoryID, $AspectRatio, $Orientation, $Template, $MainPageName, $Theme, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"fontBoldMode\" => $FontBoldMode, \"fontItalicMode\" => $FontItalicMode, \"fontUnderlineMode\" => $FontUnderlineMode, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));"
                 },
@@ -915,12 +951,15 @@
                     "type": "Button",
                     "caption": "Save styled copy",
                     "onClick": "echo IPSVIEWA_CreateStyledCopy($id, $SourceViewID, $CopyViewName, $CopyTargetCategoryID, $Theme, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), $DesignScope, json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"fontBoldMode\" => $FontBoldMode, \"fontItalicMode\" => $FontItalicMode, \"fontUnderlineMode\" => $FontUnderlineMode, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));",
-                    "name": "SaveStyledCopyButton"
+                    "name": "SaveStyledCopyButton",
+                    "visible": false
                 }
             ]
         },
         {
             "type": "Label",
+            "name": "StyledCopyInfo",
+            "visible": false,
             "caption": "The first save creates a separate design copy. Further saves with the same name and target category update that copy while preserving all later IPSView Designer changes."
         },
         {

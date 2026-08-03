@@ -128,6 +128,8 @@ assertTest(str_contains($formJson, 'IPSVIEWA_UpdateAppearancePreview'), 'The app
 assertTest(str_contains($formJson, 'SourceViewID'), 'The existing IPSView selector is missing.');
 assertTest(str_contains($formJson, 'IPSVIEWA_LoadExistingView'), 'The existing View load action is missing.');
 assertTest(str_contains($formJson, 'IPSVIEWA_CreateStyledCopy'), 'The styled copy action is missing.');
+assertTest(str_contains($formJson, 'IPSVIEWA_UpdateAssistantMode'), 'The assistant mode action is missing.');
+assertTest(str_contains($formJson, 'AssistantModeInfo'), 'The assistant mode explanation is missing.');
 
 $gitmodules = (string) file_get_contents($root . '/.gitmodules');
 assertTest(str_contains($gitmodules, 'url = https://github.com/symcon/StylePHP'), 'StylePHP submodule is missing.');
