@@ -831,6 +831,8 @@ class IPSViewAssistant extends IPSModuleStrict
     }
 
     /**
+     * Returns the stable field names that are visible only in advanced mode.
+     *
      * @return list<string>
      */
     private function advancedModeFields(): array
@@ -844,6 +846,9 @@ class IPSViewAssistant extends IPSModuleStrict
         ];
     }
 
+    /**
+     * Falls back to quick start when an unknown assistant mode is supplied.
+     */
     private function normalizeAssistantMode(int $mode): int
     {
         return $mode === self::ASSISTANT_MODE_ADVANCED
@@ -851,6 +856,9 @@ class IPSViewAssistant extends IPSModuleStrict
             : self::ASSISTANT_MODE_QUICK_START;
     }
 
+    /**
+     * Returns the localized explanation for the selected assistant mode.
+     */
     private function assistantModeInfo(int $mode): string
     {
         if ($mode === self::ASSISTANT_MODE_ADVANCED) {
@@ -860,6 +868,9 @@ class IPSViewAssistant extends IPSModuleStrict
         return $this->Translate('Quick start shows only the settings needed for a first IPSView. All detailed design and copy functions remain available in Advanced mode.');
     }
 
+    /**
+     * Returns the mode-specific explanation shown above the theme selection.
+     */
     private function themeDescription(int $mode): string
     {
         if ($mode === self::ASSISTANT_MODE_ADVANCED) {
@@ -869,6 +880,9 @@ class IPSViewAssistant extends IPSModuleStrict
         return $this->Translate('Choose a ready-made design preset. Detailed colors, effects and typography are available in Advanced mode.');
     }
 
+    /**
+     * Falls back to the wall-tablet profile for unknown profile values.
+     */
     private function normalizeUsageProfile(int $profile): int
     {
         return IPSViewUsageProfile::isSelectable($profile)
@@ -876,6 +890,9 @@ class IPSViewAssistant extends IPSModuleStrict
             : IPSViewUsageProfile::PROFILE_WALL_TABLET;
     }
 
+    /**
+     * Reads and validates the start-grid arrangement retained for the preview.
+     */
     private function previewStartGrid(): int
     {
         return $this->normalizeStartGrid(
@@ -883,6 +900,9 @@ class IPSViewAssistant extends IPSModuleStrict
         );
     }
 
+    /**
+     * Falls back to no grid for an unsupported start-grid value.
+     */
     private function normalizeStartGrid(int $startGrid): int
     {
         return in_array(
@@ -896,6 +916,9 @@ class IPSViewAssistant extends IPSModuleStrict
         ) ? $startGrid : IPSViewDocument::START_GRID_NONE;
     }
 
+    /**
+     * Returns the localized device and dimension summary for a usage profile.
+     */
     private function usageProfileInfo(int $profile): string
     {
         return $this->Translate(match ($profile) {
@@ -944,6 +967,9 @@ class IPSViewAssistant extends IPSModuleStrict
         );
     }
 
+    /**
+     * Reveals and initializes the guided Designer handover after View creation.
+     */
     private function showDesignerHandover(int $mediaID): void
     {
         $this->UpdateFormField('DesignerHandoverPanel', 'visible', true);
@@ -954,6 +980,9 @@ class IPSViewAssistant extends IPSModuleStrict
         $this->UpdateFormField('DesignerObjectHint', 'caption', $this->designerObjectHint(1));
     }
 
+    /**
+     * Builds the localized object-tree location of the newly created View.
+     */
     private function designerHandoverTitle(int $mediaID): string
     {
         $object = IPS_GetObject($mediaID);
@@ -966,6 +995,9 @@ class IPSViewAssistant extends IPSModuleStrict
         );
     }
 
+    /**
+     * Builds a localized first-control recommendation for a Symcon object.
+     */
     private function designerObjectHint(int $objectID): string
     {
         if ($objectID <= 1 || !IPS_ObjectExists($objectID)) {
@@ -1006,6 +1038,8 @@ class IPSViewAssistant extends IPSModuleStrict
     }
 
     /**
+     * Recursively updates one named field in a list of nested form items.
+     *
      * @param list<array<string, mixed>> $items
      */
     private function setConfigurationFormFieldInItems(
@@ -1031,6 +1065,9 @@ class IPSViewAssistant extends IPSModuleStrict
         return false;
     }
 
+    /**
+     * Finds the managed design copy matching source, name and target category.
+     */
     private function findManagedCopy(
         int $sourceMediaID,
         string $copyName,
@@ -1055,6 +1092,9 @@ class IPSViewAssistant extends IPSModuleStrict
         return null;
     }
 
+    /**
+     * Returns the most recently registered, still valid copy for a source View.
+     */
     private function findPreferredManagedCopy(int $sourceMediaID): ?int
     {
         foreach (array_reverse($this->readManagedCopies()) as $managedCopy) {
@@ -1066,6 +1106,9 @@ class IPSViewAssistant extends IPSModuleStrict
         return null;
     }
 
+    /**
+     * Persists the relation between a source View and its managed design copy.
+     */
     private function rememberManagedCopy(int $sourceMediaID, int $targetMediaID): void
     {
         $managedCopies = array_values(
@@ -1086,6 +1129,8 @@ class IPSViewAssistant extends IPSModuleStrict
     }
 
     /**
+     * Reads the managed-copy registry and filters invalid entries.
+     *
      * @return list<array{sourceMediaID: int, targetMediaID: int}>
      */
     private function readManagedCopies(): array
@@ -1134,6 +1179,8 @@ class IPSViewAssistant extends IPSModuleStrict
     }
 
     /**
+     * Converts a theme report into the localized result text shown to the user.
+     *
      * @param array{
      *     palette: array<string, string>,
      *     scope: int,
@@ -1145,7 +1192,8 @@ class IPSViewAssistant extends IPSModuleStrict
      *     shadowChanged: bool,
      *     globalTypographyApplied: int,
      *     controlTypographyApplied: int,
-     *     globalShapeApplied: int
+     *     globalShapeApplied: int,
+     *     backgroundChanged: bool
      * }|null $report
      */
     private function formatThemeReport(?array $report): string
@@ -1193,6 +1241,8 @@ class IPSViewAssistant extends IPSModuleStrict
     }
 
     /**
+     * Decodes the semantic color palette received from the configuration form.
+     *
      * @return array<string, mixed>
      */
     private function decodePalette(string $paletteJson): array
@@ -1211,6 +1261,8 @@ class IPSViewAssistant extends IPSModuleStrict
     }
 
     /**
+     * Decodes and validates the general visual effects received from the form.
+     *
      * @return array<string, mixed>
      */
     private function decodeEffects(string $effectsJson): array
@@ -1229,6 +1281,8 @@ class IPSViewAssistant extends IPSModuleStrict
     }
 
     /**
+     * Decodes and validates the typography and shape settings received from the form.
+     *
      * @return array<string, mixed>
      */
     private function decodeAppearance(string $appearanceJson): array
@@ -1250,6 +1304,8 @@ class IPSViewAssistant extends IPSModuleStrict
     }
 
     /**
+     * Returns the validated background-image settings persisted by the instance.
+     *
      * @return array{mode: int, layout: string, scope: int, imageData: string}
      */
     private function backgroundSettings(): array
@@ -1263,6 +1319,8 @@ class IPSViewAssistant extends IPSModuleStrict
     }
 
     /**
+     * Analyzes the current creation inputs together with the persisted background settings.
+     *
      * @return array{status: int, ready: bool, checks: list<string>, warnings: list<string>, errors: list<string>}
      */
     private function startCheck(
@@ -1287,6 +1345,8 @@ class IPSViewAssistant extends IPSModuleStrict
     }
 
     /**
+     * Writes a start-check report to the live form and enables creation when ready.
+     *
      * @param array{status: int, ready: bool, checks: list<string>, warnings: list<string>, errors: list<string>} $report
      */
     private function showStartCheck(array $report): void
@@ -1296,6 +1356,8 @@ class IPSViewAssistant extends IPSModuleStrict
     }
 
     /**
+     * Applies the initial start-check report to the form definition before rendering.
+     *
      * @param array<string, mixed>                                                                              $form
      * @param array{status: int, ready: bool, checks: list<string>, warnings: list<string>, errors: list<string>} $report
      */
@@ -1306,6 +1368,8 @@ class IPSViewAssistant extends IPSModuleStrict
     }
 
     /**
+     * Formats one start-check report as a localized multiline traffic-light summary.
+     *
      * @param array{status: int, ready: bool, checks: list<string>, warnings: list<string>, errors: list<string>} $report
      */
     private function startCheckCaption(array $report): string
@@ -1331,6 +1395,8 @@ class IPSViewAssistant extends IPSModuleStrict
     }
 
     /**
+     * Writes a resolved semantic palette back to all configuration color fields.
+     *
      * @param array<string, string> $palette
      */
     private function updateColorFields(array $palette): void

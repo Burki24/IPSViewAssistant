@@ -263,6 +263,8 @@ final class IPSViewEffects
     }
 
     /**
+     * Resolves the shadow geometry used by the SVG design preview.
+     *
      * @param array<string, mixed> $settings
      *
      * @return array{offset: int, blur: int, spread: int, opacity: float}
@@ -305,6 +307,9 @@ final class IPSViewEffects
         };
     }
 
+    /**
+     * Applies one supported shadow preset to the global IPSView defaults.
+     */
     private static function applyShadow(stdClass $document, int $shadowStyle): void
     {
         $specification = match ($shadowStyle) {
@@ -367,6 +372,8 @@ final class IPSViewEffects
     }
 
     /**
+     * Applies transparency and gradient settings to one compatible color object.
+     *
      * @param array<string, mixed> $settings
      */
     private static function applyColorEffects(stdClass $color, array $settings): bool
@@ -380,6 +387,8 @@ final class IPSViewEffects
     }
 
     /**
+     * Applies the selected alpha value while preserving secondary-color consistency.
+     *
      * @param array<string, mixed> $settings
      */
     private static function applyTransparency(stdClass $color, array $settings): void
@@ -400,6 +409,8 @@ final class IPSViewEffects
     }
 
     /**
+     * Applies or removes the generated secondary color used by IPSView gradients.
+     *
      * @param array<string, mixed> $settings
      */
     private static function applyGradient(stdClass $color, array $settings): void
@@ -438,6 +449,8 @@ final class IPSViewEffects
     }
 
     /**
+     * Collects the normalized colors of all global fill properties.
+     *
      * @return array<string, true>
      */
     private static function globalFillSignatures(stdClass $document): array
@@ -458,6 +471,8 @@ final class IPSViewEffects
     }
 
     /**
+     * Recursively applies effects to eligible control backgrounds.
+     *
      * @param array<string, mixed> $settings
      * @param array<string, true>  $globalSignatures
      */
@@ -521,6 +536,9 @@ final class IPSViewEffects
         return $applied;
     }
 
+    /**
+     * Reports whether a color object contains a complete secondary RGB color.
+     */
     private static function hasSecondaryColor(stdClass $color): bool
     {
         foreach (['R2', 'G2', 'B2'] as $component) {
@@ -532,6 +550,9 @@ final class IPSViewEffects
         return true;
     }
 
+    /**
+     * Reports whether an object contains numeric primary RGB components.
+     */
     private static function isColorObject(stdClass $color): bool
     {
         foreach (['R', 'G', 'B'] as $component) {
@@ -547,6 +568,8 @@ final class IPSViewEffects
     }
 
     /**
+     * Converts a normalized hex color to integer RGB components.
+     *
      * @return array{0: int, 1: int, 2: int}
      */
     private static function toRgb(string $color): array

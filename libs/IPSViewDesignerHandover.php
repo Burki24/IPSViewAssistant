@@ -15,6 +15,9 @@ final class IPSViewDesignerHandover
     private const VARIABLE_TYPE_FLOAT = 2;
     private const VARIABLE_TYPE_STRING = 3;
 
+    /**
+     * Recommends a suitable first IPSView control for a Symcon object type.
+     */
     public static function recommendation(int $objectType, ?int $variableType = null): string
     {
         if ($objectType === self::OBJECT_TYPE_VARIABLE) {

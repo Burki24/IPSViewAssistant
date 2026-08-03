@@ -27,7 +27,7 @@ Der **IPSView Assistant** erleichtert das Erstellen und Gestalten von IPSView-Pr
 - Schriftgröße, Schriftart, Ecken und Rahmen festlegen
 - Lokale PNG- und JPEG-Hintergrundbilder in die Hauptseite oder alle Seiten einbetten
 - Änderungen unmittelbar in einer Vorschau beurteilen
-- Nach der Erstellung geführt zum ersten Bedienelement im IPSView Designer wechseln
+- Nach der Erstellung eine geführte Übergabe zum ersten Bedienelement im IPSView Designer erhalten
 - Bestehende IPSView laden und als separate Designkopie neu gestalten
 - Bereits angelegte Designkopie bei späteren Speichervorgängen aktualisieren
 
@@ -35,6 +35,8 @@ Der **IPSView Assistant** erleichtert das Erstellen und Gestalten von IPSView-Pr
 
 - Symcon ab Version 9.0
 - Installiertes und lizenziertes IPSView (Standard oder Professional)
+
+Der IPSView Designer wird zum Öffnen, Bearbeiten und Speichern der erzeugten View benötigt. Ist er nicht installiert oder kann der Assistant ihn nicht automatisch erkennen, bleibt die Erstellung möglich; der Startcheck zeigt dann einen gelben Hinweis.
 
 ### 3. Installation
 

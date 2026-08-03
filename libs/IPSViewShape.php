@@ -150,6 +150,8 @@ final class IPSViewShape
     }
 
     /**
+     * Resolves a corner preset to its effective radius or null when preserved.
+     *
      * @param array<string, mixed> $settings
      */
     private static function resolveCornerRadius(array $settings): ?int
@@ -165,6 +167,8 @@ final class IPSViewShape
     }
 
     /**
+     * Resolves a border preset to its effective width or null when preserved.
+     *
      * @param array<string, mixed> $settings
      */
     private static function resolveBorderWidth(array $settings): ?float

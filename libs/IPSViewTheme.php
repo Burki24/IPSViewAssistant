@@ -426,6 +426,8 @@ final class IPSViewTheme
     }
 
     /**
+     * Returns the semantic-role mapping for all supported global color properties.
+     *
      * @return array<string, list<string>>
      */
     private static function propertyMapping(): array
@@ -594,6 +596,8 @@ final class IPSViewTheme
     }
 
     /**
+     * Recursively recolors eligible controls according to the selected scope.
+     *
      * @param array<string, string>              $palette
      * @param array<string, array<string, true>> $sourceRoleSignatures
      *
@@ -627,6 +631,8 @@ final class IPSViewTheme
     }
 
     /**
+     * Walks nested controls, applying semantic colors and updating report counters.
+     *
      * @param array<string, array<string, true>> $sourceRoleSignatures
      * @param array<string, string>|null         $palette
      * @param array{total: int, matching: int, all: int, applied: int} $counters
@@ -707,6 +713,8 @@ final class IPSViewTheme
     }
 
     /**
+     * Collects the old normalized color signatures for every semantic role.
+     *
      * @return array<string, array<string, true>>
      */
     private static function sourceRoleSignatures(stdClass $document): array
@@ -730,6 +738,8 @@ final class IPSViewTheme
     }
 
     /**
+     * Resolves the semantic role of one control property from its old color signature.
+     *
      * @param array<string, array<string, true>> $sourceRoleSignatures
      */
     private static function resolveControlRole(
@@ -762,6 +772,9 @@ final class IPSViewTheme
         return null;
     }
 
+    /**
+     * Maps a known control color property to its preferred semantic role.
+     */
     private static function preferredControlRole(string $property): ?string
     {
         if (preg_match('/^BorderColor\d+$/', $property) === 1) {
@@ -783,11 +796,17 @@ final class IPSViewTheme
         return null;
     }
 
+    /**
+     * Reports whether a property is a supported IPSView control color slot.
+     */
     private static function isSupportedControlColorProperty(string $property): bool
     {
         return preg_match('/^(BackColor|ForeColor|BackColor\d+|ForeColor\d+|BorderColor\d+)$/', $property) === 1;
     }
 
+    /**
+     * Reports whether a value is an IPSView color object with numeric RGB components.
+     */
     private static function isColorObject(mixed $value): bool
     {
         if (!$value instanceof stdClass) {
@@ -804,6 +823,9 @@ final class IPSViewTheme
         return true;
     }
 
+    /**
+     * Rejects unsupported design-scope values before applying a theme.
+     */
     private static function validateScope(int $scope): void
     {
         if (!in_array(
@@ -819,6 +841,9 @@ final class IPSViewTheme
         }
     }
 
+    /**
+     * Applies a color to one existing global property and reports whether it was found.
+     */
     private static function applyColor(stdClass $document, string $property, string $hexColor): bool
     {
         if (!property_exists($document, $property) || !self::isColorObject($document->{$property})) {
@@ -830,6 +855,9 @@ final class IPSViewTheme
         return true;
     }
 
+    /**
+     * Recolors an IPSView color object while preserving its secondary-lightness relation.
+     */
     private static function applyColorObject(stdClass $color, string $hexColor): void
     {
         $originalPrimary = self::colorObjectToHex($color, $hexColor);
@@ -854,6 +882,9 @@ final class IPSViewTheme
         $color->B2 = $secondBlue;
     }
 
+    /**
+     * Converts the optional secondary RGB components to a normalized hex color.
+     */
     private static function secondaryColorToHex(stdClass $color, string $fallback): string
     {
         if (!self::hasSecondaryColor($color)) {
@@ -868,6 +899,9 @@ final class IPSViewTheme
         );
     }
 
+    /**
+     * Reports whether a color object contains numeric secondary RGB components.
+     */
     private static function hasSecondaryColor(stdClass $color): bool
     {
         foreach (['R2', 'G2', 'B2'] as $component) {
@@ -880,6 +914,9 @@ final class IPSViewTheme
         return true;
     }
 
+    /**
+     * Transfers the old primary-to-secondary luminance relation to a new color.
+     */
     private static function deriveSecondaryColor(
         string $newPrimary,
         string $oldPrimary,
@@ -904,6 +941,9 @@ final class IPSViewTheme
         return self::mix($newPrimary, '#FFFFFF', min(0.65, max(0.0, $amount)));
     }
 
+    /**
+     * Calculates a simple weighted luminance value for a normalized color.
+     */
     private static function relativeLuminance(string $color): float
     {
         [$red, $green, $blue] = self::toRgb($color);
@@ -914,6 +954,8 @@ final class IPSViewTheme
     }
 
     /**
+     * Converts a normalized hex color to integer RGB components.
+     *
      * @return array{0: int, 1: int, 2: int}
      */
     private static function toRgb(string $color): array

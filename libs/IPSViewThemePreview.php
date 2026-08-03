@@ -186,6 +186,7 @@ final class IPSViewThemePreview
      * @param array<string, string> $palette
      * @param array<string, mixed>  $effects
      * @param array<string, mixed>  $appearance
+     * @param array<string, mixed>  $background
      */
     public static function createDataUri(
         array $palette,
@@ -200,9 +201,12 @@ final class IPSViewThemePreview
     }
 
     /**
+     * Creates the self-contained SVG used by the configuration-form preview.
+     *
      * @param array<string, string> $palette
      * @param array<string, mixed>  $effects
      * @param array<string, mixed>  $appearance
+     * @param array<string, mixed>  $background
      */
     public static function createSvg(
         array $palette,
@@ -450,6 +454,9 @@ SVG;
         };
     }
 
+    /**
+     * Draws optional column guides matching the selected start-grid layout.
+     */
     private static function gridGuides(int $startGrid, string $accent): string
     {
         if ($startGrid === 0) {
@@ -476,6 +483,8 @@ SVG;
     }
 
     /**
+     * Creates the SVG pattern definition required by a tiled background image.
+     *
      * @param array{dataUri: string, layout: string, width: int, height: int}|null $background
      */
     private static function backgroundDefinition(?array $background): string
@@ -499,6 +508,8 @@ SVG;
     }
 
     /**
+     * Creates the SVG element for the selected background-image layout.
+     *
      * @param array{dataUri: string, layout: string, width: int, height: int}|null $background
      */
     private static function backgroundElement(?array $background): string
@@ -534,6 +545,9 @@ SVG;
         );
     }
 
+    /**
+     * Embeds the closest bundled font face required by the current preview.
+     */
     private static function fontDefinition(
         string $fontFamily,
         bool $isBold,
@@ -565,6 +579,8 @@ SVG;
     }
 
     /**
+     * Selects the closest available bundled font face for the requested style.
+     *
      * @param array<string, array{
      *     filename: string,
      *     mime: string,
@@ -612,6 +628,8 @@ SVG;
     }
 
     /**
+     * Resolves one bundled font file to an embeddable data source.
+     *
      * @param array{
      *     filename: string,
      *     mime: string,
@@ -634,6 +652,9 @@ SVG;
         ];
     }
 
+    /**
+     * Returns the CSS font stack for a bundled or user-provided family.
+     */
     private static function fontStack(string $fontFamily): string
     {
         $font = self::PREVIEW_FONTS[$fontFamily] ?? null;
@@ -646,6 +667,9 @@ SVG;
             : $font['alias'] . ', ' . $font['fallback'];
     }
 
+    /**
+     * Loads and caches one bundled preview font as Base64 data.
+     */
     private static function fontData(string $filename): string
     {
         if (isset(self::$previewFontData[$filename])) {
@@ -662,6 +686,8 @@ SVG;
     }
 
     /**
+     * Creates one SVG linear-gradient definition when gradients are enabled.
+     *
      * @param array<string, mixed> $effects
      */
     private static function gradientDefinition(
@@ -684,6 +710,8 @@ SVG;
     }
 
     /**
+     * Returns either a solid color or the matching generated gradient reference.
+     *
      * @param array<string, mixed> $effects
      */
     private static function fill(string $id, string $color, array $effects): string
@@ -693,12 +721,17 @@ SVG;
             : $color;
     }
 
+    /**
+     * Scales and clamps one font size for the fixed preview canvas.
+     */
     private static function fontSize(int $baseSize, float $scale): int
     {
         return max(9, min(30, (int) round($baseSize * $scale)));
     }
 
     /**
+     * Resolves one semantic palette role to a normalized preview color.
+     *
      * @param array<string, string> $palette
      */
     private static function color(array $palette, string $role): string

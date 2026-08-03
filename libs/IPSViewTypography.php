@@ -339,6 +339,8 @@ final class IPSViewTypography
     }
 
     /**
+     * Resolves a typography-size preset to its effective base size.
+     *
      * @param array<string, mixed> $settings
      */
     private static function resolveBaseSize(array $settings): ?int
@@ -353,6 +355,8 @@ final class IPSViewTypography
     }
 
     /**
+     * Resolves a font-family mode to the IPSView family name to apply.
+     *
      * @param array<string, mixed> $settings
      */
     private static function resolveFontFamily(array $settings): ?string
@@ -371,6 +375,8 @@ final class IPSViewTypography
     }
 
     /**
+     * Returns the available bold and italic faces for one font family.
+     *
      * @return array{bold: bool, italic: bool}
      */
     private static function capabilitiesForFamily(string $fontFamily): array
@@ -381,6 +387,9 @@ final class IPSViewTypography
         ];
     }
 
+    /**
+     * Converts a preserve/off/on format mode to null, false or true.
+     */
     private static function resolveFormatValue(int $mode): ?bool
     {
         return match ($mode) {
@@ -390,11 +399,17 @@ final class IPSViewTypography
         };
     }
 
+    /**
+     * Scales and clamps a control font size to the supported range.
+     */
     private static function scaleFontSize(int $size, float $scale): int
     {
         return max(6, min(72, (int) round($size * $scale)));
     }
 
+    /**
+     * Recursively updates eligible control fonts and returns the change count.
+     */
     private static function applyControlTypography(
         mixed $value,
         int $scope,
@@ -476,6 +491,9 @@ final class IPSViewTypography
         return $changes;
     }
 
+    /**
+     * Applies the selected family, size and formatting to one control font.
+     */
     private static function applyFontObject(
         stdClass $font,
         int $scope,
@@ -547,6 +565,9 @@ final class IPSViewTypography
         return $changed;
     }
 
+    /**
+     * Applies explicitly selected bold, italic and underline flags.
+     */
     private static function applyFontFormatting(
         stdClass $font,
         ?bool $targetBold,

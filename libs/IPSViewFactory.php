@@ -11,12 +11,20 @@ final class IPSViewFactory
 {
     public const TEMPLATE_EMPTY = 0;
 
+    /**
+     * Uses the supplied directory to locate the bundled empty-View template.
+     */
     public function __construct(private readonly string $templateDirectory)
     {
     }
 
     /**
      * Creates and initializes one IPSView media object.
+     *
+     * @param array<string, mixed> $customPalette
+     * @param array<string, mixed> $effects
+     * @param array<string, mixed> $appearance
+     * @param array<string, mixed> $background
      */
     public function create(
         string $viewName,

@@ -9,4 +9,5 @@ Folgende Module enthält die Bibliothek:
 ## Voraussetzungen
 
 - Symcon ab Version 9.0
-- IPSView Designer zum Öffnen, Bearbeiten und Speichern der erzeugten View
+- Installiertes und lizenziertes IPSView (Standard oder Professional)
+- IPSView Designer zum Öffnen, Bearbeiten und Speichern der erzeugten View; ohne erkannten Designer bleibt die Erstellung mit einem gelben Startcheck-Hinweis möglich

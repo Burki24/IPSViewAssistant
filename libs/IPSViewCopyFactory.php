@@ -24,7 +24,8 @@ final class IPSViewCopyFactory
      *     shadowChanged: bool,
      *     globalTypographyApplied: int,
      *     controlTypographyApplied: int,
-     *     globalShapeApplied: int
+     *     globalShapeApplied: int,
+     *     backgroundChanged: bool
      * }|null
      */
     private ?array $lastThemeReport = null;
@@ -43,6 +44,14 @@ final class IPSViewCopyFactory
      *         baseFontSize: int,
      *         cornerRadius: int,
      *         borderWidth: float
+     *     },
+     *     background: array{
+     *         mode: int,
+     *         layout: string,
+     *         scope: int,
+     *         imageData: string,
+     *         width: int,
+     *         height: int
      *     },
      *     designAnalysis: array{
      *         globalColors: int,
@@ -75,6 +84,9 @@ final class IPSViewCopyFactory
      * Creates a styled copy while preserving all pages, controls and unknown fields.
      *
      * @param array<string, mixed> $customPalette
+     * @param array<string, mixed> $effects
+     * @param array<string, mixed> $appearance
+     * @param array<string, mixed> $background
      */
     public function create(
         int $sourceMediaID,
@@ -148,6 +160,9 @@ final class IPSViewCopyFactory
      * changes made in the IPSView Designer remain untouched.
      *
      * @param array<string, mixed> $customPalette
+     * @param array<string, mixed> $effects
+     * @param array<string, mixed> $appearance
+     * @param array<string, mixed> $background
      */
     public function update(
         int $targetMediaID,
@@ -188,7 +203,11 @@ final class IPSViewCopyFactory
      *     controlColorsPreserved: int,
      *     globalEffectsApplied: int,
      *     controlEffectsApplied: int,
-     *     shadowChanged: bool
+     *     shadowChanged: bool,
+     *     globalTypographyApplied: int,
+     *     controlTypographyApplied: int,
+     *     globalShapeApplied: int,
+     *     backgroundChanged: bool
      * }|null
      */
     public function getLastThemeReport(): ?array
@@ -196,6 +215,9 @@ final class IPSViewCopyFactory
         return $this->lastThemeReport;
     }
 
+    /**
+     * Finds one same-name IPSView in the target category or reports a conflicting object.
+     */
     public function findExistingTarget(string $copyName, int $targetCategoryID): ?int
     {
         $copyName = trim($copyName);
@@ -241,6 +263,9 @@ final class IPSViewCopyFactory
         return $matchingObject['id'];
     }
 
+    /**
+     * Loads and validates the IPSView document stored in a Symcon media object.
+     */
     private function loadDocument(int $sourceMediaID): IPSViewDocument
     {
         if ($sourceMediaID < 1 || !IPS_MediaExists($sourceMediaID)) {
@@ -262,6 +287,9 @@ final class IPSViewCopyFactory
         return IPSViewDocument::fromJson($json);
     }
 
+    /**
+     * Rejects empty and excessively long design-copy names.
+     */
     private function validateName(string $copyName): void
     {
         if ($copyName === '') {
@@ -273,6 +301,9 @@ final class IPSViewCopyFactory
         }
     }
 
+    /**
+     * Accepts the Symcon root or an existing category as copy target.
+     */
     private function validateTargetCategory(int $targetCategoryID): void
     {
         if ($targetCategoryID === 0) {

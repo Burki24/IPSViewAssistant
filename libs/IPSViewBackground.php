@@ -24,6 +24,8 @@ final class IPSViewBackground
     private const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 
     /**
+     * Normalizes and validates a background-image selection.
+     *
      * @param array<string, mixed> $settings
      *
      * @return array{mode: int, layout: string, scope: int, imageData: string}
@@ -111,6 +113,8 @@ final class IPSViewBackground
     }
 
     /**
+     * Reads the image referenced by the main page without changing the document.
+     *
      * @return array{mode: int, layout: string, scope: int, imageData: string, width: int, height: int}
      */
     public static function extract(stdClass $document): array
@@ -161,6 +165,8 @@ final class IPSViewBackground
     }
 
     /**
+     * Decodes the selected image for use in the SVG design preview.
+     *
      * @param array<string, mixed> $settings
      *
      * @return array{dataUri: string, layout: string, width: int, height: int}|null
@@ -182,6 +188,9 @@ final class IPSViewBackground
         ];
     }
 
+    /**
+     * Returns the first page or rejects a malformed IPSView document.
+     */
     private static function mainPage(stdClass $document): stdClass
     {
         $pages = $document->Pages ?? null;
@@ -193,6 +202,8 @@ final class IPSViewBackground
     }
 
     /**
+     * Resolves and validates the pages affected by the selected scope.
+     *
      * @return list<stdClass>
      */
     private static function targetPages(stdClass $document, int $scope): array
@@ -216,6 +227,8 @@ final class IPSViewBackground
     }
 
     /**
+     * Validates and decodes one Base64-encoded PNG or JPEG image.
+     *
      * @return array{binary: string, base64: string, mime: string, width: int, height: int}
      */
     private static function decodeImage(string $encoded): array
@@ -248,7 +261,11 @@ final class IPSViewBackground
         ];
     }
 
-    /** @param list<mixed> $images */
+    /**
+     * Reuses the hash of an identical image already embedded in the View.
+     *
+     * @param list<mixed> $images
+     */
     private static function findMatchingHash(array $images, string $base64): ?int
     {
         foreach ($images as $image) {
@@ -260,7 +277,11 @@ final class IPSViewBackground
         return null;
     }
 
-    /** @param list<mixed> $images */
+    /**
+     * Creates a deterministic positive image hash that is unused in the View.
+     *
+     * @param list<mixed> $images
+     */
     private static function createHash(string $binary, array $images): int
     {
         $used = [];
@@ -279,6 +300,9 @@ final class IPSViewBackground
         return $hash;
     }
 
+    /**
+     * Returns the supported image MIME type or null for unreadable image data.
+     */
     private static function detectMimeFromBase64(string $encoded): ?string
     {
         try {

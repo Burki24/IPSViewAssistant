@@ -14,6 +14,8 @@ final class IPSViewStartCheck
     public const STATUS_ERROR = 2;
 
     /**
+     * Collects blocking errors, non-blocking warnings and successful creation checks.
+     *
      * @param array<string, mixed> $background
      *
      * @return array{status: int, ready: bool, checks: list<string>, warnings: list<string>, errors: list<string>}
@@ -112,6 +114,8 @@ final class IPSViewStartCheck
     }
 
     /**
+     * Stops View creation when a previously generated report contains errors.
+     *
      * @param array{ready: bool, errors: list<string>} $report
      */
     public static function assertReady(array $report): void
@@ -126,6 +130,8 @@ final class IPSViewStartCheck
     }
 
     /**
+     * Appends a precise validation error for an empty or excessively long name.
+     *
      * @param list<string> $errors
      */
     private static function validateName(string $name, string $field, array &$errors): bool
@@ -150,6 +156,8 @@ final class IPSViewStartCheck
     }
 
     /**
+     * Accepts the Symcon root or an existing category as creation target.
+     *
      * @param list<string> $errors
      */
     private static function validateTargetCategory(int $targetCategoryID, array &$errors): bool
@@ -174,6 +182,9 @@ final class IPSViewStartCheck
         return true;
     }
 
+    /**
+     * Checks whether the target category already contains a same-name media object.
+     */
     private static function hasDuplicateViewName(string $viewName, int $targetCategoryID): bool
     {
         foreach (IPS_GetChildrenIDs($targetCategoryID) as $childID) {
@@ -187,6 +198,8 @@ final class IPSViewStartCheck
     }
 
     /**
+     * Validates an optional background image and adds the grid-scope hint when needed.
+     *
      * @param array<string, mixed> $background
      * @param list<string>         $checks
      * @param list<string>         $warnings
@@ -227,6 +240,9 @@ final class IPSViewStartCheck
         }
     }
 
+    /**
+     * Detects IPSView Designer, returning null when the module API cannot be queried.
+     */
     private static function designerAvailable(): ?bool
     {
         if (!function_exists('IPS_GetModuleList') || !function_exists('IPS_GetModule')) {

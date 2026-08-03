@@ -46,6 +46,9 @@ final class IPSViewUsageProfile
         };
     }
 
+    /**
+     * Reports whether a profile value can be selected in the assistant form.
+     */
     public static function isSelectable(int $profile): bool
     {
         return $profile >= self::PROFILE_WALL_TABLET

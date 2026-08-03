@@ -28,6 +28,9 @@ final class IPSViewDocument
 
     private stdClass $document;
 
+    /**
+     * Wraps the decoded IPSView root object without converting nested objects.
+     */
     private function __construct(stdClass $document)
     {
         $this->document = $document;
@@ -150,6 +153,9 @@ final class IPSViewDocument
      * Applies a semantic color theme to the IPSView defaults.
      *
      * @param array<string, mixed> $customPalette
+     * @param array<string, mixed> $effects
+     * @param array<string, mixed> $appearance
+     * @param array<string, mixed> $background
      *
      * @return array<string, string> Effective palette
      */
@@ -181,6 +187,9 @@ final class IPSViewDocument
      * Applies a semantic theme with the selected scope and returns a report.
      *
      * @param array<string, mixed> $customPalette
+     * @param array<string, mixed> $effects
+     * @param array<string, mixed> $appearance
+     * @param array<string, mixed> $background
      *
      * @return array{
      *     palette: array<string, string>,
@@ -193,7 +202,8 @@ final class IPSViewDocument
      *     shadowChanged: bool,
      *     globalTypographyApplied: int,
      *     controlTypographyApplied: int,
-     *     globalShapeApplied: int
+     *     globalShapeApplied: int,
+     *     backgroundChanged: bool
      * }
      */
     public function applyThemeWithReport(
@@ -458,6 +468,9 @@ final class IPSViewDocument
         ];
     }
 
+    /**
+     * Recursively counts IPSView control objects in nested arrays and objects.
+     */
     private static function countControls(mixed $value): int
     {
         if (is_array($value)) {
