@@ -19,6 +19,7 @@ $requiredFiles = [
     'libs/helper/ConfigurationFormHelper.php',
     'libs/helper/manifest.json',
     'libs/IPSViewTheme.php',
+    'libs/IPSViewDesignerHandover.php',
     'libs/IPSViewEffects.php',
     'libs/IPSViewTypography.php',
     'libs/IPSViewBackground.php',
@@ -134,6 +135,9 @@ assertTest(str_contains($formJson, 'AssistantModeInfo'), 'The assistant mode exp
 assertTest(str_contains($formJson, 'IPSVIEWA_UpdateUsageProfile'), 'The usage profile action is missing.');
 assertTest(str_contains($formJson, 'IPSVIEWA_MarkUsageProfileCustom'), 'The custom usage profile action is missing.');
 assertTest(str_contains($formJson, 'UsageProfileInfo'), 'The usage profile explanation is missing.');
+assertTest(str_contains($formJson, 'DesignerHandoverPanel'), 'The guided Designer handover is missing.');
+assertTest(str_contains($formJson, 'OpenObjectButton'), 'The button for opening a created IPSView is missing.');
+assertTest(str_contains($formJson, 'IPSVIEWA_UpdateDesignerHandover'), 'The Designer object recommendation action is missing.');
 
 $gitmodules = (string) file_get_contents($root . '/.gitmodules');
 assertTest(str_contains($gitmodules, 'url = https://github.com/symcon/StylePHP'), 'StylePHP submodule is missing.');

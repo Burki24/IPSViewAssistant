@@ -25,6 +25,7 @@ Der **IPSView Assistant** erleichtert das Erstellen und Gestalten von IPSView-Pr
 - Schriftgröße, Schriftart, Ecken und Rahmen festlegen
 - Lokale PNG- und JPEG-Hintergrundbilder in die Hauptseite oder alle Seiten einbetten
 - Änderungen unmittelbar in einer Vorschau beurteilen
+- Nach der Erstellung geführt zum ersten Bedienelement im IPSView Designer wechseln
 - Bestehende IPSView laden und als separate Designkopie neu gestalten
 - Bereits angelegte Designkopie bei späteren Speichervorgängen aktualisieren
 
@@ -296,12 +297,16 @@ Für eine bestehende, bereits sorgfältig gestaltete View empfiehlt sich zunäch
 
 ### 8. Ergebnis im IPSView Designer öffnen
 
-Nach dem Erstellen oder erstmaligen Speichern einer Designkopie:
+Nach dem Erstellen einer neuen View erscheint im Assistant automatisch der Bereich **Nächste Schritte im IPSView Designer**. Er bleibt auch nach dem erneuten Öffnen der Instanz verfügbar, solange das zuletzt erstellte Medienobjekt noch existiert.
 
-1. Das neu angelegte Medienobjekt im Symcon-Objektbaum öffnen.
-2. Die View im IPSView Designer laden.
-3. Die Darstellung kontrollieren und bei Bedarf einzelne Seiten oder Bedienelemente nachbearbeiten.
+1. Mit **Erstellte IPSView öffnen** das neue Medienobjekt direkt aus dem Assistant öffnen.
+2. Optional unter **Erstes Symcon-Objekt** eine Variable, ein Skript oder ein Medienobjekt auswählen. Der Assistant zeigt dessen Objekt-ID und schlägt einen geeigneten Typ für das erste Bedienelement vor.
+3. Im Repository des IPSView Designers die Objekt-ID in den Filter eingeben oder die ID-Suche verwenden. IPSView zeigt daraufhin die geeigneten normalen und kombinierten Bedienelemente an. Eines davon per Drag-and-drop auf die Hauptseite ziehen.
 4. Die View im IPSView Designer einmal speichern.
+
+Die Objektauswahl im Assistant dient nur als verständliche Hilfestellung. Sie erzeugt weder ein Bedienelement noch eine automatische Objektverknüpfung. Die offizielle IPSView-Dokumentation beschreibt die [ID-Suche und kombinierten Bedienelemente im Repository](https://docu.brownson.at/viewdesigner/WebHelpMobile/ViewDesignerRepository.html).
+
+Nach dem erstmaligen Speichern einer Designkopie kann deren Medienobjekt wie gewohnt über den Symcon-Objektbaum im IPSView Designer geöffnet werden.
 
 Der IPSView Assistant übernimmt die grundlegende Erstellung und Gestaltung. Seitenaufbau, Positionen, Navigation, Aktionen und Objektzuordnungen werden weiterhin im IPSView Designer bearbeitet.
 

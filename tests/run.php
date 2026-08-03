@@ -30,6 +30,7 @@ $commands = [
     ['Test IPSView typography and form language', 'php tests/appearance.php'],
     ['Test IPSView page backgrounds', 'php tests/background.php'],
     ['Test IPSView usage profiles', 'php tests/usage_profile.php'],
+    ['Test IPSView Designer handover', 'php tests/designer_handover.php'],
     ['Test IPSView document generation', 'php tests/document.php'],
     ['Test existing IPSView handling', 'php tests/existing_view.php'],
     ['Test module integration', 'php tests/module.php'],

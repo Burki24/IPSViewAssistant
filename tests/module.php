@@ -40,6 +40,10 @@ assertTest(
     str_contains($moduleSource, 'public function MarkUsageProfileCustom('),
     'The public custom usage profile method is missing.'
 );
+assertTest(
+    str_contains($moduleSource, 'public function UpdateDesignerHandover('),
+    'The public Designer handover method is missing.'
+);
 assertTest(str_contains($moduleSource, 'public function LoadExistingView('), 'The public LoadExistingView method is missing.');
 assertTest(str_contains($moduleSource, 'public function CreateStyledCopy('), 'The public CreateStyledCopy method is missing.');
 assertTest(
@@ -118,6 +122,12 @@ $usageProfileInfo = null;
 $aspectRatio = null;
 $orientation = null;
 $fullScreen = null;
+$designerHandoverPanel = null;
+$designerHandoverTitle = null;
+$openCreatedViewButton = null;
+$designerObject = null;
+$designerObjectHint = null;
+$designerHandoverInitialInfo = null;
 $existingViewPanel = null;
 $templateSelect = null;
 $styledCopyInfo = null;
@@ -178,6 +188,30 @@ foreach ($actions as $action) {
 
     if (($action['name'] ?? '') === 'FullScreen') {
         $fullScreen = $action;
+    }
+
+    if (($action['name'] ?? '') === 'DesignerHandoverPanel') {
+        $designerHandoverPanel = $action;
+    }
+
+    if (($action['name'] ?? '') === 'DesignerHandoverTitle') {
+        $designerHandoverTitle = $action;
+    }
+
+    if (($action['name'] ?? '') === 'OpenCreatedViewButton') {
+        $openCreatedViewButton = $action;
+    }
+
+    if (($action['name'] ?? '') === 'DesignerObjectID') {
+        $designerObject = $action;
+    }
+
+    if (($action['name'] ?? '') === 'DesignerObjectHint') {
+        $designerObjectHint = $action;
+    }
+
+    if (($action['name'] ?? '') === 'DesignerHandoverInitialInfo') {
+        $designerHandoverInitialInfo = $action;
     }
 
     if (($action['name'] ?? '') === 'ExistingViewPanel') {
@@ -348,6 +382,32 @@ foreach ([$aspectRatio, $orientation, $fullScreen] as $profileField) {
         'A manually changed View setting does not mark the usage profile as custom.'
     );
 }
+assertTest(is_array($designerHandoverPanel), 'The guided Designer handover panel is missing.');
+assertTest(($designerHandoverPanel['visible'] ?? true) === false, 'The Designer handover must stay hidden before creation.');
+assertTest(($designerHandoverPanel['expanded'] ?? false) === true, 'The Designer handover must open expanded.');
+assertTest(is_array($designerHandoverTitle), 'The created View information is missing from the Designer handover.');
+assertTest(is_array($openCreatedViewButton), 'The button for opening the created View is missing.');
+assertTest(($openCreatedViewButton['type'] ?? '') === 'OpenObjectButton', 'The created View is not opened with the native Symcon button.');
+assertTest(($openCreatedViewButton['objectID'] ?? -1) === 0, 'The initial Designer button contains an unexpected object ID.');
+assertTest(($openCreatedViewButton['visible'] ?? true) === false, 'The Designer button must stay hidden before creation.');
+assertTest(is_array($designerObject), 'The optional first Symcon object selection is missing.');
+assertTest(($designerObject['value'] ?? null) === 1, 'An optional Symcon object selection must start with nothing selected.');
+assertTest(
+    str_contains((string) ($designerObject['onChange'] ?? ''), 'IPSVIEWA_UpdateDesignerHandover('),
+    'Selecting the first Symcon object does not refresh the Designer recommendation.'
+);
+assertTest(is_array($designerObjectHint), 'The first control recommendation is missing.');
+assertTest(is_array($designerHandoverInitialInfo), 'The initial Designer handover explanation is missing.');
+assertTest(
+    str_contains($moduleSource, 'RegisterAttributeInteger(self::ATTRIBUTE_LAST_CREATED_VIEW_ID')
+        && str_contains($moduleSource, 'RegisterAttributeInteger(self::ATTRIBUTE_DESIGNER_OBJECT_ID'),
+    'The most recent Designer handover is not persisted.'
+);
+assertTest(
+    str_contains($moduleSource, '$this->showDesignerHandover($mediaID);')
+        && str_contains($moduleSource, 'applyDesignerHandoverToForm('),
+    'A created View does not activate or restore the guided Designer handover.'
+);
 assertTest(is_array($existingViewPanel), 'The existing View panel has no stable form name.');
 assertTest(($existingViewPanel['visible'] ?? true) === false, 'Existing Views must be hidden in quick start.');
 assertTest(($existingViewPanel['expanded'] ?? true) === false, 'The existing View panel must start collapsed.');

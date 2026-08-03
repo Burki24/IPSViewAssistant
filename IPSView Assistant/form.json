@@ -1028,8 +1028,58 @@
             "caption": "The first save creates a separate design copy. Further saves with the same name and target category update that copy while preserving all later IPSView Designer changes."
         },
         {
+            "type": "ExpansionPanel",
+            "name": "DesignerHandoverPanel",
+            "caption": "Next steps in IPSView Designer",
+            "expanded": true,
+            "visible": false,
+            "items": [
+                {
+                    "type": "Label",
+                    "name": "DesignerHandoverTitle",
+                    "caption": "The created IPSView is ready for editing."
+                },
+                {
+                    "type": "Label",
+                    "caption": "1. Open the created IPSView and wait until the IPSView Designer is fully loaded."
+                },
+                {
+                    "type": "OpenObjectButton",
+                    "name": "OpenCreatedViewButton",
+                    "caption": "Open created IPSView",
+                    "objectID": 0,
+                    "visible": false
+                },
+                {
+                    "type": "Label",
+                    "caption": "2. Optionally select the first Symcon object you want to visualize. The Assistant only provides a recommendation and does not create a link."
+                },
+                {
+                    "type": "SelectObject",
+                    "name": "DesignerObjectID",
+                    "caption": "First Symcon object (optional)",
+                    "value": 1,
+                    "onChange": "IPSVIEWA_UpdateDesignerHandover($id, $DesignerObjectID);"
+                },
+                {
+                    "type": "Label",
+                    "name": "DesignerObjectHint",
+                    "caption": "Select a variable, script or media object to receive a suitable starting recommendation."
+                },
+                {
+                    "type": "Label",
+                    "caption": "3. In the Designer Repository, enter the object ID in the filter or use the ID search. Drag one of the matching controls onto the main page."
+                },
+                {
+                    "type": "Label",
+                    "caption": "4. Save the View once in IPSView Designer. Further layout, navigation and object links remain Designer tasks."
+                }
+            ]
+        },
+        {
             "type": "Label",
-            "caption": "After creation, open the new media object in the object tree and save it once in the IPSView Designer."
+            "name": "DesignerHandoverInitialInfo",
+            "caption": "After creation, the guided handover to IPSView Designer appears here."
         }
     ],
     "status": []

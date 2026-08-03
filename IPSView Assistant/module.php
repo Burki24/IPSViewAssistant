@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../libs/helper/ConfigurationFormHelper.php';
 require_once __DIR__ . '/../libs/IPSViewBackground.php';
+require_once __DIR__ . '/../libs/IPSViewDesignerHandover.php';
 require_once __DIR__ . '/../libs/IPSViewEffects.php';
 require_once __DIR__ . '/../libs/IPSViewTheme.php';
 require_once __DIR__ . '/../libs/IPSViewThemePreview.php';
@@ -16,6 +17,7 @@ require_once __DIR__ . '/../libs/IPSViewUsageProfile.php';
 
 use Burki24\IPSViewAssistant\IPSViewBackground;
 use Burki24\IPSViewAssistant\IPSViewCopyFactory;
+use Burki24\IPSViewAssistant\IPSViewDesignerHandover;
 use Burki24\IPSViewAssistant\IPSViewEffects;
 use Burki24\IPSViewAssistant\IPSViewFactory;
 use Burki24\IPSViewAssistant\IPSViewShape;
@@ -38,6 +40,8 @@ class IPSViewAssistant extends IPSModuleStrict
     private const ATTRIBUTE_BACKGROUND_MODE = 'BackgroundMode';
     private const ATTRIBUTE_BACKGROUND_LAYOUT = 'BackgroundLayout';
     private const ATTRIBUTE_BACKGROUND_SCOPE = 'BackgroundScope';
+    private const ATTRIBUTE_LAST_CREATED_VIEW_ID = 'LastCreatedViewID';
+    private const ATTRIBUTE_DESIGNER_OBJECT_ID = 'DesignerObjectID';
 
     /**
      * @var array<string, string>
@@ -70,6 +74,8 @@ class IPSViewAssistant extends IPSModuleStrict
         $this->RegisterAttributeInteger(self::ATTRIBUTE_BACKGROUND_MODE, IPSViewBackground::MODE_PRESERVE);
         $this->RegisterAttributeString(self::ATTRIBUTE_BACKGROUND_LAYOUT, IPSViewBackground::LAYOUT_STRETCH);
         $this->RegisterAttributeInteger(self::ATTRIBUTE_BACKGROUND_SCOPE, IPSViewBackground::SCOPE_MAIN_PAGE);
+        $this->RegisterAttributeInteger(self::ATTRIBUTE_LAST_CREATED_VIEW_ID, 0);
+        $this->RegisterAttributeInteger(self::ATTRIBUTE_DESIGNER_OBJECT_ID, 1);
     }
 
     /**
@@ -131,6 +137,7 @@ class IPSViewAssistant extends IPSModuleStrict
         );
         $this->setConfigurationFormField($form, 'AssistantMode', 'value', $assistantMode);
         $this->applyAssistantModeToForm($form, $assistantMode);
+        $this->applyDesignerHandoverToForm($form);
 
         return $this->EncodeConfigurationForm($form);
     }
@@ -183,6 +190,17 @@ class IPSViewAssistant extends IPSModuleStrict
     }
 
     /**
+     * Updates the recommendation for the first object to place in IPSView Designer.
+     */
+    public function UpdateDesignerHandover(int $ObjectID): void
+    {
+        $objectID = $ObjectID > 1 && IPS_ObjectExists($ObjectID) ? $ObjectID : 1;
+        $this->WriteAttributeInteger(self::ATTRIBUTE_DESIGNER_OBJECT_ID, $objectID);
+        $this->UpdateFormField('DesignerObjectID', 'value', $objectID);
+        $this->UpdateFormField('DesignerObjectHint', 'caption', $this->designerObjectHint($objectID));
+    }
+
+    /**
      * Creates a ready-initialized IPSView media object from the assistant form.
      */
     public function CreateView(
@@ -214,6 +232,9 @@ class IPSViewAssistant extends IPSModuleStrict
                 $this->backgroundSettings(),
                 $FullScreen
             );
+            $this->WriteAttributeInteger(self::ATTRIBUTE_LAST_CREATED_VIEW_ID, $mediaID);
+            $this->WriteAttributeInteger(self::ATTRIBUTE_DESIGNER_OBJECT_ID, 1);
+            $this->showDesignerHandover($mediaID);
 
             return sprintf(
                 $this->Translate('The IPSView "%s" was created successfully with object ID %d.'),
@@ -743,6 +764,89 @@ class IPSViewAssistant extends IPSModuleStrict
             IPSViewUsageProfile::PROFILE_CUSTOM     => 'Aspect ratio, orientation and full-screen mode can be selected freely.',
             default                                 => '16:9 landscape, 1360 x 765 logical pixels, full screen. Recommended for a permanently installed control panel.',
         });
+    }
+
+    /**
+     * Restores the handover for the most recently created View when the form is reopened.
+     *
+     * @param array<string, mixed> $form
+     */
+    private function applyDesignerHandoverToForm(array &$form): void
+    {
+        $mediaID = $this->ReadAttributeInteger(self::ATTRIBUTE_LAST_CREATED_VIEW_ID);
+        $visible = $mediaID > 0 && IPS_MediaExists($mediaID);
+
+        $this->setConfigurationFormField($form, 'DesignerHandoverPanel', 'visible', $visible);
+        $this->setConfigurationFormField($form, 'DesignerHandoverInitialInfo', 'visible', !$visible);
+        $this->setConfigurationFormField($form, 'OpenCreatedViewButton', 'visible', $visible);
+        $this->setConfigurationFormField($form, 'OpenCreatedViewButton', 'objectID', $visible ? $mediaID : 0);
+
+        if (!$visible) {
+            return;
+        }
+
+        $objectID = $this->ReadAttributeInteger(self::ATTRIBUTE_DESIGNER_OBJECT_ID);
+        if ($objectID > 1 && !IPS_ObjectExists($objectID)) {
+            $objectID = 1;
+        }
+
+        $this->setConfigurationFormField(
+            $form,
+            'DesignerHandoverTitle',
+            'caption',
+            $this->designerHandoverTitle($mediaID)
+        );
+        $this->setConfigurationFormField($form, 'DesignerObjectID', 'value', $objectID);
+        $this->setConfigurationFormField(
+            $form,
+            'DesignerObjectHint',
+            'caption',
+            $this->designerObjectHint($objectID)
+        );
+    }
+
+    private function showDesignerHandover(int $mediaID): void
+    {
+        $this->UpdateFormField('DesignerHandoverPanel', 'visible', true);
+        $this->UpdateFormField('DesignerHandoverPanel', 'expanded', true);
+        $this->UpdateFormField('DesignerHandoverInitialInfo', 'visible', false);
+        $this->UpdateFormField('DesignerHandoverTitle', 'caption', $this->designerHandoverTitle($mediaID));
+        $this->UpdateFormField('OpenCreatedViewButton', 'objectID', $mediaID);
+        $this->UpdateFormField('OpenCreatedViewButton', 'visible', true);
+        $this->UpdateFormField('DesignerObjectID', 'value', 1);
+        $this->UpdateFormField('DesignerObjectHint', 'caption', $this->designerObjectHint(1));
+    }
+
+    private function designerHandoverTitle(int $mediaID): string
+    {
+        $object = IPS_GetObject($mediaID);
+
+        return sprintf(
+            $this->Translate('Created IPSView "%s" (object ID %d). Use the button to open it directly from this Assistant.'),
+            (string) ($object['ObjectName'] ?? ''),
+            $mediaID
+        );
+    }
+
+    private function designerObjectHint(int $objectID): string
+    {
+        if ($objectID <= 1 || !IPS_ObjectExists($objectID)) {
+            return $this->Translate('Select a variable, script or media object to receive a suitable starting recommendation.');
+        }
+
+        $object = IPS_GetObject($objectID);
+        $objectType = (int) ($object['ObjectType'] ?? -1);
+        $variableType = $objectType === 2
+            ? (int) (IPS_GetVariable($objectID)['VariableType'] ?? -1)
+            : null;
+        $recommendation = IPSViewDesignerHandover::recommendation($objectType, $variableType);
+
+        return sprintf(
+            $this->Translate('Object ID %d ("%s"): %s'),
+            $objectID,
+            (string) ($object['ObjectName'] ?? ''),
+            $this->Translate($recommendation)
+        );
     }
 
     /**
