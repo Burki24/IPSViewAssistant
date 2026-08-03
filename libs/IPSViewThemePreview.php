@@ -188,9 +188,10 @@ final class IPSViewThemePreview
     public static function createDataUri(
         array $palette,
         array $effects = [],
-        array $appearance = []
+        array $appearance = [],
+        array $background = []
     ): string {
-        $svg = self::createSvg($palette, $effects, $appearance);
+        $svg = self::createSvg($palette, $effects, $appearance, $background);
 
         return 'data:image/svg+xml;base64,' . base64_encode($svg);
     }
@@ -203,7 +204,8 @@ final class IPSViewThemePreview
     public static function createSvg(
         array $palette,
         array $effects = [],
-        array $appearance = []
+        array $appearance = [],
+        array $background = []
     ): string {
         $view = self::color($palette, IPSViewTheme::ROLE_VIEW_BACKGROUND);
         $page = self::color($palette, IPSViewTheme::ROLE_PAGE_BACKGROUND);
@@ -250,6 +252,9 @@ final class IPSViewThemePreview
         $shadowOffset = $shadowSettings['offset'];
         $shadowBlur = $shadowSettings['blur'];
         $shadowOpacity = number_format($shadowSettings['opacity'], 2, '.', '');
+        $backgroundPreview = IPSViewBackground::preview($background);
+        $backgroundDefinition = self::backgroundDefinition($backgroundPreview);
+        $backgroundElement = self::backgroundElement($backgroundPreview);
 
         $definitions = [
             self::gradientDefinition('viewFill', $view, $effects),
@@ -282,6 +287,7 @@ final class IPSViewThemePreview
 <svg xmlns="http://www.w3.org/2000/svg" width="920" height="420" viewBox="0 0 920 420">
   <defs>
     {$fontDefinition}
+    {$backgroundDefinition}
     <pattern id="checker" width="20" height="20" patternUnits="userSpaceOnUse">
       <rect width="20" height="20" fill="#E5E7EB"/>
       <rect width="10" height="10" fill="#F8FAFC"/>
@@ -295,6 +301,7 @@ final class IPSViewThemePreview
   <rect width="920" height="420" rx="{$cornerRadius}" fill="url(#checker)"/>
   <rect width="920" height="420" rx="{$cornerRadius}" fill="{$viewFill}" fill-opacity="{$opacity}"/>
   <rect x="22" y="22" width="876" height="376" rx="{$cornerRadius}" fill="{$pageFill}" fill-opacity="{$opacity}" stroke="{$border}" stroke-width="{$borderWidth}"/>
+  {$backgroundElement}
   <rect x="22" y="22" width="876" height="68" rx="{$cornerRadius}" fill="{$surfaceFill}" fill-opacity="{$opacity}"/>
   <rect x="22" y="72" width="876" height="18" fill="{$surfaceFill}" fill-opacity="{$opacity}"/>
   <circle cx="60" cy="56" r="17" fill="{$accentFill}" fill-opacity="{$opacity}"/>
@@ -340,6 +347,65 @@ final class IPSViewThemePreview
   <circle cx="825" cy="316" r="12" fill="{$inactiveFill}" fill-opacity="{$opacity}"/>
 </svg>
 SVG;
+    }
+
+    /**
+     * @param array{dataUri: string, layout: string, width: int, height: int}|null $background
+     */
+    private static function backgroundDefinition(?array $background): string
+    {
+        if ($background === null || $background['layout'] !== IPSViewBackground::LAYOUT_TILE) {
+            return '';
+        }
+
+        $width = max(1, $background['width']);
+        $height = max(1, $background['height']);
+        $dataUri = htmlspecialchars($background['dataUri'], ENT_QUOTES | ENT_XML1, 'UTF-8');
+
+        return sprintf(
+            '<pattern id="backgroundImage" width="%d" height="%d" patternUnits="userSpaceOnUse"><image href="%s" width="%d" height="%d"/></pattern>',
+            $width,
+            $height,
+            $dataUri,
+            $width,
+            $height
+        );
+    }
+
+    /**
+     * @param array{dataUri: string, layout: string, width: int, height: int}|null $background
+     */
+    private static function backgroundElement(?array $background): string
+    {
+        if ($background === null) {
+            return '';
+        }
+
+        if ($background['layout'] === IPSViewBackground::LAYOUT_TILE) {
+            return '<rect x="22" y="22" width="876" height="376" fill="url(#backgroundImage)"/>';
+        }
+
+        $dataUri = htmlspecialchars($background['dataUri'], ENT_QUOTES | ENT_XML1, 'UTF-8');
+        if ($background['layout'] === IPSViewBackground::LAYOUT_CENTER) {
+            $width = max(1, $background['width']);
+            $height = max(1, $background['height']);
+            $x = 22 + (876 - $width) / 2;
+            $y = 22 + (376 - $height) / 2;
+
+            return sprintf(
+                '<image href="%s" x="%s" y="%s" width="%d" height="%d"/>',
+                $dataUri,
+                number_format($x, 1, '.', ''),
+                number_format($y, 1, '.', ''),
+                $width,
+                $height
+            );
+        }
+
+        return sprintf(
+            '<image href="%s" x="22" y="22" width="876" height="376" preserveAspectRatio="none"/>',
+            $dataUri
+        );
     }
 
     private static function fontDefinition(

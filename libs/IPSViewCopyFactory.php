@@ -66,6 +66,7 @@ final class IPSViewCopyFactory
             'controlCount'   => $document->getControlCount(),
             'palette'        => $document->extractThemePalette(),
             'appearance'     => $document->extractAppearance(),
+            'background'     => $document->extractBackground(),
             'designAnalysis' => $document->analyzeThemeColors(),
         ];
     }
@@ -83,7 +84,8 @@ final class IPSViewCopyFactory
         array $customPalette = [],
         int $scope = IPSViewTheme::SCOPE_GLOBAL_DEFAULTS,
         array $effects = [],
-        array $appearance = []
+        array $appearance = [],
+        array $background = []
     ): int {
         $copyName = trim($copyName);
 
@@ -109,7 +111,8 @@ final class IPSViewCopyFactory
                 $customPalette,
                 $scope,
                 $effects,
-                $appearance
+                $appearance,
+                $background
             );
 
             $mediaFile = IPS_GetKernelDir()
@@ -152,7 +155,8 @@ final class IPSViewCopyFactory
         array $customPalette = [],
         int $scope = IPSViewTheme::SCOPE_GLOBAL_DEFAULTS,
         array $effects = [],
-        array $appearance = []
+        array $appearance = [],
+        array $background = []
     ): int {
         $document = $this->loadDocument($targetMediaID);
         $this->lastThemeReport = $document->applyThemeWithReport(
@@ -160,7 +164,8 @@ final class IPSViewCopyFactory
             $customPalette,
             $scope,
             $effects,
-            $appearance
+            $appearance,
+            $background
         );
 
         if (!IPS_SetMediaContent($targetMediaID, base64_encode($document->toJson()))) {

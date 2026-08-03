@@ -131,7 +131,18 @@
             "Underlined": "Unterstrichen",
             "Bold and italic are available only when IPSView provides the matching font cut. Underlining is available for every font. Font formatting is applied to existing controls according to the selected design scope.": "Fett und Kursiv stehen nur zur Verfügung, wenn IPSView den passenden Schriftschnitt mitliefert. Unterstreichen ist bei jeder Schrift möglich. Die Schriftformatierung wird entsprechend dem gewählten Gestaltungsumfang auf vorhandene Bedienelemente angewendet.",
             "The fixed IPSView font catalogue and its available font cuts are bundled for the offline preview. Segment7 uses the original G7 Segment 7 S5 font. Only detected system fonts may still use a browser fallback.": "Der feste IPSView-Schriftkatalog und seine verfügbaren Schriftschnitte werden für die Offline-Vorschau mitgeliefert. Segment7 verwendet die originale Schrift G7 Segment 7 S5. Nur erkannte Systemschriften können weiterhin durch eine Browser-Ersatzschrift dargestellt werden.",
-            "These settings define the global font family and size, the formatting of existing control fonts, and basic corner and border styles. Pages, element placement and individual detail settings remain in IPSView Designer.": "Diese Einstellungen definieren die globale Schriftart und Schriftgröße, die Formatierung vorhandener Bedienelementschriften sowie grundlegende Ecken- und Rahmenformen. Seiten, Platzierung der Elemente und individuelle Detaileinstellungen bleiben Aufgabe des IPSView Designers."
+            "These settings define the global font family and size, the formatting of existing control fonts, and basic corner and border styles. Pages, element placement and individual detail settings remain in IPSView Designer.": "Diese Einstellungen definieren die globale Schriftart und Schriftgröße, die Formatierung vorhandener Bedienelementschriften sowie grundlegende Ecken- und Rahmenformen. Seiten, Platzierung der Elemente und individuelle Detaileinstellungen bleiben Aufgabe des IPSView Designers.",
+            "Background image": "Hintergrundbild",
+            "Main page background": "Hintergrund der Hauptseite",
+            "Remove background image": "Hintergrundbild entfernen",
+            "Image file from this computer": "Bilddatei von diesem Computer",
+            "PNG or JPEG file": "PNG- oder JPEG-Datei",
+            "Image layout": "Bildanordnung",
+            "Tiles": "Kacheln",
+            "Centered": "Zentriert",
+            "Stretch": "Strecken",
+            "The image is embedded in the IPSView and applied only to the main page. PNG and JPEG files up to 10 MB are supported.": "Das Bild wird in die IPSView eingebettet und nur auf die Hauptseite angewendet. Unterstützt werden PNG- und JPEG-Dateien bis 10 MB.",
+            "Please select a PNG or JPEG background image.": "Bitte wähle ein PNG- oder JPEG-Hintergrundbild aus."
         }
     }
 }

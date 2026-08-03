@@ -21,6 +21,7 @@ Der **IPSView Assistant** erleichtert das Erstellen und Gestalten von IPSView-Pr
 - Vorgefertigte Farbdesigns auswählen und individuell anpassen
 - Farben, Schatten, Transparenz und Farbverläufe einstellen
 - Schriftgröße, Schriftart, Ecken und Rahmen festlegen
+- Lokale PNG- und JPEG-Hintergrundbilder in die Hauptseite einbetten
 - Änderungen unmittelbar in einer Vorschau beurteilen
 - Bestehende IPSView laden und als separate Designkopie neu gestalten
 - Bereits angelegte Designkopie bei späteren Speichervorgängen aktualisieren
@@ -234,6 +235,18 @@ Die ausgewählte Rahmenfarbe wird im Bereich **Designfarben** über **Rahmen und
 #### 6.7 Vorschau
 
 Die Vorschau zeigt das Zusammenspiel von Farben, Schatten, Transparenz, Farbverlauf, Schrift, Ecken und Rahmen. Sie dient als Orientierung für das Gesamtbild. Einzelne Bedienelemente können im späteren IPSView Designer aufgrund ihrer eigenen Einstellungen abweichend aussehen.
+
+#### 6.8 Hintergrundbild
+
+Für die Hauptseite kann ein PNG- oder JPEG-Bild vom aktuell verwendeten Computer ausgewählt werden. Der Assistant bettet den Dateiinhalt direkt in die `.ipsView` ein; ein lokaler Dateipfad wird nicht gespeichert. Unterstützt werden Dateien bis 10 MB.
+
+| Auswahl | Wirkung |
+|---|---|
+| **Bestehende Einstellung beibehalten** | Verändert das vorhandene Hintergrundbild einer Designkopie nicht. |
+| **Hintergrundbild entfernen** | Entfernt Bild und Anordnung von der Hauptseite. |
+| **Bilddatei von diesem Computer** | Bettet die ausgewählte Datei ein und weist sie der Hauptseite zu. |
+
+Die Bildanordnung kann auf **Kacheln**, **Zentriert** oder **Strecken** gesetzt werden. Andere Seiten und deren Hintergrundbilder werden nicht verändert. Identische bereits eingebettete Bilder werden wiederverwendet.
 
 ### 7. Gestaltungsumfang bei bestehenden Views
 

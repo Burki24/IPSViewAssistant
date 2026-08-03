@@ -1,0 +1,247 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Burki24\IPSViewAssistant;
+
+use InvalidArgumentException;
+use RuntimeException;
+use stdClass;
+
+final class IPSViewBackground
+{
+    public const MODE_PRESERVE = 0;
+    public const MODE_REMOVE = 1;
+    public const MODE_FILE = 2;
+
+    public const LAYOUT_TILE = 'Tile';
+    public const LAYOUT_CENTER = 'Center';
+    public const LAYOUT_STRETCH = 'Stretch';
+
+    private const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
+
+    /**
+     * @param array<string, mixed> $settings
+     *
+     * @return array{mode: int, layout: string, imageData: string}
+     */
+    public static function resolve(array $settings = []): array
+    {
+        $mode = (int) ($settings['mode'] ?? self::MODE_PRESERVE);
+        if (!in_array($mode, [self::MODE_PRESERVE, self::MODE_REMOVE, self::MODE_FILE], true)) {
+            throw new InvalidArgumentException('The selected background image mode is invalid.');
+        }
+
+        $layout = (string) ($settings['layout'] ?? self::LAYOUT_STRETCH);
+        if (!in_array($layout, [self::LAYOUT_TILE, self::LAYOUT_CENTER, self::LAYOUT_STRETCH], true)) {
+            throw new InvalidArgumentException('The selected background image layout is invalid.');
+        }
+
+        return [
+            'mode'      => $mode,
+            'layout'    => $layout,
+            'imageData' => trim((string) ($settings['imageData'] ?? '')),
+        ];
+    }
+
+    /**
+     * Applies the selection only to the first (main) page.
+     *
+     * @param array<string, mixed> $settings
+     */
+    public static function apply(stdClass $document, array $settings = []): bool
+    {
+        $settings = self::resolve($settings);
+        if ($settings['mode'] === self::MODE_PRESERVE) {
+            return false;
+        }
+
+        $page = self::mainPage($document);
+        if ($settings['mode'] === self::MODE_REMOVE) {
+            $changed = (int) ($page->BackgroundImage ?? 0) !== 0
+                || (string) ($page->BackgroundLayout ?? '') !== '';
+            $page->BackgroundImage = 0;
+            $page->BackgroundLayout = '';
+
+            return $changed;
+        }
+
+        $image = self::decodeImage($settings['imageData']);
+        $images = $document->Images ?? [];
+        if (!is_array($images)) {
+            throw new RuntimeException('The IPSView image collection is invalid.');
+        }
+
+        $imageHash = self::findMatchingHash($images, $image['base64']);
+        if ($imageHash === null) {
+            $imageHash = self::createHash($image['binary'], $images);
+            $images[] = (object) [
+                'ImageData' => $image['base64'],
+                'ImageHash' => $imageHash,
+                'ImageType' => -1,
+                'Height'    => $image['height'],
+                'Width'     => $image['width'],
+            ];
+            $document->Images = $images;
+        }
+
+        $changed = (int) ($page->BackgroundImage ?? 0) !== $imageHash
+            || (string) ($page->BackgroundLayout ?? '') !== $settings['layout'];
+        $page->BackgroundImage = $imageHash;
+        $page->BackgroundLayout = $settings['layout'];
+
+        return $changed;
+    }
+
+    /**
+     * @return array{mode: int, layout: string, imageData: string, width: int, height: int}
+     */
+    public static function extract(stdClass $document): array
+    {
+        $page = self::mainPage($document);
+        $hash = (int) ($page->BackgroundImage ?? 0);
+        $layout = (string) ($page->BackgroundLayout ?? '');
+
+        if ($hash === 0) {
+            return [
+                'mode'      => self::MODE_PRESERVE,
+                'layout'    => self::LAYOUT_STRETCH,
+                'imageData' => '',
+                'width'     => 0,
+                'height'    => 0,
+            ];
+        }
+
+        foreach ($document->Images ?? [] as $image) {
+            if (!$image instanceof stdClass || (int) ($image->ImageHash ?? 0) !== $hash) {
+                continue;
+            }
+
+            $data = trim((string) ($image->ImageData ?? ''));
+            $mime = self::detectMimeFromBase64($data);
+
+            return [
+                'mode'      => self::MODE_PRESERVE,
+                'layout'    => in_array($layout, [self::LAYOUT_TILE, self::LAYOUT_CENTER, self::LAYOUT_STRETCH], true)
+                    ? $layout
+                    : self::LAYOUT_STRETCH,
+                'imageData' => $mime === null ? '' : 'data:' . $mime . ';base64,' . $data,
+                'width'     => (int) ($image->Width ?? 0),
+                'height'    => (int) ($image->Height ?? 0),
+            ];
+        }
+
+        return [
+            'mode'      => self::MODE_PRESERVE,
+            'layout'    => self::LAYOUT_STRETCH,
+            'imageData' => '',
+            'width'     => 0,
+            'height'    => 0,
+        ];
+    }
+
+    /**
+     * @param array<string, mixed> $settings
+     *
+     * @return array{dataUri: string, layout: string, width: int, height: int}|null
+     */
+    public static function preview(array $settings = []): ?array
+    {
+        $settings = self::resolve($settings);
+        if ($settings['mode'] === self::MODE_REMOVE || $settings['imageData'] === '') {
+            return null;
+        }
+
+        $image = self::decodeImage($settings['imageData']);
+
+        return [
+            'dataUri' => 'data:' . $image['mime'] . ';base64,' . $image['base64'],
+            'layout'  => $settings['layout'],
+            'width'   => $image['width'],
+            'height'  => $image['height'],
+        ];
+    }
+
+    private static function mainPage(stdClass $document): stdClass
+    {
+        $pages = $document->Pages ?? null;
+        if (!is_array($pages) || !isset($pages[0]) || !$pages[0] instanceof stdClass) {
+            throw new RuntimeException('The IPSView document does not contain a valid main page.');
+        }
+
+        return $pages[0];
+    }
+
+    /**
+     * @return array{binary: string, base64: string, mime: string, width: int, height: int}
+     */
+    private static function decodeImage(string $encoded): array
+    {
+        $encoded = trim($encoded);
+        if (preg_match('/^data:([^;,]+);base64,(.*)$/s', $encoded, $matches) === 1) {
+            $encoded = $matches[2];
+        }
+        $encoded = preg_replace('/\s+/', '', $encoded) ?? '';
+        $binary = base64_decode($encoded, true);
+        if ($binary === false || $binary === '') {
+            throw new InvalidArgumentException('The selected background image does not contain valid Base64 data.');
+        }
+        if (strlen($binary) > self::MAX_IMAGE_BYTES) {
+            throw new InvalidArgumentException('The selected background image must not exceed 10 MB.');
+        }
+
+        $info = getimagesizefromstring($binary);
+        $mime = is_array($info) ? (string) ($info['mime'] ?? '') : '';
+        if (!in_array($mime, ['image/png', 'image/jpeg'], true)) {
+            throw new InvalidArgumentException('Only valid PNG and JPEG background images are supported.');
+        }
+
+        return [
+            'binary' => $binary,
+            'base64' => base64_encode($binary),
+            'mime'   => $mime,
+            'width'  => (int) $info[0],
+            'height' => (int) $info[1],
+        ];
+    }
+
+    /** @param list<mixed> $images */
+    private static function findMatchingHash(array $images, string $base64): ?int
+    {
+        foreach ($images as $image) {
+            if ($image instanceof stdClass && hash_equals((string) ($image->ImageData ?? ''), $base64)) {
+                return (int) ($image->ImageHash ?? 0);
+            }
+        }
+
+        return null;
+    }
+
+    /** @param list<mixed> $images */
+    private static function createHash(string $binary, array $images): int
+    {
+        $used = [];
+        foreach ($images as $image) {
+            if ($image instanceof stdClass) {
+                $used[(int) ($image->ImageHash ?? 0)] = true;
+            }
+        }
+
+        $hash = unpack('N', substr(hash('sha256', $binary, true), 0, 4))[1] & 0x7FFFFFFF;
+        $hash = max(1, $hash);
+        while (isset($used[$hash])) {
+            $hash = $hash === 0x7FFFFFFF ? 1 : $hash + 1;
+        }
+
+        return $hash;
+    }
+
+    private static function detectMimeFromBase64(string $encoded): ?string
+    {
+        try {
+            return self::decodeImage($encoded)['mime'];
+        } catch (InvalidArgumentException) {
+            return null;
+        }
+    }
+}

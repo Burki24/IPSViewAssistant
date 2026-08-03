@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../libs/helper/ConfigurationFormHelper.php';
+require_once __DIR__ . '/../libs/IPSViewBackground.php';
 require_once __DIR__ . '/../libs/IPSViewEffects.php';
 require_once __DIR__ . '/../libs/IPSViewTheme.php';
 require_once __DIR__ . '/../libs/IPSViewThemePreview.php';
@@ -12,6 +13,7 @@ require_once __DIR__ . '/../libs/IPSViewFactory.php';
 require_once __DIR__ . '/../libs/IPSViewShape.php';
 require_once __DIR__ . '/../libs/IPSViewTypography.php';
 
+use Burki24\IPSViewAssistant\IPSViewBackground;
 use Burki24\IPSViewAssistant\IPSViewCopyFactory;
 use Burki24\IPSViewAssistant\IPSViewEffects;
 use Burki24\IPSViewAssistant\IPSViewFactory;
@@ -26,6 +28,9 @@ class IPSViewAssistant extends IPSModuleStrict
     use ConfigurationFormHelper;
 
     private const ATTRIBUTE_MANAGED_COPIES = 'ManagedCopies';
+    private const ATTRIBUTE_BACKGROUND_IMAGE = 'BackgroundImage';
+    private const ATTRIBUTE_BACKGROUND_MODE = 'BackgroundMode';
+    private const ATTRIBUTE_BACKGROUND_LAYOUT = 'BackgroundLayout';
 
     /**
      * @var array<string, string>
@@ -53,6 +58,9 @@ class IPSViewAssistant extends IPSModuleStrict
         parent::Create();
 
         $this->RegisterAttributeString(self::ATTRIBUTE_MANAGED_COPIES, '[]');
+        $this->RegisterAttributeString(self::ATTRIBUTE_BACKGROUND_IMAGE, '');
+        $this->RegisterAttributeInteger(self::ATTRIBUTE_BACKGROUND_MODE, IPSViewBackground::MODE_PRESERVE);
+        $this->RegisterAttributeString(self::ATTRIBUTE_BACKGROUND_LAYOUT, IPSViewBackground::LAYOUT_STRETCH);
     }
 
     /**
@@ -85,7 +93,22 @@ class IPSViewAssistant extends IPSModuleStrict
             $form,
             'ThemePreview',
             'image',
-            IPSViewThemePreview::createDataUri($palette, IPSViewEffects::resolve(), [])
+            IPSViewThemePreview::createDataUri($palette, IPSViewEffects::resolve(), [], $this->backgroundSettings())
+        );
+        $background = $this->backgroundSettings();
+        $this->setConfigurationFormField($form, 'BackgroundImageMode', 'value', $background['mode']);
+        $this->setConfigurationFormField($form, 'BackgroundImageLayout', 'value', $background['layout']);
+        $this->setConfigurationFormField(
+            $form,
+            'BackgroundImageFile',
+            'visible',
+            $background['mode'] === IPSViewBackground::MODE_FILE
+        );
+        $this->setConfigurationFormField(
+            $form,
+            'BackgroundImageLayout',
+            'visible',
+            $background['mode'] === IPSViewBackground::MODE_FILE
         );
 
         return $this->EncodeConfigurationForm($form);
@@ -118,7 +141,8 @@ class IPSViewAssistant extends IPSModuleStrict
                 $Theme,
                 $this->decodePalette($ThemePalette),
                 $this->decodeEffects($Effects),
-                $this->decodeAppearance($Appearance)
+                $this->decodeAppearance($Appearance),
+                $this->backgroundSettings()
             );
 
             return sprintf(
@@ -212,6 +236,10 @@ class IPSViewAssistant extends IPSModuleStrict
             );
 
             $palette = $paletteInspection['palette'];
+            $background = $paletteInspection['background'];
+            $this->WriteAttributeInteger(self::ATTRIBUTE_BACKGROUND_MODE, IPSViewBackground::MODE_PRESERVE);
+            $this->WriteAttributeString(self::ATTRIBUTE_BACKGROUND_LAYOUT, $background['layout']);
+            $this->WriteAttributeString(self::ATTRIBUTE_BACKGROUND_IMAGE, $background['imageData']);
             $this->UpdateFormField('Theme', 'value', IPSViewTheme::THEME_CUSTOM);
             $this->UpdateFormField('TypographyStyle', 'value', IPSViewTypography::STYLE_PRESERVE);
             $this->UpdateFormField('FontFamilyMode', 'value', IPSViewTypography::FONT_PRESERVE);
@@ -223,7 +251,11 @@ class IPSViewAssistant extends IPSModuleStrict
             $this->UpdateFormField('BorderStyle', 'value', IPSViewShape::BORDER_PRESERVE);
             $this->UpdateFormField('CustomBorderWidth', 'value', $appearanceInspection['borderWidth']);
             $this->updateColorFields($palette);
-            $this->UpdateFormField('ThemePreview', 'image', IPSViewThemePreview::createDataUri($palette, $this->decodeEffects($Effects), $appearance));
+            $this->UpdateFormField('BackgroundImageMode', 'value', IPSViewBackground::MODE_PRESERVE);
+            $this->UpdateFormField('BackgroundImageFile', 'visible', false);
+            $this->UpdateFormField('BackgroundImageLayout', 'value', $background['layout']);
+            $this->UpdateFormField('BackgroundImageLayout', 'visible', false);
+            $this->UpdateFormField('ThemePreview', 'image', IPSViewThemePreview::createDataUri($palette, $this->decodeEffects($Effects), $appearance, $this->backgroundSettings()));
             $this->UpdateFormField('CopyViewName', 'value', $copyName);
             $this->UpdateFormField('CopyTargetCategoryID', 'value', $copyTargetCategoryID);
             $this->UpdateFormField('ExistingViewStatus', 'caption', $status);
@@ -276,7 +308,8 @@ class IPSViewAssistant extends IPSModuleStrict
                     $this->decodePalette($ThemePalette),
                     $DesignScope,
                     $this->decodeEffects($Effects),
-                    $this->decodeAppearance($Appearance)
+                    $this->decodeAppearance($Appearance),
+                    $this->backgroundSettings()
                 );
                 $this->rememberManagedCopy($SourceViewID, $targetMediaID);
                 $reportText = $this->formatThemeReport($factory->getLastThemeReport());
@@ -305,7 +338,8 @@ class IPSViewAssistant extends IPSModuleStrict
                 $this->decodePalette($ThemePalette),
                 $DesignScope,
                 $this->decodeEffects($Effects),
-                $this->decodeAppearance($Appearance)
+                $this->decodeAppearance($Appearance),
+                $this->backgroundSettings()
             );
             $this->rememberManagedCopy($SourceViewID, $mediaID);
             $reportText = $this->formatThemeReport($factory->getLastThemeReport());
@@ -353,7 +387,8 @@ class IPSViewAssistant extends IPSModuleStrict
                 IPSViewThemePreview::createDataUri(
                     $palette,
                     $this->decodeEffects($Effects),
-                    $this->decodeAppearance($Appearance)
+                    $this->decodeAppearance($Appearance),
+                    $this->backgroundSettings()
                 )
             );
         } catch (Throwable $exception) {
@@ -382,7 +417,8 @@ class IPSViewAssistant extends IPSModuleStrict
                 IPSViewThemePreview::createDataUri(
                     $palette,
                     $this->decodeEffects($Effects),
-                    $this->decodeAppearance($Appearance)
+                    $this->decodeAppearance($Appearance),
+                    $this->backgroundSettings()
                 )
             );
         } catch (Throwable $exception) {
@@ -410,7 +446,8 @@ class IPSViewAssistant extends IPSModuleStrict
                 IPSViewThemePreview::createDataUri(
                     $palette,
                     $this->decodeEffects($Effects),
-                    $this->decodeAppearance($Appearance)
+                    $this->decodeAppearance($Appearance),
+                    $this->backgroundSettings()
                 )
             );
         } catch (Throwable $exception) {
@@ -440,11 +477,73 @@ class IPSViewAssistant extends IPSModuleStrict
                 IPSViewThemePreview::createDataUri(
                     $palette,
                     $this->decodeEffects($Effects),
-                    $appearance
+                    $appearance,
+                    $this->backgroundSettings()
                 )
             );
         } catch (Throwable $exception) {
             $this->SendDebug('UpdateAppearancePreview', $exception->getMessage(), 0);
+        }
+    }
+
+    /**
+     * Stores the local background selection and refreshes the design preview.
+     */
+    public function UpdateBackgroundPreview(
+        string $ImageData,
+        int $Mode,
+        string $Layout,
+        string $ThemePalette,
+        string $Effects = '',
+        string $Appearance = ''
+    ): void {
+        try {
+            $storedImage = $this->ReadAttributeString(self::ATTRIBUTE_BACKGROUND_IMAGE);
+            $settings = IPSViewBackground::resolve([
+                'mode'      => $Mode,
+                'layout'    => $Layout,
+                'imageData' => $ImageData !== '' ? $ImageData : $storedImage,
+            ]);
+            if ($settings['mode'] === IPSViewBackground::MODE_FILE && $settings['imageData'] === '') {
+                $this->WriteAttributeInteger(self::ATTRIBUTE_BACKGROUND_MODE, $settings['mode']);
+                $this->WriteAttributeString(self::ATTRIBUTE_BACKGROUND_LAYOUT, $settings['layout']);
+                $this->UpdateFormField('BackgroundImageFile', 'visible', true);
+                $this->UpdateFormField('BackgroundImageLayout', 'visible', true);
+                $this->UpdateFormField(
+                    'BackgroundImageStatus',
+                    'caption',
+                    $this->Translate('Please select a PNG or JPEG background image.')
+                );
+
+                return;
+            }
+
+            IPSViewBackground::preview($settings);
+            $this->WriteAttributeString(self::ATTRIBUTE_BACKGROUND_IMAGE, $settings['imageData']);
+            $this->WriteAttributeInteger(self::ATTRIBUTE_BACKGROUND_MODE, $settings['mode']);
+            $this->WriteAttributeString(self::ATTRIBUTE_BACKGROUND_LAYOUT, $settings['layout']);
+            $visible = $settings['mode'] === IPSViewBackground::MODE_FILE;
+            $this->UpdateFormField('BackgroundImageMode', 'value', $settings['mode']);
+            $this->UpdateFormField('BackgroundImageFile', 'visible', $visible);
+            $this->UpdateFormField('BackgroundImageLayout', 'visible', $visible);
+            $this->UpdateFormField(
+                'BackgroundImageStatus',
+                'caption',
+                $this->Translate('The image is embedded in the IPSView and applied only to the main page. PNG and JPEG files up to 10 MB are supported.')
+            );
+            $this->UpdateFormField(
+                'ThemePreview',
+                'image',
+                IPSViewThemePreview::createDataUri(
+                    IPSViewTheme::resolvePalette(IPSViewTheme::THEME_CUSTOM, $this->decodePalette($ThemePalette)),
+                    $this->decodeEffects($Effects),
+                    $this->decodeAppearance($Appearance),
+                    $settings
+                )
+            );
+        } catch (Throwable $exception) {
+            $this->SendDebug('UpdateBackgroundPreview', $exception->getMessage(), 0);
+            $this->UpdateFormField('BackgroundImageStatus', 'caption', $exception->getMessage());
         }
     }
 
@@ -726,6 +825,18 @@ class IPSViewAssistant extends IPSModuleStrict
             ...IPSViewTypography::resolve($appearance),
             ...IPSViewShape::resolve($appearance),
         ];
+    }
+
+    /**
+     * @return array{mode: int, layout: string, imageData: string}
+     */
+    private function backgroundSettings(): array
+    {
+        return IPSViewBackground::resolve([
+            'mode'      => $this->ReadAttributeInteger(self::ATTRIBUTE_BACKGROUND_MODE),
+            'layout'    => $this->ReadAttributeString(self::ATTRIBUTE_BACKGROUND_LAYOUT),
+            'imageData' => $this->ReadAttributeString(self::ATTRIBUTE_BACKGROUND_IMAGE),
+        ]);
     }
 
     /**

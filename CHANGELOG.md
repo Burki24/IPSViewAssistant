@@ -13,6 +13,9 @@
 
 ### Added
 
+- Added local PNG/JPEG background images for the main page, including preserve, remove, tile, center and stretch modes.
+- Embedded selected images directly in IPSView documents with content reuse and live SVG preview support.
+
 - Font formatting for existing controls with preserve, normal and enabled modes for bold, italic and underline.
 - Real italic and bold-italic preview cuts for Roboto, RobotoMono, OpenSans and PTSans.
 - Dynamic font-format controls that follow the capabilities of the selected IPSView font family.
@@ -71,4 +74,3 @@
 - Reduced and centered the design preview for a more compact configuration form.
 - Enlarged the semantic color controls and fixed truncated captions.
 - Fixed live preview and custom View generation for integer values returned by Symcon SelectColor fields.
-

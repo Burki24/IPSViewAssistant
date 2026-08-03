@@ -122,6 +122,10 @@ $cornerStyle = null;
 $customCornerRadius = null;
 $borderStyle = null;
 $customBorderWidth = null;
+$backgroundPanel = null;
+$backgroundMode = null;
+$backgroundFile = null;
+$backgroundLayout = null;
 $colorFields = [];
 
 foreach ($actions as $action) {
@@ -223,6 +227,22 @@ foreach ($actions as $action) {
 
     if (($action['name'] ?? '') === 'CustomBorderWidth') {
         $customBorderWidth = $action;
+    }
+
+    if (($action['name'] ?? '') === 'BackgroundImagePanel') {
+        $backgroundPanel = $action;
+    }
+
+    if (($action['name'] ?? '') === 'BackgroundImageMode') {
+        $backgroundMode = $action;
+    }
+
+    if (($action['name'] ?? '') === 'BackgroundImageFile') {
+        $backgroundFile = $action;
+    }
+
+    if (($action['name'] ?? '') === 'BackgroundImageLayout') {
+        $backgroundLayout = $action;
     }
 
     if (($action['type'] ?? '') === 'SelectColor') {
@@ -382,6 +402,21 @@ assertTest(
 assertTest(
     str_contains($shapeSource, 'public static function apply('),
     'The IPSView form language cannot be applied.'
+);
+assertTest(is_array($backgroundPanel), 'The main-page background panel is missing.');
+assertTest(is_array($backgroundMode), 'The background mode selection is missing.');
+assertTest(count($backgroundMode['options'] ?? []) === 3, 'The background selection does not offer all modes.');
+assertTest(is_array($backgroundFile), 'The local background file selection is missing.');
+assertTest(($backgroundFile['extensions'] ?? '') === '.png,.jpg,.jpeg', 'The background file filter is incorrect.');
+assertTest(is_array($backgroundLayout), 'The background layout selection is missing.');
+assertTest(count($backgroundLayout['options'] ?? []) === 3, 'The background layout selection does not offer all modes.');
+assertTest(
+    str_contains((string) ($backgroundFile['onChange'] ?? ''), 'IPSVIEWA_UpdateBackgroundPreview('),
+    'Selecting a background image does not refresh the preview.'
+);
+assertTest(
+    str_contains($moduleSource, 'public function UpdateBackgroundPreview('),
+    'The public background preview method is missing.'
 );
 assertTest(is_array($preview), 'The live theme preview is missing from the form.');
 assertTest(($preview['image'] ?? null) === '', 'The dynamic preview placeholder must be empty in form.json.');

@@ -145,7 +145,8 @@ final class IPSViewDocument
         int $theme,
         array $customPalette = [],
         array $effects = [],
-        array $appearance = []
+        array $appearance = [],
+        array $background = []
     ): array {
         $palette = IPSViewTheme::apply($this->document, $theme, $customPalette);
         IPSViewEffects::apply(
@@ -159,6 +160,7 @@ final class IPSViewDocument
             IPSViewTheme::SCOPE_GLOBAL_DEFAULTS
         );
         IPSViewShape::apply($this->document, $appearance);
+        IPSViewBackground::apply($this->document, $background);
 
         return $palette;
     }
@@ -187,7 +189,8 @@ final class IPSViewDocument
         array $customPalette = [],
         int $scope = IPSViewTheme::SCOPE_GLOBAL_DEFAULTS,
         array $effects = [],
-        array $appearance = []
+        array $appearance = [],
+        array $background = []
     ): array {
         $themeReport = IPSViewTheme::applyWithReport(
             $this->document,
@@ -206,8 +209,9 @@ final class IPSViewDocument
             $scope
         );
         $shapeReport = IPSViewShape::apply($this->document, $appearance);
+        $backgroundChanged = IPSViewBackground::apply($this->document, $background);
 
-        return [...$themeReport, ...$effectReport, ...$typographyReport, ...$shapeReport];
+        return [...$themeReport, ...$effectReport, ...$typographyReport, ...$shapeReport, 'backgroundChanged' => $backgroundChanged];
     }
 
     /**
@@ -253,6 +257,16 @@ final class IPSViewDocument
             ...IPSViewTypography::extract($this->document),
             ...IPSViewShape::extract($this->document),
         ];
+    }
+
+    /**
+     * Reads the background image assigned to the main page.
+     *
+     * @return array{mode: int, layout: string, imageData: string, width: int, height: int}
+     */
+    public function extractBackground(): array
+    {
+        return IPSViewBackground::extract($this->document);
     }
 
     /**

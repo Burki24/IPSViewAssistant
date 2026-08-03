@@ -21,6 +21,7 @@ $requiredFiles = [
     'libs/IPSViewTheme.php',
     'libs/IPSViewEffects.php',
     'libs/IPSViewTypography.php',
+    'libs/IPSViewBackground.php',
     'libs/IPSViewShape.php',
     'libs/IPSViewThemePreview.php',
     'libs/IPSViewDocument.php',

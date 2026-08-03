@@ -29,7 +29,8 @@ final class IPSViewFactory
         int $theme = IPSViewTheme::THEME_STANDARD,
         array $customPalette = [],
         array $effects = [],
-        array $appearance = []
+        array $appearance = [],
+        array $background = []
     ): int {
         $viewName = trim($viewName);
         $mainPageName = trim($mainPageName);
@@ -51,7 +52,7 @@ final class IPSViewFactory
 
             $document = IPSViewDocument::fromTemplate($this->templateDirectory . '/empty-view.json');
             $document->configure($viewName, $mediaID, $aspectRatio, $orientation, $mainPageName);
-            $document->applyTheme($theme, $customPalette, $effects, $appearance);
+            $document->applyTheme($theme, $customPalette, $effects, $appearance, $background);
 
             $mediaFile = IPS_GetKernelDir()
                 . 'media'
