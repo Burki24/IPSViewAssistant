@@ -811,9 +811,18 @@
                                     "width": "360px",
                                     "onChange": "IPSVIEWA_UpdateBackgroundPreview($id, $BackgroundImageFile, $BackgroundImageMode, $BackgroundImageLayout, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"fontBoldMode\" => $FontBoldMode, \"fontItalicMode\" => $FontItalicMode, \"fontUnderlineMode\" => $FontUnderlineMode, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));",
                                     "options": [
-                                        {"caption": "Preserve existing", "value": 0},
-                                        {"caption": "Remove background image", "value": 1},
-                                        {"caption": "Image file from this computer", "value": 2}
+                                        {
+                                            "caption": "Preserve existing",
+                                            "value": 0
+                                        },
+                                        {
+                                            "caption": "Remove background image",
+                                            "value": 1
+                                        },
+                                        {
+                                            "caption": "Image file from this computer",
+                                            "value": 2
+                                        }
                                     ]
                                 },
                                 {
@@ -834,9 +843,18 @@
                                     "width": "360px",
                                     "onChange": "IPSVIEWA_UpdateBackgroundPreview($id, $BackgroundImageFile, $BackgroundImageMode, $BackgroundImageLayout, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"fontBoldMode\" => $FontBoldMode, \"fontItalicMode\" => $FontItalicMode, \"fontUnderlineMode\" => $FontUnderlineMode, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));",
                                     "options": [
-                                        {"caption": "Tiles", "value": "Tile"},
-                                        {"caption": "Centered", "value": "Center"},
-                                        {"caption": "Stretch", "value": "Stretch"}
+                                        {
+                                            "caption": "Tiles",
+                                            "value": "Tile"
+                                        },
+                                        {
+                                            "caption": "Centered",
+                                            "value": "Center"
+                                        },
+                                        {
+                                            "caption": "Stretch",
+                                            "value": "Stretch"
+                                        }
                                     ]
                                 },
                                 {
