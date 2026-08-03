@@ -24,7 +24,7 @@ $cases = [
 
 foreach ($cases as [$ratio, $orientation, $expectedWidth, $expectedHeight, $ratioLabel]) {
     $document = IPSViewDocument::fromTemplate($templatePath);
-    $document->configure('Test View', 12345, $ratio, $orientation, 'Startseite');
+    $document->configure('Test View', 12345, $ratio, $orientation, 'Startseite', true);
     $copy = $document->copy();
     $json = $document->toJson();
 
@@ -34,6 +34,7 @@ foreach ($cases as [$ratio, $orientation, $expectedWidth, $expectedHeight, $rati
     assertTest($copy->Height === $expectedHeight, 'The View height is incorrect.');
     assertTest($copy->HardwareWidth === $expectedWidth, 'The hardware width is incorrect.');
     assertTest($copy->HardwareHeight === $expectedHeight, 'The hardware height is incorrect.');
+    assertTest($copy->FullScreen === true, 'The full-screen setting was not applied.');
     assertTest(str_contains($copy->Hardware, '(' . $ratioLabel . ')'), 'The hardware ratio label is incorrect.');
     assertTest($copy->Pages[0]->PageName === 'Startseite', 'The main page name was not applied.');
     assertTest($copy->Pages[0]->Controls === [], 'The empty View unexpectedly contains controls.');

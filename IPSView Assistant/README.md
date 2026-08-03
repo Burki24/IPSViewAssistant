@@ -18,6 +18,7 @@ Der **IPSView Assistant** erleichtert das Erstellen und Gestalten von IPSView-Pr
 
 - Neue IPSView als Medienobjekt mit Hauptseite erstellen
 - Zwischen einem übersichtlichen Schnellstart und dem vollständigen Expertenmodus wechseln
+- Einsatzprofile für Wandtablet, Tablet, Smartphone und Browser verwenden
 - Seitenverhältnis und Ausrichtung festlegen
 - Vorgefertigte Farbdesigns auswählen und individuell anpassen
 - Farben, Schatten, Transparenz und Farbverläufe einstellen
@@ -53,13 +54,25 @@ Der **Expertenmodus** stellt sämtliche Funktionen des Assistants bereit. Der zu
 
 Im Bereich **View-Einstellungen** werden die grundlegenden Eigenschaften der neuen View festgelegt. Für die erste View reicht der Schnellstart vollständig aus.
 
+Das **Einsatzprofil** belegt Seitenverhältnis, Ausrichtung und Vollbildmodus gemeinsam vor. Sobald eine dieser Einstellungen manuell geändert wird, wechselt die Auswahl auf **Benutzerdefiniert**.
+
+| Einsatzprofil | Voreinstellung |
+|---|---|
+| **Wandtablet** | 16:9, Querformat, 1360 x 765 logische Pixel, Vollbild |
+| **Tablet** | 4:3, Querformat, 1024 x 768 logische Pixel, Vollbild |
+| **Smartphone** | 16:9, Hochformat, 765 x 1360 logische Pixel, Vollbild |
+| **Browser** | 16:9, Querformat, 1360 x 765 logische Pixel, Fenstermodus |
+| **Benutzerdefiniert** | Seitenverhältnis, Ausrichtung und Vollbild frei wählen |
+
 | Einstellung | Bedeutung |
 |---|---|
+| **Einsatzprofil** | Gemeinsame Voreinstellung für das vorgesehene Anzeigegerät. |
 | **View-Name** | Name des neu angelegten IPSView-Medienobjekts im Symcon-Objektbaum. |
 | **Zielkategorie** | Kategorie, in der das Medienobjekt angelegt wird. |
 | **Name der Hauptseite** | Bezeichnung der ersten Seite innerhalb der neuen View. |
 | **Seitenverhältnis** | Auswahl zwischen quadratisch (1:1), klassisch (4:3) und Breitbild (16:9). |
 | **Ausrichtung** | Querformat oder Hochformat. |
+| **Vollbild** | Nutzt am Client die gesamte Anzeige ohne Fensterrahmen. |
 | **Vorlage** | Grundlage der neuen View. Derzeit steht eine leere View zur Verfügung. Diese technische Auswahl wird nur im Expertenmodus angezeigt. |
 
 Danach im Bereich **Design** die gewünschte Gestaltung auswählen. Mit **View erstellen** wird das neue IPSView-Medienobjekt angelegt.

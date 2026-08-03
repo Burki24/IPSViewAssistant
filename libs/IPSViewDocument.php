@@ -64,7 +64,8 @@ final class IPSViewDocument
         int $mediaID,
         int $aspectRatio,
         int $orientation,
-        string $mainPageName
+        string $mainPageName,
+        bool $fullScreen = false
     ): void {
         $viewName = trim($viewName);
         $mainPageName = trim($mainPageName);
@@ -97,6 +98,7 @@ final class IPSViewDocument
         $this->document->HardwareHeight = $height;
         $this->document->Width = $width;
         $this->document->Height = $height;
+        $this->document->FullScreen = $fullScreen;
         $this->document->CurrentPageName = $mainPageName;
         $this->document->ItemID = 0;
 

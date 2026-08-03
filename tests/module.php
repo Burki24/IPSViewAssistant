@@ -32,6 +32,14 @@ assertTest(
     str_contains($moduleSource, 'public function UpdateAssistantMode('),
     'The public assistant mode method is missing.'
 );
+assertTest(
+    str_contains($moduleSource, 'public function UpdateUsageProfile('),
+    'The public usage profile method is missing.'
+);
+assertTest(
+    str_contains($moduleSource, 'public function MarkUsageProfileCustom('),
+    'The public custom usage profile method is missing.'
+);
 assertTest(str_contains($moduleSource, 'public function LoadExistingView('), 'The public LoadExistingView method is missing.');
 assertTest(str_contains($moduleSource, 'public function CreateStyledCopy('), 'The public CreateStyledCopy method is missing.');
 assertTest(
@@ -105,6 +113,11 @@ $button = null;
 $copyButton = null;
 $assistantMode = null;
 $assistantModeInfo = null;
+$usageProfile = null;
+$usageProfileInfo = null;
+$aspectRatio = null;
+$orientation = null;
+$fullScreen = null;
 $existingViewPanel = null;
 $templateSelect = null;
 $styledCopyInfo = null;
@@ -145,6 +158,26 @@ foreach ($actions as $action) {
 
     if (($action['name'] ?? '') === 'AssistantModeInfo') {
         $assistantModeInfo = $action;
+    }
+
+    if (($action['name'] ?? '') === 'UsageProfile') {
+        $usageProfile = $action;
+    }
+
+    if (($action['name'] ?? '') === 'UsageProfileInfo') {
+        $usageProfileInfo = $action;
+    }
+
+    if (($action['name'] ?? '') === 'AspectRatio') {
+        $aspectRatio = $action;
+    }
+
+    if (($action['name'] ?? '') === 'Orientation') {
+        $orientation = $action;
+    }
+
+    if (($action['name'] ?? '') === 'FullScreen') {
+        $fullScreen = $action;
     }
 
     if (($action['name'] ?? '') === 'ExistingViewPanel') {
@@ -293,6 +326,24 @@ assertTest(
     'Changing the assistant mode does not call the public module method.'
 );
 assertTest(is_array($assistantModeInfo), 'The assistant mode explanation is missing from the form.');
+assertTest(is_array($usageProfile), 'The usage profile selection is missing from the form.');
+assertTest(($usageProfile['value'] ?? null) === 0, 'The wall tablet must be the default usage profile.');
+assertTest(count($usageProfile['options'] ?? []) === 5, 'All usage profiles must be available.');
+assertTest(
+    str_contains((string) ($usageProfile['onChange'] ?? ''), 'IPSVIEWA_UpdateUsageProfile('),
+    'Changing the usage profile does not apply its View settings.'
+);
+assertTest(is_array($usageProfileInfo), 'The usage profile explanation is missing from the form.');
+assertTest(is_array($aspectRatio), 'The aspect ratio selection is missing from the form.');
+assertTest(is_array($orientation), 'The orientation selection is missing from the form.');
+assertTest(is_array($fullScreen), 'The full-screen selection is missing from the form.');
+assertTest(($fullScreen['value'] ?? null) === true, 'The wall tablet profile must start in full-screen mode.');
+foreach ([$aspectRatio, $orientation, $fullScreen] as $profileField) {
+    assertTest(
+        str_contains((string) ($profileField['onChange'] ?? ''), 'IPSVIEWA_MarkUsageProfileCustom('),
+        'A manually changed View setting does not mark the usage profile as custom.'
+    );
+}
 assertTest(is_array($existingViewPanel), 'The existing View panel has no stable form name.');
 assertTest(($existingViewPanel['visible'] ?? true) === false, 'Existing Views must be hidden in quick start.');
 assertTest(($existingViewPanel['expanded'] ?? true) === false, 'The existing View panel must start collapsed.');
@@ -317,6 +368,15 @@ assertTest(
 assertTest(
     str_contains((string) ($button['onClick'] ?? ''), '$Theme'),
     'The Create View button does not pass the selected theme.'
+);
+assertTest(
+    str_contains((string) ($button['onClick'] ?? ''), '$FullScreen'),
+    'The Create View button does not pass the selected full-screen mode.'
+);
+assertTest(
+    str_contains($factorySource, '$fullScreen')
+        && str_contains($factorySource, '$document->configure('),
+    'The View factory does not forward the selected full-screen mode.'
 );
 assertTest(is_array($copyButton), 'The Save styled copy button is missing from the form.');
 assertTest(($copyButton['name'] ?? '') === 'SaveStyledCopyButton', 'The styled copy button has no stable form name.');

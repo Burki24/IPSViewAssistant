@@ -25,6 +25,7 @@ $requiredFiles = [
     'libs/IPSViewShape.php',
     'libs/IPSViewThemePreview.php',
     'libs/IPSViewDocument.php',
+    'libs/IPSViewUsageProfile.php',
     'libs/IPSViewCopyFactory.php',
     'libs/IPSViewFactory.php',
     'libs/templates/empty-view.json',
@@ -130,6 +131,9 @@ assertTest(str_contains($formJson, 'IPSVIEWA_LoadExistingView'), 'The existing V
 assertTest(str_contains($formJson, 'IPSVIEWA_CreateStyledCopy'), 'The styled copy action is missing.');
 assertTest(str_contains($formJson, 'IPSVIEWA_UpdateAssistantMode'), 'The assistant mode action is missing.');
 assertTest(str_contains($formJson, 'AssistantModeInfo'), 'The assistant mode explanation is missing.');
+assertTest(str_contains($formJson, 'IPSVIEWA_UpdateUsageProfile'), 'The usage profile action is missing.');
+assertTest(str_contains($formJson, 'IPSVIEWA_MarkUsageProfileCustom'), 'The custom usage profile action is missing.');
+assertTest(str_contains($formJson, 'UsageProfileInfo'), 'The usage profile explanation is missing.');
 
 $gitmodules = (string) file_get_contents($root . '/.gitmodules');
 assertTest(str_contains($gitmodules, 'url = https://github.com/symcon/StylePHP'), 'StylePHP submodule is missing.');

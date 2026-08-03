@@ -12,6 +12,7 @@ require_once __DIR__ . '/../libs/IPSViewCopyFactory.php';
 require_once __DIR__ . '/../libs/IPSViewFactory.php';
 require_once __DIR__ . '/../libs/IPSViewShape.php';
 require_once __DIR__ . '/../libs/IPSViewTypography.php';
+require_once __DIR__ . '/../libs/IPSViewUsageProfile.php';
 
 use Burki24\IPSViewAssistant\IPSViewBackground;
 use Burki24\IPSViewAssistant\IPSViewCopyFactory;
@@ -21,6 +22,7 @@ use Burki24\IPSViewAssistant\IPSViewShape;
 use Burki24\IPSViewAssistant\IPSViewTheme;
 use Burki24\IPSViewAssistant\IPSViewThemePreview;
 use Burki24\IPSViewAssistant\IPSViewTypography;
+use Burki24\IPSViewAssistant\IPSViewUsageProfile;
 use Burki24\SymconModuleHelper\ConfigurationFormHelper;
 
 class IPSViewAssistant extends IPSModuleStrict
@@ -152,6 +154,35 @@ class IPSViewAssistant extends IPSModuleStrict
     }
 
     /**
+     * Applies one ready-made device profile to the basic View settings.
+     */
+    public function UpdateUsageProfile(int $Profile): void
+    {
+        $profile = $this->normalizeUsageProfile($Profile);
+        $this->UpdateFormField('UsageProfile', 'value', $profile);
+        $this->UpdateFormField('UsageProfileInfo', 'caption', $this->usageProfileInfo($profile));
+
+        if ($profile === IPSViewUsageProfile::PROFILE_CUSTOM) {
+            return;
+        }
+
+        $settings = IPSViewUsageProfile::resolve($profile);
+        $this->UpdateFormField('AspectRatio', 'value', $settings['aspectRatio']);
+        $this->UpdateFormField('Orientation', 'value', $settings['orientation']);
+        $this->UpdateFormField('FullScreen', 'value', $settings['fullScreen']);
+    }
+
+    /**
+     * Marks manually adjusted View settings as a custom usage profile.
+     */
+    public function MarkUsageProfileCustom(): void
+    {
+        $profile = IPSViewUsageProfile::PROFILE_CUSTOM;
+        $this->UpdateFormField('UsageProfile', 'value', $profile);
+        $this->UpdateFormField('UsageProfileInfo', 'caption', $this->usageProfileInfo($profile));
+    }
+
+    /**
      * Creates a ready-initialized IPSView media object from the assistant form.
      */
     public function CreateView(
@@ -164,7 +195,8 @@ class IPSViewAssistant extends IPSModuleStrict
         int $Theme = IPSViewTheme::THEME_STANDARD,
         string $ThemePalette = '',
         string $Effects = '',
-        string $Appearance = ''
+        string $Appearance = '',
+        bool $FullScreen = false
     ): string {
         try {
             $factory = new IPSViewFactory(__DIR__ . '/../libs/templates');
@@ -179,7 +211,8 @@ class IPSViewAssistant extends IPSModuleStrict
                 $this->decodePalette($ThemePalette),
                 $this->decodeEffects($Effects),
                 $this->decodeAppearance($Appearance),
-                $this->backgroundSettings()
+                $this->backgroundSettings(),
+                $FullScreen
             );
 
             return sprintf(
@@ -692,6 +725,24 @@ class IPSViewAssistant extends IPSModuleStrict
         }
 
         return $this->Translate('Choose a ready-made design preset. Detailed colors, effects and typography are available in Advanced mode.');
+    }
+
+    private function normalizeUsageProfile(int $profile): int
+    {
+        return IPSViewUsageProfile::isSelectable($profile)
+            ? $profile
+            : IPSViewUsageProfile::PROFILE_WALL_TABLET;
+    }
+
+    private function usageProfileInfo(int $profile): string
+    {
+        return $this->Translate(match ($profile) {
+            IPSViewUsageProfile::PROFILE_TABLET     => '4:3 landscape, 1024 x 768 logical pixels, full screen. Recommended for a portable tablet.',
+            IPSViewUsageProfile::PROFILE_SMARTPHONE => '16:9 portrait, 765 x 1360 logical pixels, full screen. Recommended for a phone.',
+            IPSViewUsageProfile::PROFILE_BROWSER    => '16:9 landscape, 1360 x 765 logical pixels, window mode. Recommended for use in a browser.',
+            IPSViewUsageProfile::PROFILE_CUSTOM     => 'Aspect ratio, orientation and full-screen mode can be selected freely.',
+            default                                 => '16:9 landscape, 1360 x 765 logical pixels, full screen. Recommended for a permanently installed control panel.',
+        });
     }
 
     /**
