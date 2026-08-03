@@ -712,7 +712,7 @@ class IPSViewAssistant extends IPSModuleStrict
         string $ThemePalette,
         string $Effects = '',
         string $Appearance = '',
-        bool $ImageSelectionChanged = false
+        bool $ImageSelectionChanged
     ): void {
         try {
             $storedImage = $this->ReadAttributeString(self::ATTRIBUTE_BACKGROUND_IMAGE);
