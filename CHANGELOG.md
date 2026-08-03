@@ -13,6 +13,7 @@
 
 ### Added
 
+- Added an explicit, start-check-controlled overwrite option for one unambiguous same-name IPSView while retaining its object ID and rolling back failed content writes.
 - Added local PNG/JPEG background images for the main page or all pages, including preserve, remove, tile, center and stretch modes.
 - Embedded selected images directly in IPSView documents with content reuse and live SVG preview support.
 

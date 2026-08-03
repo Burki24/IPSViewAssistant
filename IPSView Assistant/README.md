@@ -87,6 +87,8 @@ Das optionale **Start-Raster** bereitet eine leere Inhaltsseite für einen geord
 
 Direkt vor den Aktionsschaltflächen fasst der **Startcheck** die wichtigsten Voraussetzungen zusammen. Er prüft Namen und Zielkategorie, erkennt eine bereits vorhandene gleichnamige View, validiert Format, Start-Raster und Hintergrundbild und sucht nach dem installierten IPSView Designer. Grün bedeutet, dass die View erstellt werden kann. Gelb kennzeichnet einen hilfreichen, aber nicht blockierenden Hinweis – beispielsweise ein nur auf die Hauptseite angewendetes Hintergrundbild bei aktiviertem Start-Raster. Rot nennt die zu korrigierenden Angaben und deaktiviert **View erstellen**. Änderungen an den grundlegenden View-Einstellungen aktualisieren den Bericht direkt; mit **Erneut prüfen** lässt er sich jederzeit vollständig aktualisieren. Beim Erstellen führt der Assistant dieselbe Prüfung unabhängig von der Anzeige nochmals verbindlich aus.
 
+Ist genau eine gleichnamige IPSView in der Zielkategorie vorhanden, bietet der Startcheck die ausdrückliche Auswahl **Vorhandene View überschreiben** an. Ohne diese Bestätigung bleibt die Erstellung gesperrt. Beim bestätigten Überschreiben bleibt die Objekt-ID erhalten, aber alle Seiten, Bedienelemente und Einstellungen der bisherigen View werden durch die neu erzeugte View ersetzt. Gleichnamige Nicht-IPSView-Objekte und mehrere gleichnamige Treffer können nicht überschrieben werden.
+
 | Seitenverhältnis | Logische Größe im Querformat |
 |---|---:|
 | **1:1** | 1000 x 1000 |

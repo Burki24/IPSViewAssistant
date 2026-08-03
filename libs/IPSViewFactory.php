@@ -39,7 +39,8 @@ final class IPSViewFactory
         array $appearance = [],
         array $background = [],
         bool $fullScreen = false,
-        int $startGrid = IPSViewDocument::START_GRID_NONE
+        int $startGrid = IPSViewDocument::START_GRID_NONE,
+        bool $overwriteExisting = false
     ): int {
         $viewName = trim($viewName);
         $mainPageName = trim($mainPageName);
@@ -51,8 +52,30 @@ final class IPSViewFactory
             $orientation,
             $template,
             $startGrid,
-            $background
+            $background,
+            $overwriteExisting
         ));
+
+        $existingMediaID = $overwriteExisting
+            ? IPSViewStartCheck::findExistingView($viewName, $targetCategoryID)
+            : null;
+        if ($existingMediaID !== null) {
+            return $this->overwrite(
+                $existingMediaID,
+                $viewName,
+                $aspectRatio,
+                $orientation,
+                $template,
+                $mainPageName,
+                $theme,
+                $customPalette,
+                $effects,
+                $appearance,
+                $background,
+                $fullScreen,
+                $startGrid
+            );
+        }
 
         $mediaID = IPS_CreateMedia(0);
 
@@ -60,17 +83,21 @@ final class IPSViewFactory
             IPS_SetName($mediaID, $viewName);
             IPS_SetParent($mediaID, $targetCategoryID);
 
-            $document = IPSViewDocument::fromTemplate($this->templateDirectory . '/empty-view.json');
-            $document->configure(
+            $document = $this->buildDocument(
                 $viewName,
                 $mediaID,
                 $aspectRatio,
                 $orientation,
+                $template,
                 $mainPageName,
+                $theme,
+                $customPalette,
+                $effects,
+                $appearance,
+                $background,
                 $fullScreen,
                 $startGrid
             );
-            $document->applyTheme($theme, $customPalette, $effects, $appearance, $background);
 
             $mediaFile = IPS_GetKernelDir()
                 . 'media'
@@ -96,6 +123,107 @@ final class IPSViewFactory
 
             throw $exception;
         }
+    }
+
+    /**
+     * Replaces one explicitly selected same-name IPSView while retaining its object ID.
+     *
+     * @param array<string, mixed> $customPalette
+     * @param array<string, mixed> $effects
+     * @param array<string, mixed> $appearance
+     * @param array<string, mixed> $background
+     */
+    private function overwrite(
+        int $mediaID,
+        string $viewName,
+        int $aspectRatio,
+        int $orientation,
+        int $template,
+        string $mainPageName,
+        int $theme,
+        array $customPalette,
+        array $effects,
+        array $appearance,
+        array $background,
+        bool $fullScreen,
+        int $startGrid
+    ): int {
+        $previousContent = IPS_GetMediaContent($mediaID);
+        $document = $this->buildDocument(
+            $viewName,
+            $mediaID,
+            $aspectRatio,
+            $orientation,
+            $template,
+            $mainPageName,
+            $theme,
+            $customPalette,
+            $effects,
+            $appearance,
+            $background,
+            $fullScreen,
+            $startGrid
+        );
+
+        try {
+            if (!IPS_SetMediaContent($mediaID, base64_encode($document->toJson()))) {
+                throw new RuntimeException('The existing IPSView content could not be overwritten.');
+            }
+
+            IPS_SendMediaEvent($mediaID);
+
+            return $mediaID;
+        } catch (Throwable $exception) {
+            try {
+                IPS_SetMediaContent($mediaID, $previousContent);
+                IPS_SendMediaEvent($mediaID);
+            } catch (Throwable) {
+            }
+
+            throw $exception;
+        }
+    }
+
+    /**
+     * Builds the configured IPSView document shared by creation and explicit overwrite.
+     *
+     * @param array<string, mixed> $customPalette
+     * @param array<string, mixed> $effects
+     * @param array<string, mixed> $appearance
+     * @param array<string, mixed> $background
+     */
+    private function buildDocument(
+        string $viewName,
+        int $mediaID,
+        int $aspectRatio,
+        int $orientation,
+        int $template,
+        string $mainPageName,
+        int $theme,
+        array $customPalette,
+        array $effects,
+        array $appearance,
+        array $background,
+        bool $fullScreen,
+        int $startGrid
+    ): IPSViewDocument {
+        if ($template !== self::TEMPLATE_EMPTY) {
+            throw new RuntimeException('The selected template is not supported.');
+        }
+
+        $document = IPSViewDocument::fromTemplate($this->templateDirectory . '/empty-view.json');
+        $document->configure(
+            $viewName,
+            $mediaID,
+            $aspectRatio,
+            $orientation,
+            $mainPageName,
+            $fullScreen,
+            $startGrid
+        );
+        $document->applyTheme($theme, $customPalette, $effects, $appearance, $background);
+
+        return $document;
     }
 
 }

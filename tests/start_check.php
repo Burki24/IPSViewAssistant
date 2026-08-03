@@ -15,10 +15,16 @@ $GLOBALS['startCheckObjects'] = [
     100 => ['ObjectType' => 0, 'ObjectName' => 'Views'],
     200 => ['ObjectType' => 1, 'ObjectName' => 'Not a category'],
     300 => ['ObjectType' => 5, 'ObjectName' => 'Existing View'],
+    400 => ['ObjectType' => 1, 'ObjectName' => 'Conflicting Target'],
+    500 => ['ObjectType' => 5, 'ObjectName' => 'Wrong Media'],
 ];
 $GLOBALS['startCheckChildren'] = [
     0   => [],
-    100 => [300],
+    100 => [300, 400, 500],
+];
+$GLOBALS['startCheckMedia'] = [
+    300 => ['MediaType' => 0],
+    500 => ['MediaType' => 1],
 ];
 $GLOBALS['startCheckModules'] = [
     '{DESIGNER}' => ['ModuleName' => 'IPSView Designer'],
@@ -43,6 +49,19 @@ function IPS_GetObject(int $objectID): array
 function IPS_GetChildrenIDs(int $objectID): array
 {
     return $GLOBALS['startCheckChildren'][$objectID] ?? [];
+}
+
+function IPS_MediaExists(int $mediaID): bool
+{
+    return isset($GLOBALS['startCheckMedia'][$mediaID]);
+}
+
+/**
+ * @return array<string, mixed>
+ */
+function IPS_GetMedia(int $mediaID): array
+{
+    return $GLOBALS['startCheckMedia'][$mediaID];
 }
 
 /**
@@ -74,7 +93,8 @@ function analyzeStartCheck(
     int $orientation = IPSViewDocument::ORIENTATION_LANDSCAPE,
     int $template = 0,
     int $startGrid = IPSViewDocument::START_GRID_NONE,
-    array $background = []
+    array $background = [],
+    bool $overwriteExisting = false
 ): array {
     return IPSViewStartCheck::analyze(
         $viewName,
@@ -84,7 +104,8 @@ function analyzeStartCheck(
         $orientation,
         $template,
         $startGrid,
-        $background
+        $background,
+        $overwriteExisting
     );
 }
 
@@ -100,10 +121,39 @@ assertTest(
 $duplicate = analyzeStartCheck('Existing View');
 assertTest(!$duplicate['ready'], 'A duplicate View name was not rejected.');
 assertTest($duplicate['status'] === IPSViewStartCheck::STATUS_ERROR, 'A duplicate View name is not red.');
+assertTest($duplicate['overwriteAvailable'], 'A safe same-name IPSView cannot be selected for overwrite.');
 assertTest(
-    in_array('A View with this name already exists in the target category.', $duplicate['errors'], true),
+    in_array('A View with this name already exists in the target category. Enable overwrite to replace it.', $duplicate['errors'], true),
     'The duplicate-name error is missing.'
 );
+
+$overwrite = analyzeStartCheck('Existing View', overwriteExisting: true);
+assertTest($overwrite['ready'], 'An explicitly confirmed safe overwrite is still blocked.');
+assertTest(
+    $overwrite['status'] === IPSViewStartCheck::STATUS_WARNING,
+    'An explicitly confirmed overwrite does not produce a warning.'
+);
+assertTest(
+    in_array('The existing View will be overwritten completely while its object ID is retained.', $overwrite['warnings'], true),
+    'The destructive overwrite warning is missing.'
+);
+
+$conflictingTarget = analyzeStartCheck('Conflicting Target', overwriteExisting: true);
+assertTest(!$conflictingTarget['ready'], 'A same-name non-IPSView object was accepted for overwrite.');
+assertTest(!$conflictingTarget['overwriteAvailable'], 'Overwrite was offered for a non-IPSView target.');
+
+$wrongMedia = analyzeStartCheck('Wrong Media', overwriteExisting: true);
+assertTest(!$wrongMedia['ready'], 'A same-name non-IPSView medium was accepted for overwrite.');
+assertTest(!$wrongMedia['overwriteAvailable'], 'Overwrite was offered for a non-IPSView medium.');
+
+$GLOBALS['startCheckObjects'][301] = ['ObjectType' => 5, 'ObjectName' => 'Existing View'];
+$GLOBALS['startCheckMedia'][301] = ['MediaType' => 0];
+$GLOBALS['startCheckChildren'][100][] = 301;
+$ambiguousTarget = analyzeStartCheck('Existing View', overwriteExisting: true);
+assertTest(!$ambiguousTarget['ready'], 'Multiple same-name IPSViews were accepted for overwrite.');
+assertTest(!$ambiguousTarget['overwriteAvailable'], 'Overwrite was offered for multiple same-name IPSViews.');
+unset($GLOBALS['startCheckObjects'][301], $GLOBALS['startCheckMedia'][301]);
+$GLOBALS['startCheckChildren'][100] = [300, 400, 500];
 
 $invalid = analyzeStartCheck('', 200, '', 99, 99, 1, 99);
 assertTest(count($invalid['errors']) === 7, 'The start check did not collect all invalid basic settings.');

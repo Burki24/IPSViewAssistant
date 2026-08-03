@@ -31,8 +31,16 @@ assertTest(str_contains($moduleSource, 'use ConfigurationFormHelper;'), 'The mod
 assertTest(str_contains($moduleSource, 'public function GetConfigurationForm(): string'), 'The dynamic configuration form is missing.');
 assertTest(str_contains($moduleSource, 'public function CreateView('), 'The public CreateView method is missing.');
 assertTest(
+    str_contains($moduleSource, 'public function CreateOrOverwriteView('),
+    'The explicit View overwrite method is missing.'
+);
+assertTest(
     str_contains($moduleSource, 'public function UpdateStartCheck('),
     'The public start-check method is missing.'
+);
+assertTest(
+    str_contains($moduleSource, 'public function UpdateStartCheckWithOverwrite('),
+    'The overwrite-aware start-check method is missing.'
 );
 assertTest(
     str_contains($moduleSource, 'public function UpdateAssistantMode('),
@@ -80,6 +88,11 @@ assertTest(str_contains($factorySource, 'IPS_CreateMedia(0)'), 'The factory does
 assertTest(str_contains($factorySource, 'IPS_SetMediaFile('), 'The factory does not assign a media file.');
 assertTest(str_contains($factorySource, 'IPS_SetMediaContent('), 'The factory does not write the IPSView content.');
 assertTest(str_contains($factorySource, 'IPS_SendMediaEvent('), 'The factory does not announce the media update.');
+assertTest(str_contains($factorySource, 'private function overwrite('), 'The factory cannot overwrite an existing View.');
+assertTest(
+    str_contains($factorySource, '$previousContent = IPS_GetMediaContent($mediaID);'),
+    'The factory does not preserve the previous content for overwrite rollback.'
+);
 assertTest(str_contains($factorySource, 'applyTheme('), 'The factory does not apply the selected theme.');
 assertTest(
     str_contains($factorySource, 'IPSViewStartCheck::assertReady('),
@@ -134,6 +147,8 @@ $mainPageName = null;
 $startCheckPanel = null;
 $startCheckStatus = null;
 $runStartCheckButton = null;
+$overwriteExistingView = null;
+$overwriteExistingViewInfo = null;
 $copyButton = null;
 $assistantMode = null;
 $assistantModeInfo = null;
@@ -205,6 +220,14 @@ foreach ($actions as $action) {
 
     if (($action['name'] ?? '') === 'RunStartCheckButton') {
         $runStartCheckButton = $action;
+    }
+
+    if (($action['name'] ?? '') === 'OverwriteExistingView') {
+        $overwriteExistingView = $action;
+    }
+
+    if (($action['name'] ?? '') === 'OverwriteExistingViewInfo') {
+        $overwriteExistingViewInfo = $action;
     }
 
     if (($action['name'] ?? '') === 'AssistantMode') {
@@ -406,16 +429,30 @@ assertTest(($startCheckPanel['expanded'] ?? false) === true, 'The start check mu
 assertTest(is_array($startCheckStatus), 'The start-check status report is missing from the form.');
 assertTest(is_array($runStartCheckButton), 'The manual start-check button is missing from the form.');
 assertTest(
-    str_contains((string) ($runStartCheckButton['onClick'] ?? ''), 'IPSVIEWA_UpdateStartCheck('),
+    str_contains((string) ($runStartCheckButton['onClick'] ?? ''), 'IPSVIEWA_UpdateStartCheckWithOverwrite('),
     'The manual start-check button does not call the public module method.'
 );
 foreach ([$viewName, $targetCategory, $mainPageName, $aspectRatio, $orientation, $startGrid] as $startCheckField) {
     assertTest(is_array($startCheckField), 'A start-check input field is missing from the form.');
     assertTest(
-        str_contains((string) ($startCheckField['onChange'] ?? ''), 'IPSVIEWA_UpdateStartCheck('),
+        str_contains((string) ($startCheckField['onChange'] ?? ''), 'IPSVIEWA_UpdateStartCheckWithOverwrite('),
         'A relevant View setting does not refresh the start check.'
     );
 }
+assertTest(is_array($overwriteExistingView), 'The explicit overwrite confirmation is missing.');
+assertTest(($overwriteExistingView['visible'] ?? true) === false, 'Overwrite must remain hidden without a conflict.');
+assertTest(($overwriteExistingView['value'] ?? true) === false, 'Overwrite must never be enabled by default.');
+assertTest(
+    str_contains((string) ($overwriteExistingView['onChange'] ?? ''), '$OverwriteExistingView'),
+    'The overwrite confirmation does not refresh the start check.'
+);
+assertTest(is_array($overwriteExistingViewInfo), 'The destructive overwrite explanation is missing.');
+assertTest(($overwriteExistingViewInfo['visible'] ?? true) === false, 'The overwrite explanation is visible without a conflict.');
+assertTest(
+    str_ends_with((string) ($viewName['onChange'] ?? ''), ', false);')
+        && str_ends_with((string) ($targetCategory['onChange'] ?? ''), ', false);'),
+    'Changing the View name or target category does not reset overwrite confirmation.'
+);
 assertTest(
     str_contains($moduleSource, "UpdateFormField('CreateViewButton', 'enabled'")
         && str_contains($moduleSource, 'IPSViewStartCheck::assertReady($startCheck);'),
@@ -491,8 +528,12 @@ assertTest(
     'The advanced mode does not control all advanced form areas.'
 );
 assertTest(
-    str_contains((string) ($button['onClick'] ?? ''), 'IPSVIEWA_CreateView('),
-    'The Create View button does not call the public module method.'
+    str_contains((string) ($button['onClick'] ?? ''), 'IPSVIEWA_CreateOrOverwriteView('),
+    'The Create View button does not call the overwrite-aware public module method.'
+);
+assertTest(
+    str_contains((string) ($button['onClick'] ?? ''), '$OverwriteExistingView'),
+    'The Create View button does not pass the explicit overwrite confirmation.'
 );
 assertTest(
     str_contains((string) ($button['onClick'] ?? ''), '$Theme'),

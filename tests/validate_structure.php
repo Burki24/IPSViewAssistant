@@ -60,6 +60,7 @@ $requiredFiles = [
     'tests/effects.php',
     'tests/appearance.php',
     'tests/start_check.php',
+    'tests/factory.php',
     'tests/existing_view.php',
     'tests/stubs',
     '.style',

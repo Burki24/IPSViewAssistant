@@ -242,6 +242,41 @@ class IPSViewAssistant extends IPSModuleStrict
         bool $FullScreen = false,
         int $StartGrid = IPSViewDocument::START_GRID_NONE
     ): string {
+        return $this->CreateOrOverwriteView(
+            $ViewName,
+            $TargetCategoryID,
+            $AspectRatio,
+            $Orientation,
+            $Template,
+            $MainPageName,
+            $Theme,
+            $ThemePalette,
+            $Effects,
+            $Appearance,
+            $FullScreen,
+            $StartGrid,
+            false
+        );
+    }
+
+    /**
+     * Creates a new IPSView or explicitly overwrites one unambiguous same-name IPSView.
+     */
+    public function CreateOrOverwriteView(
+        string $ViewName,
+        int $TargetCategoryID,
+        int $AspectRatio,
+        int $Orientation,
+        int $Template,
+        string $MainPageName,
+        int $Theme,
+        string $ThemePalette,
+        string $Effects,
+        string $Appearance,
+        bool $FullScreen,
+        int $StartGrid,
+        bool $OverwriteExistingView
+    ): string {
         try {
             $startCheck = $this->startCheck(
                 $ViewName,
@@ -250,10 +285,12 @@ class IPSViewAssistant extends IPSModuleStrict
                 $AspectRatio,
                 $Orientation,
                 $Template,
-                $StartGrid
+                $StartGrid,
+                $OverwriteExistingView
             );
-            $this->showStartCheck($startCheck);
+            $this->showStartCheck($startCheck, $OverwriteExistingView);
             IPSViewStartCheck::assertReady($startCheck);
+            $wasOverwritten = $OverwriteExistingView && $startCheck['overwriteAvailable'];
 
             $factory = new IPSViewFactory(__DIR__ . '/../libs/templates');
             $mediaID = $factory->create(
@@ -269,20 +306,27 @@ class IPSViewAssistant extends IPSModuleStrict
                 $this->decodeAppearance($Appearance),
                 $this->backgroundSettings(),
                 $FullScreen,
-                $StartGrid
+                $StartGrid,
+                $OverwriteExistingView
             );
             $this->WriteAttributeInteger(self::ATTRIBUTE_PREVIEW_START_GRID, $StartGrid);
             $this->WriteAttributeInteger(self::ATTRIBUTE_LAST_CREATED_VIEW_ID, $mediaID);
             $this->WriteAttributeInteger(self::ATTRIBUTE_DESIGNER_OBJECT_ID, 1);
             $this->showDesignerHandover($mediaID);
 
-            return sprintf(
-                $this->Translate('The IPSView "%s" was created successfully with object ID %d.'),
-                trim($ViewName),
-                $mediaID
-            );
+            return $wasOverwritten
+                ? sprintf(
+                    $this->Translate('The IPSView "%s" was overwritten successfully while retaining object ID %d.'),
+                    trim($ViewName),
+                    $mediaID
+                )
+                : sprintf(
+                    $this->Translate('The IPSView "%s" was created successfully with object ID %d.'),
+                    trim($ViewName),
+                    $mediaID
+                );
         } catch (Throwable $exception) {
-            $this->SendDebug('CreateView', $exception->getMessage(), 0);
+            $this->SendDebug('CreateOrOverwriteView', $exception->getMessage(), 0);
 
             return sprintf(
                 $this->Translate('The IPSView could not be created: %s'),
@@ -676,6 +720,31 @@ class IPSViewAssistant extends IPSModuleStrict
         int $Template,
         int $StartGrid
     ): void {
+        $this->UpdateStartCheckWithOverwrite(
+            $ViewName,
+            $TargetCategoryID,
+            $MainPageName,
+            $AspectRatio,
+            $Orientation,
+            $Template,
+            $StartGrid,
+            false
+        );
+    }
+
+    /**
+     * Rechecks the form and includes the user's explicit overwrite decision.
+     */
+    public function UpdateStartCheckWithOverwrite(
+        string $ViewName,
+        int $TargetCategoryID,
+        string $MainPageName,
+        int $AspectRatio,
+        int $Orientation,
+        int $Template,
+        int $StartGrid,
+        bool $OverwriteExistingView
+    ): void {
         try {
             $this->showStartCheck($this->startCheck(
                 $ViewName,
@@ -684,10 +753,11 @@ class IPSViewAssistant extends IPSModuleStrict
                 $AspectRatio,
                 $Orientation,
                 $Template,
-                $StartGrid
-            ));
+                $StartGrid,
+                $OverwriteExistingView
+            ), $OverwriteExistingView);
         } catch (Throwable $exception) {
-            $this->SendDebug('UpdateStartCheck', $exception->getMessage(), 0);
+            $this->SendDebug('UpdateStartCheckWithOverwrite', $exception->getMessage(), 0);
             $this->UpdateFormField(
                 'StartCheckStatus',
                 'caption',
@@ -697,6 +767,8 @@ class IPSViewAssistant extends IPSModuleStrict
                 )
             );
             $this->UpdateFormField('CreateViewButton', 'enabled', false);
+            $this->UpdateFormField('OverwriteExistingView', 'visible', false);
+            $this->UpdateFormField('OverwriteExistingViewInfo', 'visible', false);
         }
     }
 
@@ -1314,7 +1386,7 @@ class IPSViewAssistant extends IPSModuleStrict
     /**
      * Analyzes the current creation inputs together with the persisted background settings.
      *
-     * @return array{status: int, ready: bool, checks: list<string>, warnings: list<string>, errors: list<string>}
+     * @return array{status: int, ready: bool, overwriteAvailable: bool, checks: list<string>, warnings: list<string>, errors: list<string>}
      */
     private function startCheck(
         string $viewName,
@@ -1323,7 +1395,8 @@ class IPSViewAssistant extends IPSModuleStrict
         int $aspectRatio,
         int $orientation,
         int $template,
-        int $startGrid
+        int $startGrid,
+        bool $overwriteExisting = false
     ): array {
         return IPSViewStartCheck::analyze(
             $viewName,
@@ -1333,37 +1406,44 @@ class IPSViewAssistant extends IPSModuleStrict
             $orientation,
             $template,
             $startGrid,
-            $this->backgroundSettings()
+            $this->backgroundSettings(),
+            $overwriteExisting
         );
     }
 
     /**
      * Writes a start-check report to the live form and enables creation when ready.
      *
-     * @param array{status: int, ready: bool, checks: list<string>, warnings: list<string>, errors: list<string>} $report
+     * @param array{status: int, ready: bool, overwriteAvailable: bool, checks: list<string>, warnings: list<string>, errors: list<string>} $report
      */
-    private function showStartCheck(array $report): void
+    private function showStartCheck(array $report, bool $overwriteExisting = false): void
     {
         $this->UpdateFormField('StartCheckStatus', 'caption', $this->startCheckCaption($report));
         $this->UpdateFormField('CreateViewButton', 'enabled', $report['ready']);
+        $this->UpdateFormField('OverwriteExistingView', 'visible', $report['overwriteAvailable']);
+        $this->UpdateFormField('OverwriteExistingView', 'value', $overwriteExisting);
+        $this->UpdateFormField('OverwriteExistingViewInfo', 'visible', $report['overwriteAvailable']);
     }
 
     /**
      * Applies the initial start-check report to the form definition before rendering.
      *
      * @param array<string, mixed>                                                                              $form
-     * @param array{status: int, ready: bool, checks: list<string>, warnings: list<string>, errors: list<string>} $report
+     * @param array{status: int, ready: bool, overwriteAvailable: bool, checks: list<string>, warnings: list<string>, errors: list<string>} $report
      */
     private function applyStartCheckToForm(array &$form, array $report): void
     {
         $this->setConfigurationFormField($form, 'StartCheckStatus', 'caption', $this->startCheckCaption($report));
         $this->setConfigurationFormField($form, 'CreateViewButton', 'enabled', $report['ready']);
+        $this->setConfigurationFormField($form, 'OverwriteExistingView', 'visible', $report['overwriteAvailable']);
+        $this->setConfigurationFormField($form, 'OverwriteExistingView', 'value', false);
+        $this->setConfigurationFormField($form, 'OverwriteExistingViewInfo', 'visible', $report['overwriteAvailable']);
     }
 
     /**
      * Formats one start-check report as a localized multiline traffic-light summary.
      *
-     * @param array{status: int, ready: bool, checks: list<string>, warnings: list<string>, errors: list<string>} $report
+     * @param array{status: int, ready: bool, overwriteAvailable: bool, checks: list<string>, warnings: list<string>, errors: list<string>} $report
      */
     private function startCheckCaption(array $report): string
     {

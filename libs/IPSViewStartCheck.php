@@ -18,7 +18,7 @@ final class IPSViewStartCheck
      *
      * @param array<string, mixed> $background
      *
-     * @return array{status: int, ready: bool, checks: list<string>, warnings: list<string>, errors: list<string>}
+     * @return array{status: int, ready: bool, overwriteAvailable: bool, checks: list<string>, warnings: list<string>, errors: list<string>}
      */
     public static function analyze(
         string $viewName,
@@ -28,11 +28,13 @@ final class IPSViewStartCheck
         int $orientation,
         int $template,
         int $startGrid,
-        array $background = []
+        array $background = [],
+        bool $overwriteExisting = false
     ): array {
         $checks = [];
         $warnings = [];
         $errors = [];
+        $overwriteAvailable = false;
 
         $viewNameValid = self::validateName(trim($viewName), 'View', $errors);
         $mainPageNameValid = self::validateName(trim($mainPageName), 'main page', $errors);
@@ -42,10 +44,20 @@ final class IPSViewStartCheck
 
         $targetValid = self::validateTargetCategory($targetCategoryID, $errors);
         if ($targetValid && $viewNameValid) {
-            if (self::hasDuplicateViewName(trim($viewName), $targetCategoryID)) {
-                $errors[] = 'A View with this name already exists in the target category.';
-            } else {
-                $checks[] = 'The target category is available and the View name is unused.';
+            try {
+                $existingViewID = self::findExistingView(trim($viewName), $targetCategoryID);
+                if ($existingViewID === null) {
+                    $checks[] = 'The target category is available and the View name is unused.';
+                } else {
+                    $overwriteAvailable = true;
+                    if ($overwriteExisting) {
+                        $warnings[] = 'The existing View will be overwritten completely while its object ID is retained.';
+                    } else {
+                        $errors[] = 'A View with this name already exists in the target category. Enable overwrite to replace it.';
+                    }
+                }
+            } catch (InvalidArgumentException $exception) {
+                $errors[] = $exception->getMessage();
             }
         }
 
@@ -105,11 +117,12 @@ final class IPSViewStartCheck
             : ($warnings !== [] ? self::STATUS_WARNING : self::STATUS_READY);
 
         return [
-            'status'   => $status,
-            'ready'    => $errors === [],
-            'checks'   => $checks,
-            'warnings' => $warnings,
-            'errors'   => $errors,
+            'status'             => $status,
+            'ready'              => $errors === [],
+            'overwriteAvailable' => $overwriteAvailable,
+            'checks'             => $checks,
+            'warnings'           => $warnings,
+            'errors'             => $errors,
         ];
     }
 
@@ -127,6 +140,43 @@ final class IPSViewStartCheck
         throw new InvalidArgumentException(
             $report['errors'][0] ?? 'The View configuration is not ready for creation.'
         );
+    }
+
+    /**
+     * Finds one unambiguous same-name IPSView or rejects a conflicting target object.
+     */
+    public static function findExistingView(string $viewName, int $targetCategoryID): ?int
+    {
+        $matchingObjects = [];
+        foreach (IPS_GetChildrenIDs($targetCategoryID) as $childID) {
+            $object = IPS_GetObject($childID);
+            if ((string) ($object['ObjectName'] ?? '') === $viewName) {
+                $matchingObjects[] = [
+                    'id'   => $childID,
+                    'type' => (int) ($object['ObjectType'] ?? -1),
+                ];
+            }
+        }
+
+        if ($matchingObjects === []) {
+            return null;
+        }
+
+        if (count($matchingObjects) > 1) {
+            throw new InvalidArgumentException('More than one object with this name exists in the target category.');
+        }
+
+        $matchingObject = $matchingObjects[0];
+        if ($matchingObject['type'] !== 5 || !IPS_MediaExists($matchingObject['id'])) {
+            throw new InvalidArgumentException('An object with this name exists, but it is not an IPSView media object.');
+        }
+
+        $media = IPS_GetMedia($matchingObject['id']);
+        if ((int) ($media['MediaType'] ?? -1) !== 0) {
+            throw new InvalidArgumentException('A media object with this name exists, but it is not an IPSView.');
+        }
+
+        return $matchingObject['id'];
     }
 
     /**
@@ -180,21 +230,6 @@ final class IPSViewStartCheck
         }
 
         return true;
-    }
-
-    /**
-     * Checks whether the target category already contains a same-name media object.
-     */
-    private static function hasDuplicateViewName(string $viewName, int $targetCategoryID): bool
-    {
-        foreach (IPS_GetChildrenIDs($targetCategoryID) as $childID) {
-            $object = IPS_GetObject($childID);
-            if (($object['ObjectType'] ?? -1) === 5 && ($object['ObjectName'] ?? '') === $viewName) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**

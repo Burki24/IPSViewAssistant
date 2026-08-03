@@ -33,6 +33,7 @@ $commands = [
     ['Test IPSView usage profiles', 'php tests/usage_profile.php'],
     ['Test IPSView Designer handover', 'php tests/designer_handover.php'],
     ['Test IPSView document generation', 'php tests/document.php'],
+    ['Test IPSView creation and overwrite', 'php tests/factory.php'],
     ['Test existing IPSView handling', 'php tests/existing_view.php'],
     ['Test module integration', 'php tests/module.php'],
     ['Test library metadata updater', 'python3 tests/test_update_library_metadata.py'],

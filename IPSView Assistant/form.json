@@ -86,14 +86,14 @@
                             "name": "ViewName",
                             "caption": "View name",
                             "value": "Neue IPSView",
-                            "onChange": "IPSVIEWA_UpdateStartCheck($id, $ViewName, $TargetCategoryID, $MainPageName, $AspectRatio, $Orientation, $Template, $StartGrid);"
+                            "onChange": "IPSVIEWA_UpdateStartCheckWithOverwrite($id, $ViewName, $TargetCategoryID, $MainPageName, $AspectRatio, $Orientation, $Template, $StartGrid, false);"
                         },
                         {
                             "type": "SelectCategory",
                             "name": "TargetCategoryID",
                             "caption": "Target category",
                             "value": 0,
-                            "onChange": "IPSVIEWA_UpdateStartCheck($id, $ViewName, $TargetCategoryID, $MainPageName, $AspectRatio, $Orientation, $Template, $StartGrid);"
+                            "onChange": "IPSVIEWA_UpdateStartCheckWithOverwrite($id, $ViewName, $TargetCategoryID, $MainPageName, $AspectRatio, $Orientation, $Template, $StartGrid, false);"
                         }
                     ]
                 },
@@ -105,14 +105,14 @@
                             "name": "MainPageName",
                             "caption": "Main page name",
                             "value": "Hauptseite",
-                            "onChange": "IPSVIEWA_UpdateStartCheck($id, $ViewName, $TargetCategoryID, $MainPageName, $AspectRatio, $Orientation, $Template, $StartGrid);"
+                            "onChange": "IPSVIEWA_UpdateStartCheckWithOverwrite($id, $ViewName, $TargetCategoryID, $MainPageName, $AspectRatio, $Orientation, $Template, $StartGrid, $OverwriteExistingView);"
                         },
                         {
                             "type": "Select",
                             "name": "AspectRatio",
                             "caption": "Aspect ratio",
                             "value": 2,
-                            "onChange": "IPSVIEWA_MarkUsageProfileCustom($id); IPSVIEWA_UpdateStartCheck($id, $ViewName, $TargetCategoryID, $MainPageName, $AspectRatio, $Orientation, $Template, $StartGrid);",
+                            "onChange": "IPSVIEWA_MarkUsageProfileCustom($id); IPSVIEWA_UpdateStartCheckWithOverwrite($id, $ViewName, $TargetCategoryID, $MainPageName, $AspectRatio, $Orientation, $Template, $StartGrid, $OverwriteExistingView);",
                             "options": [
                                 {
                                     "caption": "Square (1:1)",
@@ -149,7 +149,7 @@
                             "name": "Orientation",
                             "caption": "Orientation",
                             "value": 0,
-                            "onChange": "IPSVIEWA_MarkUsageProfileCustom($id); IPSVIEWA_UpdateStartCheck($id, $ViewName, $TargetCategoryID, $MainPageName, $AspectRatio, $Orientation, $Template, $StartGrid);",
+                            "onChange": "IPSVIEWA_MarkUsageProfileCustom($id); IPSVIEWA_UpdateStartCheckWithOverwrite($id, $ViewName, $TargetCategoryID, $MainPageName, $AspectRatio, $Orientation, $Template, $StartGrid, $OverwriteExistingView);",
                             "options": [
                                 {
                                     "caption": "Landscape",
@@ -179,7 +179,7 @@
                             "caption": "Start grid",
                             "value": 0,
                             "width": "360px",
-                            "onChange": "IPSVIEWA_UpdateStartGridPreview($id, $StartGrid, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"fontBoldMode\" => $FontBoldMode, \"fontItalicMode\" => $FontItalicMode, \"fontUnderlineMode\" => $FontUnderlineMode, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES)); IPSVIEWA_UpdateStartCheck($id, $ViewName, $TargetCategoryID, $MainPageName, $AspectRatio, $Orientation, $Template, $StartGrid);",
+                            "onChange": "IPSVIEWA_UpdateStartGridPreview($id, $StartGrid, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"fontBoldMode\" => $FontBoldMode, \"fontItalicMode\" => $FontItalicMode, \"fontUnderlineMode\" => $FontUnderlineMode, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES)); IPSVIEWA_UpdateStartCheckWithOverwrite($id, $ViewName, $TargetCategoryID, $MainPageName, $AspectRatio, $Orientation, $Template, $StartGrid, $OverwriteExistingView);",
                             "options": [
                                 {
                                     "caption": "No grid",
@@ -983,7 +983,7 @@
                                     "value": 0,
                                     "visible": false,
                                     "width": "360px",
-                                    "onChange": "IPSVIEWA_UpdateBackgroundScope($id, $BackgroundImageScope); IPSVIEWA_UpdateStartCheck($id, $ViewName, $TargetCategoryID, $MainPageName, $AspectRatio, $Orientation, $Template, $StartGrid);",
+                                    "onChange": "IPSVIEWA_UpdateBackgroundScope($id, $BackgroundImageScope); IPSVIEWA_UpdateStartCheckWithOverwrite($id, $ViewName, $TargetCategoryID, $MainPageName, $AspectRatio, $Orientation, $Template, $StartGrid, $OverwriteExistingView);",
                                     "options": [
                                         {
                                             "caption": "Main page only",
@@ -1055,10 +1055,24 @@
                     "caption": "The start check is being prepared."
                 },
                 {
+                    "type": "CheckBox",
+                    "name": "OverwriteExistingView",
+                    "caption": "Overwrite the existing View",
+                    "value": false,
+                    "visible": false,
+                    "onChange": "IPSVIEWA_UpdateStartCheckWithOverwrite($id, $ViewName, $TargetCategoryID, $MainPageName, $AspectRatio, $Orientation, $Template, $StartGrid, $OverwriteExistingView);"
+                },
+                {
+                    "type": "Label",
+                    "name": "OverwriteExistingViewInfo",
+                    "caption": "The existing View keeps its object ID, but all pages, controls and settings are replaced.",
+                    "visible": false
+                },
+                {
                     "type": "Button",
                     "name": "RunStartCheckButton",
                     "caption": "Check again",
-                    "onClick": "IPSVIEWA_UpdateStartCheck($id, $ViewName, $TargetCategoryID, $MainPageName, $AspectRatio, $Orientation, $Template, $StartGrid);"
+                    "onClick": "IPSVIEWA_UpdateStartCheckWithOverwrite($id, $ViewName, $TargetCategoryID, $MainPageName, $AspectRatio, $Orientation, $Template, $StartGrid, $OverwriteExistingView);"
                 }
             ]
         },
@@ -1069,7 +1083,7 @@
                     "type": "Button",
                     "name": "CreateViewButton",
                     "caption": "Create View",
-                    "onClick": "echo IPSVIEWA_CreateView($id, $ViewName, $TargetCategoryID, $AspectRatio, $Orientation, $Template, $MainPageName, $Theme, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"fontBoldMode\" => $FontBoldMode, \"fontItalicMode\" => $FontItalicMode, \"fontUnderlineMode\" => $FontUnderlineMode, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES), $FullScreen, $StartGrid);"
+                    "onClick": "echo IPSVIEWA_CreateOrOverwriteView($id, $ViewName, $TargetCategoryID, $AspectRatio, $Orientation, $Template, $MainPageName, $Theme, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"fontBoldMode\" => $FontBoldMode, \"fontItalicMode\" => $FontItalicMode, \"fontUnderlineMode\" => $FontUnderlineMode, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES), $FullScreen, $StartGrid, $OverwriteExistingView);"
                 },
                 {
                     "type": "Button",
