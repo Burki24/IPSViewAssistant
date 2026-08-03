@@ -28,7 +28,7 @@ Der **IPSView Assistant** erleichtert das Erstellen und Gestalten von IPSView-Pr
 ### 2. Voraussetzungen
 
 - Symcon ab Version 9.0
-- Installierter und lizenzierter IPSView Designer
+- Installiertes und lizenziertes IPSView (Standard oder Professional)
 
 ### 3. Installation
 
