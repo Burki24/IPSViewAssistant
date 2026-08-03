@@ -173,6 +173,13 @@ assertTest(
 );
 assertTest(str_contains($svg, '@font-face'), 'The selected preview font is not embedded offline.');
 assertTest(str_contains($svg, 'data:font/ttf;base64,'), 'The real bold-italic preview cut is not embedded.');
+$robotoMonoBoldItalic = base64_encode(
+    (string) file_get_contents(dirname(__DIR__) . '/libs/fonts/RobotoMono-BoldItalic.ttf')
+);
+assertTest(
+    str_contains($svg, $robotoMonoBoldItalic),
+    'The preview does not embed the original RobotoMono Bold Italic file.'
+);
 assertTest(str_contains($svg, 'font-weight="700"'), 'The preview does not show bold text.');
 assertTest(str_contains($svg, 'font-style="italic"'), 'The preview does not show italic text.');
 assertTest(str_contains($svg, 'text-decoration="underline"'), 'The preview does not show underlined text.');

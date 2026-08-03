@@ -4,6 +4,8 @@
 
 ### Changed
 
+- Replaced all generated WOFF2 preview subsets with the complete original IPSView TrueType font cuts.
+- Simplified the offline font loader so every preview style uses the matching unmodified IPSView font file.
 - Replaced the Segment7 preview substitute with the original G7 Segment 7 S5 font supplied by IPSView.
 - Restricted bold and italic choices to the real font cuts registered by IPSView; unsupported choices are reset to normal automatically.
 - Restricted font selection to the eight fonts offered by IPSView so generated Views remain portable across IPSView clients.
@@ -14,7 +16,7 @@
 - Font formatting for existing controls with preserve, normal and enabled modes for bold, italic and underline.
 - Real italic and bold-italic preview cuts for Roboto, RobotoMono, OpenSans and PTSans.
 - Dynamic font-format controls that follow the capabilities of the selected IPSView font family.
-- Offline WOFF2 preview fonts for the fixed IPSView font catalogue, embedded only for the currently selected family in the generated SVG.
+- Offline preview fonts for the fixed IPSView font catalogue, embedded only for the currently selected family and style in the generated SVG.
 - Font license and attribution files for all bundled preview fonts.
 - A5 global typography presets with preserve, compact, standard, large and custom base-size modes.
 - Selectable font families aligned with the fixed IPSView font catalogue: Roboto, RobotoMono, DancingScript, IndieFlower, OpenSans, PTSans, BebasNeue and Segment7.

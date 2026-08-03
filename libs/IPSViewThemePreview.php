@@ -13,10 +13,7 @@ final class IPSViewThemePreview
      *     faces: array<string, array{
      *         filename: string,
      *         mime: string,
-     *         format: string,
-     *         fallbackFilename?: string,
-     *         fallbackMime?: string,
-     *         fallbackFormat?: string
+     *         format: string
      *     }>
      * }>
      */
@@ -26,9 +23,9 @@ final class IPSViewThemePreview
             'fallback' => 'sans-serif',
             'faces'    => [
                 '400-normal' => [
-                    'filename' => 'preview-font-01-400.woff2',
-                    'mime'     => 'font/woff2',
-                    'format'   => 'woff2',
+                    'filename' => 'Roboto-Regular.ttf',
+                    'mime'     => 'font/ttf',
+                    'format'   => 'truetype',
                 ],
                 '400-italic' => [
                     'filename' => 'Roboto-RegularItalic.ttf',
@@ -36,9 +33,9 @@ final class IPSViewThemePreview
                     'format'   => 'truetype',
                 ],
                 '700-normal' => [
-                    'filename' => 'preview-font-01-700.woff2',
-                    'mime'     => 'font/woff2',
-                    'format'   => 'woff2',
+                    'filename' => 'Roboto-Bold.ttf',
+                    'mime'     => 'font/ttf',
+                    'format'   => 'truetype',
                 ],
                 '700-italic' => [
                     'filename' => 'Roboto-BoldItalic.ttf',
@@ -52,9 +49,9 @@ final class IPSViewThemePreview
             'fallback' => 'monospace',
             'faces'    => [
                 '400-normal' => [
-                    'filename' => 'preview-font-02-400.woff2',
-                    'mime'     => 'font/woff2',
-                    'format'   => 'woff2',
+                    'filename' => 'RobotoMono-Regular.ttf',
+                    'mime'     => 'font/ttf',
+                    'format'   => 'truetype',
                 ],
                 '400-italic' => [
                     'filename' => 'RobotoMono-RegularItalic.ttf',
@@ -62,9 +59,9 @@ final class IPSViewThemePreview
                     'format'   => 'truetype',
                 ],
                 '700-normal' => [
-                    'filename' => 'preview-font-02-700.woff2',
-                    'mime'     => 'font/woff2',
-                    'format'   => 'woff2',
+                    'filename' => 'RobotoMono-Bold.ttf',
+                    'mime'     => 'font/ttf',
+                    'format'   => 'truetype',
                 ],
                 '700-italic' => [
                     'filename' => 'RobotoMono-BoldItalic.ttf',
@@ -78,14 +75,14 @@ final class IPSViewThemePreview
             'fallback' => 'cursive',
             'faces'    => [
                 '400-normal' => [
-                    'filename' => 'preview-font-03-400.woff2',
-                    'mime'     => 'font/woff2',
-                    'format'   => 'woff2',
+                    'filename' => 'DancingScript-Regular.ttf',
+                    'mime'     => 'font/ttf',
+                    'format'   => 'truetype',
                 ],
                 '700-normal' => [
-                    'filename' => 'preview-font-03-700.woff2',
-                    'mime'     => 'font/woff2',
-                    'format'   => 'woff2',
+                    'filename' => 'DancingScript-Bold.ttf',
+                    'mime'     => 'font/ttf',
+                    'format'   => 'truetype',
                 ],
             ],
         ],
@@ -94,9 +91,9 @@ final class IPSViewThemePreview
             'fallback' => 'cursive',
             'faces'    => [
                 '400-normal' => [
-                    'filename' => 'preview-font-04-400.woff2',
-                    'mime'     => 'font/woff2',
-                    'format'   => 'woff2',
+                    'filename' => 'IndieFlower-Regular.ttf',
+                    'mime'     => 'font/ttf',
+                    'format'   => 'truetype',
                 ],
             ],
         ],
@@ -105,9 +102,9 @@ final class IPSViewThemePreview
             'fallback' => 'sans-serif',
             'faces'    => [
                 '400-normal' => [
-                    'filename' => 'preview-font-05-400.woff2',
-                    'mime'     => 'font/woff2',
-                    'format'   => 'woff2',
+                    'filename' => 'OpenSans-Regular.ttf',
+                    'mime'     => 'font/ttf',
+                    'format'   => 'truetype',
                 ],
                 '400-italic' => [
                     'filename' => 'OpenSans-RegularItalic.ttf',
@@ -115,9 +112,9 @@ final class IPSViewThemePreview
                     'format'   => 'truetype',
                 ],
                 '700-normal' => [
-                    'filename' => 'preview-font-05-700.woff2',
-                    'mime'     => 'font/woff2',
-                    'format'   => 'woff2',
+                    'filename' => 'OpenSans-Bold.ttf',
+                    'mime'     => 'font/ttf',
+                    'format'   => 'truetype',
                 ],
                 '700-italic' => [
                     'filename' => 'OpenSans-BoldItalic.ttf',
@@ -131,9 +128,9 @@ final class IPSViewThemePreview
             'fallback' => 'sans-serif',
             'faces'    => [
                 '400-normal' => [
-                    'filename' => 'preview-font-06-400.woff2',
-                    'mime'     => 'font/woff2',
-                    'format'   => 'woff2',
+                    'filename' => 'PTSans-Regular.ttf',
+                    'mime'     => 'font/ttf',
+                    'format'   => 'truetype',
                 ],
                 '400-italic' => [
                     'filename' => 'PTSans-RegularItalic.ttf',
@@ -141,9 +138,9 @@ final class IPSViewThemePreview
                     'format'   => 'truetype',
                 ],
                 '700-normal' => [
-                    'filename' => 'preview-font-06-700.woff2',
-                    'mime'     => 'font/woff2',
-                    'format'   => 'woff2',
+                    'filename' => 'PTSans-Bold.ttf',
+                    'mime'     => 'font/ttf',
+                    'format'   => 'truetype',
                 ],
                 '700-italic' => [
                     'filename' => 'PTSans-BoldItalic.ttf',
@@ -157,9 +154,9 @@ final class IPSViewThemePreview
             'fallback' => 'sans-serif',
             'faces'    => [
                 '400-normal' => [
-                    'filename' => 'preview-font-07-400.woff2',
-                    'mime'     => 'font/woff2',
-                    'format'   => 'woff2',
+                    'filename' => 'BebasNeue-Regular.ttf',
+                    'mime'     => 'font/ttf',
+                    'format'   => 'truetype',
                 ],
             ],
         ],
@@ -168,12 +165,9 @@ final class IPSViewThemePreview
             'fallback' => 'monospace',
             'faces'    => [
                 '400-normal' => [
-                    'filename'         => 'Segment7-Regular.ttf',
-                    'mime'             => 'font/ttf',
-                    'format'           => 'truetype',
-                    'fallbackFilename' => 'preview-font-08-400.woff2',
-                    'fallbackMime'     => 'font/woff2',
-                    'fallbackFormat'   => 'woff2',
+                    'filename' => 'Segment7-Regular.ttf',
+                    'mime'     => 'font/ttf',
+                    'format'   => 'truetype',
                 ],
             ],
         ],
@@ -382,10 +376,7 @@ SVG;
      * @param array<string, array{
      *     filename: string,
      *     mime: string,
-     *     format: string,
-     *     fallbackFilename?: string,
-     *     fallbackMime?: string,
-     *     fallbackFormat?: string
+     *     format: string
      * }> $faces
      *
      * @return array{
@@ -432,10 +423,7 @@ SVG;
      * @param array{
      *     filename: string,
      *     mime: string,
-     *     format: string,
-     *     fallbackFilename?: string,
-     *     fallbackMime?: string,
-     *     fallbackFormat?: string
+     *     format: string
      * } $face
      *
      * @return array{data: string, mime: string, format: string}|null
@@ -443,28 +431,14 @@ SVG;
     private static function resolveFontSource(array $face): ?array
     {
         $fontData = self::fontData($face['filename']);
-        if ($fontData !== '') {
-            return [
-                'data'   => $fontData,
-                'mime'   => $face['mime'],
-                'format' => $face['format'],
-            ];
-        }
-
-        $fallbackFilename = (string) ($face['fallbackFilename'] ?? '');
-        if ($fallbackFilename === '') {
-            return null;
-        }
-
-        $fontData = self::fontData($fallbackFilename);
         if ($fontData === '') {
             return null;
         }
 
         return [
             'data'   => $fontData,
-            'mime'   => (string) ($face['fallbackMime'] ?? 'font/woff2'),
-            'format' => (string) ($face['fallbackFormat'] ?? 'woff2'),
+            'mime'   => $face['mime'],
+            'format' => $face['format'],
         ];
     }
 

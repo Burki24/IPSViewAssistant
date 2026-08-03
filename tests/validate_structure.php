@@ -31,27 +31,26 @@ $requiredFiles = [
     'libs/fonts/Apache-2.0.txt',
     'libs/fonts/OFL-1.1.txt',
     'libs/fonts/ParaType-Free-Font-License.txt',
-    'libs/fonts/preview-font-01-400.woff2',
-    'libs/fonts/preview-font-01-700.woff2',
-    'libs/fonts/preview-font-02-400.woff2',
-    'libs/fonts/preview-font-02-700.woff2',
-    'libs/fonts/preview-font-03-400.woff2',
-    'libs/fonts/preview-font-03-700.woff2',
-    'libs/fonts/preview-font-04-400.woff2',
-    'libs/fonts/preview-font-05-400.woff2',
-    'libs/fonts/preview-font-05-700.woff2',
-    'libs/fonts/preview-font-06-400.woff2',
-    'libs/fonts/preview-font-06-700.woff2',
-    'libs/fonts/preview-font-07-400.woff2',
-    'libs/fonts/preview-font-08-400.woff2',
-    'libs/fonts/Roboto-RegularItalic.ttf',
-    'libs/fonts/Roboto-BoldItalic.ttf',
-    'libs/fonts/RobotoMono-RegularItalic.ttf',
-    'libs/fonts/RobotoMono-BoldItalic.ttf',
-    'libs/fonts/OpenSans-RegularItalic.ttf',
+    'libs/fonts/BebasNeue-Regular.ttf',
+    'libs/fonts/DancingScript-Bold.ttf',
+    'libs/fonts/DancingScript-Regular.ttf',
+    'libs/fonts/IndieFlower-Regular.ttf',
+    'libs/fonts/OpenSans-Bold.ttf',
     'libs/fonts/OpenSans-BoldItalic.ttf',
-    'libs/fonts/PTSans-RegularItalic.ttf',
+    'libs/fonts/OpenSans-Regular.ttf',
+    'libs/fonts/OpenSans-RegularItalic.ttf',
+    'libs/fonts/PTSans-Bold.ttf',
     'libs/fonts/PTSans-BoldItalic.ttf',
+    'libs/fonts/PTSans-Regular.ttf',
+    'libs/fonts/PTSans-RegularItalic.ttf',
+    'libs/fonts/Roboto-Bold.ttf',
+    'libs/fonts/Roboto-BoldItalic.ttf',
+    'libs/fonts/Roboto-Regular.ttf',
+    'libs/fonts/Roboto-RegularItalic.ttf',
+    'libs/fonts/RobotoMono-Bold.ttf',
+    'libs/fonts/RobotoMono-BoldItalic.ttf',
+    'libs/fonts/RobotoMono-Regular.ttf',
+    'libs/fonts/RobotoMono-RegularItalic.ttf',
     'libs/fonts/Segment7-Regular.ttf',
     'tests/theme.php',
     'tests/effects.php',
@@ -67,17 +66,13 @@ foreach ($requiredFiles as $file) {
 
 assertTest(!is_dir($root . '/assets'), 'The library root must not contain an assets module directory.');
 
-$previewFonts = glob($root . '/libs/fonts/preview-font-*.woff2');
-assertTest(is_array($previewFonts), 'The bundled preview fonts could not be enumerated.');
-assertTest(count($previewFonts) === 13, 'The bundled preview font set is incomplete.');
-foreach ($previewFonts as $previewFont) {
-    $signature = file_get_contents($previewFont, false, null, 0, 4);
-    assertTest($signature === 'wOF2', 'A bundled preview font is not a valid WOFF2 file.');
-}
+$obsoletePreviewFonts = glob($root . '/libs/fonts/preview-font-*.woff2');
+assertTest(is_array($obsoletePreviewFonts), 'The obsolete preview fonts could not be enumerated.');
+assertTest($obsoletePreviewFonts === [], 'Obsolete generated WOFF2 preview fonts must not be bundled.');
 
 $previewTrueTypeFonts = glob($root . '/libs/fonts/*.ttf');
 assertTest(is_array($previewTrueTypeFonts), 'The original preview font cuts could not be enumerated.');
-assertTest(count($previewTrueTypeFonts) >= 9, 'The original preview font-cut set is incomplete.');
+assertTest(count($previewTrueTypeFonts) === 21, 'The original IPSView preview font set is incomplete.');
 foreach ($previewTrueTypeFonts as $previewTrueTypeFont) {
     $signature = file_get_contents($previewTrueTypeFont, false, null, 0, 4);
     assertTest($signature === "\x00\x01\x00\x00", 'A bundled preview font is not a valid TrueType file.');
