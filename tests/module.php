@@ -426,7 +426,9 @@ assertTest(($preview['center'] ?? false) === true, 'The live preview must be cen
 $workspace = null;
 $colorsPanel = null;
 $previewPanel = null;
-foreach ($actions as $action) {
+$backgroundPanelPosition = null;
+$previewPanelPosition = null;
+foreach ($actions as $position => $action) {
     if (($action['name'] ?? '') === 'ThemeWorkspace') {
         $workspace = $action;
     }
@@ -435,11 +437,21 @@ foreach ($actions as $action) {
     }
     if (($action['name'] ?? '') === 'ThemePreviewPanel') {
         $previewPanel = $action;
+        $previewPanelPosition = $position;
+    }
+    if (($action['name'] ?? '') === 'BackgroundImagePanel') {
+        $backgroundPanelPosition = $position;
     }
 }
 assertTest(is_array($workspace) && ($workspace['type'] ?? '') === 'RowLayout', 'The responsive theme workspace is missing.');
 assertTest(($colorsPanel['width'] ?? '') === '820px', 'The color panel must have a readable responsive base width.');
 assertTest(($previewPanel['width'] ?? '') === '700px', 'The preview panel must have a compact responsive base width.');
+assertTest(
+    is_int($previewPanelPosition)
+        && is_int($backgroundPanelPosition)
+        && $previewPanelPosition < $backgroundPanelPosition,
+    'The preview must remain beside the main settings before the background panel wraps to a new row.'
+);
 assertTest(count($colorFields) === 12, 'The form must expose exactly twelve semantic color roles.');
 
 foreach ($colorFields as $field) {

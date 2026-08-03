@@ -798,10 +798,26 @@
                         },
                         {
                             "type": "ExpansionPanel",
+                            "name": "ThemePreviewPanel",
+                            "caption": "Preview",
+                            "expanded": true,
+                            "width": "700px",
+                            "items": [
+                                {
+                                    "type": "Image",
+                                    "name": "ThemePreview",
+                                    "image": "",
+                                    "center": true,
+                                    "width": "100%"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "ExpansionPanel",
                             "name": "BackgroundImagePanel",
                             "caption": "Background image",
                             "expanded": false,
-                            "width": "700px",
+                            "width": "820px",
                             "items": [
                                 {
                                     "type": "Select",
@@ -861,22 +877,6 @@
                                     "type": "Label",
                                     "name": "BackgroundImageStatus",
                                     "caption": "The image is embedded in the IPSView and applied only to the main page. PNG and JPEG files up to 10 MB are supported."
-                                }
-                            ]
-                        },
-                        {
-                            "type": "ExpansionPanel",
-                            "name": "ThemePreviewPanel",
-                            "caption": "Preview",
-                            "expanded": true,
-                            "width": "700px",
-                            "items": [
-                                {
-                                    "type": "Image",
-                                    "name": "ThemePreview",
-                                    "image": "",
-                                    "center": true,
-                                    "width": "100%"
                                 }
                             ]
                         }
