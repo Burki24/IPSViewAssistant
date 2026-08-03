@@ -335,6 +335,10 @@ assertTest(
 );
 assertTest(is_array($usageProfileInfo), 'The usage profile explanation is missing from the form.');
 assertTest(is_array($aspectRatio), 'The aspect ratio selection is missing from the form.');
+assertTest(count($aspectRatio['options'] ?? []) === 7, 'Not all supported aspect ratios are available.');
+$aspectRatioValues = array_column($aspectRatio['options'] ?? [], 'value');
+sort($aspectRatioValues);
+assertTest($aspectRatioValues === [0, 1, 2, 3, 4, 5, 6], 'The aspect ratio value mapping is incomplete.');
 assertTest(is_array($orientation), 'The orientation selection is missing from the form.');
 assertTest(is_array($fullScreen), 'The full-screen selection is missing from the form.');
 assertTest(($fullScreen['value'] ?? null) === true, 'The wall tablet profile must start in full-screen mode.');

@@ -14,6 +14,10 @@ final class IPSViewDocument
     public const ASPECT_RATIO_SQUARE = 0;
     public const ASPECT_RATIO_4_3 = 1;
     public const ASPECT_RATIO_16_9 = 2;
+    public const ASPECT_RATIO_8_5 = 3;
+    public const ASPECT_RATIO_9_5 = 4;
+    public const ASPECT_RATIO_13_6 = 5;
+    public const ASPECT_RATIO_2_1 = 6;
 
     public const ORIENTATION_LANDSCAPE = 0;
     public const ORIENTATION_PORTRAIT = 1;
@@ -331,6 +335,10 @@ final class IPSViewDocument
             self::ASPECT_RATIO_SQUARE => ['1:1', 1000, 1000],
             self::ASPECT_RATIO_4_3    => ['4:3', 1024, 768],
             self::ASPECT_RATIO_16_9   => ['16:9', 1360, 765],
+            self::ASPECT_RATIO_8_5    => ['8:5', 1280, 800],
+            self::ASPECT_RATIO_9_5    => ['9:5', 1440, 800],
+            self::ASPECT_RATIO_13_6   => ['13:6', 1300, 600],
+            self::ASPECT_RATIO_2_1    => ['2:1', 1360, 680],
             default                   => throw new InvalidArgumentException('The selected aspect ratio is not supported.'),
         };
     }

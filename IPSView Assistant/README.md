@@ -70,10 +70,22 @@ Das **Einsatzprofil** belegt Seitenverhältnis, Ausrichtung und Vollbildmodus ge
 | **View-Name** | Name des neu angelegten IPSView-Medienobjekts im Symcon-Objektbaum. |
 | **Zielkategorie** | Kategorie, in der das Medienobjekt angelegt wird. |
 | **Name der Hauptseite** | Bezeichnung der ersten Seite innerhalb der neuen View. |
-| **Seitenverhältnis** | Auswahl zwischen quadratisch (1:1), klassisch (4:3) und Breitbild (16:9). |
+| **Seitenverhältnis** | Auswahl zwischen 1:1, 4:3, 8:5, 9:5, 13:6, 16:9 und 2:1. |
 | **Ausrichtung** | Querformat oder Hochformat. |
 | **Vollbild** | Nutzt am Client die gesamte Anzeige ohne Fensterrahmen. |
 | **Vorlage** | Grundlage der neuen View. Derzeit steht eine leere View zur Verfügung. Diese technische Auswahl wird nur im Expertenmodus angezeigt. |
+
+Der Assistant verwendet für jedes Verhältnis eine exakt proportionale logische Startgröße. Im Hochformat werden Breite und Höhe vertauscht.
+
+| Seitenverhältnis | Logische Größe im Querformat |
+|---|---:|
+| **1:1** | 1000 x 1000 |
+| **4:3** | 1024 x 768 |
+| **8:5 (16:10)** | 1280 x 800 |
+| **9:5 (18:10)** | 1440 x 800 |
+| **13:6** | 1300 x 600 |
+| **16:9** | 1360 x 765 |
+| **2:1** | 1360 x 680 |
 
 Danach im Bereich **Design** die gewünschte Gestaltung auswählen. Mit **View erstellen** wird das neue IPSView-Medienobjekt angelegt.
 

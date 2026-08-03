@@ -120,8 +120,24 @@
                                     "value": 1
                                 },
                                 {
+                                    "caption": "8:5 (16:10)",
+                                    "value": 3
+                                },
+                                {
+                                    "caption": "9:5 (18:10)",
+                                    "value": 4
+                                },
+                                {
+                                    "caption": "Ultra-wide (13:6)",
+                                    "value": 5
+                                },
+                                {
                                     "caption": "Widescreen (16:9)",
                                     "value": 2
+                                },
+                                {
+                                    "caption": "Ultra-wide (2:1)",
+                                    "value": 6
                                 }
                             ]
                         },

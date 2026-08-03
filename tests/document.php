@@ -18,8 +18,16 @@ $cases = [
     [IPSViewDocument::ASPECT_RATIO_SQUARE, IPSViewDocument::ORIENTATION_PORTRAIT, 1000, 1000, '1:1'],
     [IPSViewDocument::ASPECT_RATIO_4_3, IPSViewDocument::ORIENTATION_LANDSCAPE, 1024, 768, '4:3'],
     [IPSViewDocument::ASPECT_RATIO_4_3, IPSViewDocument::ORIENTATION_PORTRAIT, 768, 1024, '4:3'],
+    [IPSViewDocument::ASPECT_RATIO_8_5, IPSViewDocument::ORIENTATION_LANDSCAPE, 1280, 800, '8:5'],
+    [IPSViewDocument::ASPECT_RATIO_8_5, IPSViewDocument::ORIENTATION_PORTRAIT, 800, 1280, '8:5'],
+    [IPSViewDocument::ASPECT_RATIO_9_5, IPSViewDocument::ORIENTATION_LANDSCAPE, 1440, 800, '9:5'],
+    [IPSViewDocument::ASPECT_RATIO_9_5, IPSViewDocument::ORIENTATION_PORTRAIT, 800, 1440, '9:5'],
+    [IPSViewDocument::ASPECT_RATIO_13_6, IPSViewDocument::ORIENTATION_LANDSCAPE, 1300, 600, '13:6'],
+    [IPSViewDocument::ASPECT_RATIO_13_6, IPSViewDocument::ORIENTATION_PORTRAIT, 600, 1300, '13:6'],
     [IPSViewDocument::ASPECT_RATIO_16_9, IPSViewDocument::ORIENTATION_LANDSCAPE, 1360, 765, '16:9'],
     [IPSViewDocument::ASPECT_RATIO_16_9, IPSViewDocument::ORIENTATION_PORTRAIT, 765, 1360, '16:9'],
+    [IPSViewDocument::ASPECT_RATIO_2_1, IPSViewDocument::ORIENTATION_LANDSCAPE, 1360, 680, '2:1'],
+    [IPSViewDocument::ASPECT_RATIO_2_1, IPSViewDocument::ORIENTATION_PORTRAIT, 680, 1360, '2:1'],
 ];
 
 foreach ($cases as [$ratio, $orientation, $expectedWidth, $expectedHeight, $ratioLabel]) {
