@@ -695,8 +695,17 @@ assertTest(
     'Selecting a background image does not refresh the preview.'
 );
 assertTest(
+    str_ends_with((string) ($backgroundFile['onChange'] ?? ''), ', true);'),
+    'Changing the background image does not distinguish an explicit file removal.'
+);
+assertTest(
     str_contains($moduleSource, 'public function UpdateBackgroundPreview('),
     'The public background preview method is missing.'
+);
+assertTest(
+    str_contains($moduleSource, 'bool $ImageSelectionChanged = false')
+        && str_contains($moduleSource, '$ImageSelectionChanged' . "\n" . '                    ? $ImageData'),
+    'The background preview cannot clear a previously persisted image explicitly.'
 );
 assertTest(
     str_contains($moduleSource, 'public function UpdateBackgroundScope('),

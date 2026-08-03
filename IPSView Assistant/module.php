@@ -702,6 +702,8 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Stores the local background selection and refreshes the design preview.
+     *
+     * An empty image clears the persisted upload only when the file selection itself changed.
      */
     public function UpdateBackgroundPreview(
         string $ImageData,
@@ -709,7 +711,8 @@ class IPSViewAssistant extends IPSModuleStrict
         string $Layout,
         string $ThemePalette,
         string $Effects = '',
-        string $Appearance = ''
+        string $Appearance = '',
+        bool $ImageSelectionChanged = false
     ): void {
         try {
             $storedImage = $this->ReadAttributeString(self::ATTRIBUTE_BACKGROUND_IMAGE);
@@ -717,24 +720,10 @@ class IPSViewAssistant extends IPSModuleStrict
                 'mode'      => $Mode,
                 'layout'    => $Layout,
                 'scope'     => $this->ReadAttributeInteger(self::ATTRIBUTE_BACKGROUND_SCOPE),
-                'imageData' => $ImageData !== '' ? $ImageData : $storedImage,
+                'imageData' => $ImageSelectionChanged
+                    ? $ImageData
+                    : ($ImageData !== '' ? $ImageData : $storedImage),
             ]);
-            if ($settings['mode'] === IPSViewBackground::MODE_FILE && $settings['imageData'] === '') {
-                $this->WriteAttributeInteger(self::ATTRIBUTE_BACKGROUND_MODE, $settings['mode']);
-                $this->WriteAttributeString(self::ATTRIBUTE_BACKGROUND_LAYOUT, $settings['layout']);
-                $this->WriteAttributeInteger(self::ATTRIBUTE_BACKGROUND_SCOPE, $settings['scope']);
-                $this->UpdateFormField('BackgroundImageFile', 'visible', true);
-                $this->UpdateFormField('BackgroundImageLayout', 'visible', true);
-                $this->UpdateFormField('BackgroundImageScope', 'visible', true);
-                $this->UpdateFormField(
-                    'BackgroundImageStatus',
-                    'caption',
-                    $this->Translate('Please select a PNG or JPEG background image.')
-                );
-
-                return;
-            }
-
             IPSViewBackground::preview($settings);
             $this->WriteAttributeString(self::ATTRIBUTE_BACKGROUND_IMAGE, $settings['imageData']);
             $this->WriteAttributeInteger(self::ATTRIBUTE_BACKGROUND_MODE, $settings['mode']);
@@ -752,7 +741,11 @@ class IPSViewAssistant extends IPSModuleStrict
             $this->UpdateFormField(
                 'BackgroundImageStatus',
                 'caption',
-                $this->Translate('Background image changes are applied to the selected pages. PNG and JPEG files up to 10 MB are embedded directly in the IPSView.')
+                $this->Translate(
+                    $settings['mode'] === IPSViewBackground::MODE_FILE && $settings['imageData'] === ''
+                        ? 'Please select a PNG or JPEG background image.'
+                        : 'Background image changes are applied to the selected pages. PNG and JPEG files up to 10 MB are embedded directly in the IPSView.'
+                )
             );
             $this->UpdateFormField(
                 'ThemePreview',
