@@ -126,6 +126,7 @@ $backgroundPanel = null;
 $backgroundMode = null;
 $backgroundFile = null;
 $backgroundLayout = null;
+$backgroundScope = null;
 $colorFields = [];
 
 foreach ($actions as $action) {
@@ -243,6 +244,10 @@ foreach ($actions as $action) {
 
     if (($action['name'] ?? '') === 'BackgroundImageLayout') {
         $backgroundLayout = $action;
+    }
+
+    if (($action['name'] ?? '') === 'BackgroundImageScope') {
+        $backgroundScope = $action;
     }
 
     if (($action['type'] ?? '') === 'SelectColor') {
@@ -410,6 +415,12 @@ assertTest(is_array($backgroundFile), 'The local background file selection is mi
 assertTest(($backgroundFile['extensions'] ?? '') === '.png,.jpg,.jpeg', 'The background file filter is incorrect.');
 assertTest(is_array($backgroundLayout), 'The background layout selection is missing.');
 assertTest(count($backgroundLayout['options'] ?? []) === 3, 'The background layout selection does not offer all modes.');
+assertTest(is_array($backgroundScope), 'The background page-scope selection is missing.');
+assertTest(count($backgroundScope['options'] ?? []) === 2, 'The background page-scope selection does not offer both modes.');
+assertTest(
+    str_contains((string) ($backgroundScope['onChange'] ?? ''), 'IPSVIEWA_UpdateBackgroundScope('),
+    'Changing the background page scope is not persisted.'
+);
 assertTest(
     str_contains((string) ($backgroundFile['onChange'] ?? ''), 'IPSVIEWA_UpdateBackgroundPreview('),
     'Selecting a background image does not refresh the preview.'
@@ -417,6 +428,10 @@ assertTest(
 assertTest(
     str_contains($moduleSource, 'public function UpdateBackgroundPreview('),
     'The public background preview method is missing.'
+);
+assertTest(
+    str_contains($moduleSource, 'public function UpdateBackgroundScope('),
+    'The public background page-scope method is missing.'
 );
 assertTest(is_array($preview), 'The live theme preview is missing from the form.');
 assertTest(($preview['image'] ?? null) === '', 'The dynamic preview placeholder must be empty in form.json.');

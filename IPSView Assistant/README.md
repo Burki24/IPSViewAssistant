@@ -21,7 +21,7 @@ Der **IPSView Assistant** erleichtert das Erstellen und Gestalten von IPSView-Pr
 - Vorgefertigte Farbdesigns auswählen und individuell anpassen
 - Farben, Schatten, Transparenz und Farbverläufe einstellen
 - Schriftgröße, Schriftart, Ecken und Rahmen festlegen
-- Lokale PNG- und JPEG-Hintergrundbilder in die Hauptseite einbetten
+- Lokale PNG- und JPEG-Hintergrundbilder in die Hauptseite oder alle Seiten einbetten
 - Änderungen unmittelbar in einer Vorschau beurteilen
 - Bestehende IPSView laden und als separate Designkopie neu gestalten
 - Bereits angelegte Designkopie bei späteren Speichervorgängen aktualisieren
@@ -238,15 +238,17 @@ Die Vorschau zeigt das Zusammenspiel von Farben, Schatten, Transparenz, Farbverl
 
 #### 6.8 Hintergrundbild
 
-Für die Hauptseite kann ein PNG- oder JPEG-Bild vom aktuell verwendeten Computer ausgewählt werden. Der Assistant bettet den Dateiinhalt direkt in die `.ipsView` ein; ein lokaler Dateipfad wird nicht gespeichert. Unterstützt werden Dateien bis 10 MB.
+Für die Hauptseite oder alle Seiten kann ein PNG- oder JPEG-Bild vom aktuell verwendeten Computer ausgewählt werden. Der Assistant bettet den Dateiinhalt direkt in die `.ipsView` ein; ein lokaler Dateipfad wird nicht gespeichert. Unterstützt werden Dateien bis 10 MB.
 
 | Auswahl | Wirkung |
 |---|---|
 | **Bestehende Einstellung beibehalten** | Verändert das vorhandene Hintergrundbild einer Designkopie nicht. |
-| **Hintergrundbild entfernen** | Entfernt Bild und Anordnung von der Hauptseite. |
-| **Bilddatei von diesem Computer** | Bettet die ausgewählte Datei ein und weist sie der Hauptseite zu. |
+| **Hintergrundbild entfernen** | Entfernt Bild und Anordnung von den ausgewählten Seiten. |
+| **Bilddatei von diesem Computer** | Bettet die ausgewählte Datei ein und weist sie den ausgewählten Seiten zu. |
 
-Die Bildanordnung kann auf **Kacheln**, **Zentriert** oder **Strecken** gesetzt werden. Andere Seiten und deren Hintergrundbilder werden nicht verändert. Identische bereits eingebettete Bilder werden wiederverwendet.
+Unter **Anwenden auf** lässt sich auswählen, ob die Änderung nur die **Hauptseite** oder **alle Seiten** betrifft. Das gilt sowohl für das Zuweisen eines Bildes und seiner Anordnung als auch für das Entfernen vorhandener Hintergrundbilder. Bei **Nur Hauptseite** bleiben alle anderen Seiten unverändert.
+
+Die Bildanordnung kann auf **Kacheln**, **Zentriert** oder **Strecken** gesetzt werden. Identische bereits eingebettete Bilder werden wiederverwendet und auch bei mehreren Seiten nur einmal gespeichert.
 
 ### 7. Gestaltungsumfang bei bestehenden Views
 

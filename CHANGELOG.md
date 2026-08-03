@@ -13,7 +13,7 @@
 
 ### Added
 
-- Added local PNG/JPEG background images for the main page, including preserve, remove, tile, center and stretch modes.
+- Added local PNG/JPEG background images for the main page or all pages, including preserve, remove, tile, center and stretch modes.
 - Embedded selected images directly in IPSView documents with content reuse and live SVG preview support.
 
 - Font formatting for existing controls with preserve, normal and enabled modes for bold, italic and underline.

@@ -822,7 +822,7 @@
                                 {
                                     "type": "Select",
                                     "name": "BackgroundImageMode",
-                                    "caption": "Main page background",
+                                    "caption": "Background image action",
                                     "value": 0,
                                     "width": "360px",
                                     "onChange": "IPSVIEWA_UpdateBackgroundPreview($id, $BackgroundImageFile, $BackgroundImageMode, $BackgroundImageLayout, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"fontBoldMode\" => $FontBoldMode, \"fontItalicMode\" => $FontItalicMode, \"fontUnderlineMode\" => $FontUnderlineMode, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));",
@@ -838,6 +838,25 @@
                                         {
                                             "caption": "Image file from this computer",
                                             "value": 2
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "Select",
+                                    "name": "BackgroundImageScope",
+                                    "caption": "Apply to",
+                                    "value": 0,
+                                    "visible": false,
+                                    "width": "360px",
+                                    "onChange": "IPSVIEWA_UpdateBackgroundScope($id, $BackgroundImageScope);",
+                                    "options": [
+                                        {
+                                            "caption": "Main page only",
+                                            "value": 0
+                                        },
+                                        {
+                                            "caption": "All pages",
+                                            "value": 1
                                         }
                                     ]
                                 },
@@ -876,7 +895,7 @@
                                 {
                                     "type": "Label",
                                     "name": "BackgroundImageStatus",
-                                    "caption": "The image is embedded in the IPSView and applied only to the main page. PNG and JPEG files up to 10 MB are supported."
+                                    "caption": "Background image changes are applied to the selected pages. PNG and JPEG files up to 10 MB are embedded directly in the IPSView."
                                 }
                             ]
                         }

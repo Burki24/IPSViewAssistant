@@ -14,6 +14,9 @@ final class IPSViewBackground
     public const MODE_REMOVE = 1;
     public const MODE_FILE = 2;
 
+    public const SCOPE_MAIN_PAGE = 0;
+    public const SCOPE_ALL_PAGES = 1;
+
     public const LAYOUT_TILE = 'Tile';
     public const LAYOUT_CENTER = 'Center';
     public const LAYOUT_STRETCH = 'Stretch';
@@ -23,7 +26,7 @@ final class IPSViewBackground
     /**
      * @param array<string, mixed> $settings
      *
-     * @return array{mode: int, layout: string, imageData: string}
+     * @return array{mode: int, layout: string, scope: int, imageData: string}
      */
     public static function resolve(array $settings = []): array
     {
@@ -37,15 +40,21 @@ final class IPSViewBackground
             throw new InvalidArgumentException('The selected background image layout is invalid.');
         }
 
+        $scope = (int) ($settings['scope'] ?? self::SCOPE_MAIN_PAGE);
+        if (!in_array($scope, [self::SCOPE_MAIN_PAGE, self::SCOPE_ALL_PAGES], true)) {
+            throw new InvalidArgumentException('The selected background image page scope is invalid.');
+        }
+
         return [
             'mode'      => $mode,
             'layout'    => $layout,
+            'scope'     => $scope,
             'imageData' => trim((string) ($settings['imageData'] ?? '')),
         ];
     }
 
     /**
-     * Applies the selection only to the first (main) page.
+     * Applies the selection to the main page or all pages.
      *
      * @param array<string, mixed> $settings
      */
@@ -56,12 +65,16 @@ final class IPSViewBackground
             return false;
         }
 
-        $page = self::mainPage($document);
+        $pages = self::targetPages($document, $settings['scope']);
         if ($settings['mode'] === self::MODE_REMOVE) {
-            $changed = (int) ($page->BackgroundImage ?? 0) !== 0
-                || (string) ($page->BackgroundLayout ?? '') !== '';
-            $page->BackgroundImage = 0;
-            $page->BackgroundLayout = '';
+            $changed = false;
+            foreach ($pages as $page) {
+                $changed = $changed
+                    || (int) ($page->BackgroundImage ?? 0) !== 0
+                    || (string) ($page->BackgroundLayout ?? '') !== '';
+                $page->BackgroundImage = 0;
+                $page->BackgroundLayout = '';
+            }
 
             return $changed;
         }
@@ -85,16 +98,20 @@ final class IPSViewBackground
             $document->Images = $images;
         }
 
-        $changed = (int) ($page->BackgroundImage ?? 0) !== $imageHash
-            || (string) ($page->BackgroundLayout ?? '') !== $settings['layout'];
-        $page->BackgroundImage = $imageHash;
-        $page->BackgroundLayout = $settings['layout'];
+        $changed = false;
+        foreach ($pages as $page) {
+            $changed = $changed
+                || (int) ($page->BackgroundImage ?? 0) !== $imageHash
+                || (string) ($page->BackgroundLayout ?? '') !== $settings['layout'];
+            $page->BackgroundImage = $imageHash;
+            $page->BackgroundLayout = $settings['layout'];
+        }
 
         return $changed;
     }
 
     /**
-     * @return array{mode: int, layout: string, imageData: string, width: int, height: int}
+     * @return array{mode: int, layout: string, scope: int, imageData: string, width: int, height: int}
      */
     public static function extract(stdClass $document): array
     {
@@ -106,6 +123,7 @@ final class IPSViewBackground
             return [
                 'mode'      => self::MODE_PRESERVE,
                 'layout'    => self::LAYOUT_STRETCH,
+                'scope'     => self::SCOPE_MAIN_PAGE,
                 'imageData' => '',
                 'width'     => 0,
                 'height'    => 0,
@@ -125,6 +143,7 @@ final class IPSViewBackground
                 'layout'    => in_array($layout, [self::LAYOUT_TILE, self::LAYOUT_CENTER, self::LAYOUT_STRETCH], true)
                     ? $layout
                     : self::LAYOUT_STRETCH,
+                'scope'     => self::SCOPE_MAIN_PAGE,
                 'imageData' => $mime === null ? '' : 'data:' . $mime . ';base64,' . $data,
                 'width'     => (int) ($image->Width ?? 0),
                 'height'    => (int) ($image->Height ?? 0),
@@ -134,6 +153,7 @@ final class IPSViewBackground
         return [
             'mode'      => self::MODE_PRESERVE,
             'layout'    => self::LAYOUT_STRETCH,
+            'scope'     => self::SCOPE_MAIN_PAGE,
             'imageData' => '',
             'width'     => 0,
             'height'    => 0,
@@ -170,6 +190,29 @@ final class IPSViewBackground
         }
 
         return $pages[0];
+    }
+
+    /**
+     * @return list<stdClass>
+     */
+    private static function targetPages(stdClass $document, int $scope): array
+    {
+        $pages = $document->Pages ?? null;
+        if (!is_array($pages) || !isset($pages[0]) || !$pages[0] instanceof stdClass) {
+            throw new RuntimeException('The IPSView document does not contain a valid main page.');
+        }
+
+        if ($scope === self::SCOPE_MAIN_PAGE) {
+            return [$pages[0]];
+        }
+
+        foreach ($pages as $page) {
+            if (!$page instanceof stdClass) {
+                throw new RuntimeException('The IPSView document contains an invalid page.');
+            }
+        }
+
+        return $pages;
     }
 
     /**

@@ -20,6 +20,18 @@ $png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY
 $templatePath = dirname(__DIR__) . '/libs/templates/empty-view.json';
 $document = IPSViewDocument::fromTemplate($templatePath);
 $document->configure('Background Test', 12345, IPSViewDocument::ASPECT_RATIO_16_9, 0, 'Main');
+$seed = $document->copy();
+$secondPage = json_decode(json_encode($seed->Pages[0], JSON_THROW_ON_ERROR), false, 512, JSON_THROW_ON_ERROR);
+$thirdPage = json_decode(json_encode($seed->Pages[0], JSON_THROW_ON_ERROR), false, 512, JSON_THROW_ON_ERROR);
+$secondPage->PageName = 'Second';
+$secondPage->BackgroundImage = 777;
+$secondPage->BackgroundLayout = 'Center';
+$thirdPage->PageName = 'Third';
+$thirdPage->BackgroundImage = 888;
+$thirdPage->BackgroundLayout = 'Stretch';
+$seed->Pages[] = $secondPage;
+$seed->Pages[] = $thirdPage;
+$document = IPSViewDocument::fromJson(json_encode($seed, JSON_THROW_ON_ERROR));
 
 $document->applyTheme(
     IPSViewTheme::THEME_STANDARD,
@@ -39,6 +51,8 @@ assertTest($copy->Images[0]->ImageType === -1, 'The IPSView image type is incorr
 assertTest($copy->Images[0]->Width === 1 && $copy->Images[0]->Height === 1, 'The image dimensions are incorrect.');
 assertTest($copy->Pages[0]->BackgroundImage === $copy->Images[0]->ImageHash, 'The main page does not reference the embedded image.');
 assertTest($copy->Pages[0]->BackgroundLayout === 'Tile', 'The selected image layout was not applied.');
+assertTest($copy->Pages[1]->BackgroundImage === 777, 'The main-page scope changed another page.');
+assertTest($copy->Pages[2]->BackgroundImage === 888, 'The main-page scope changed the third page.');
 
 $document->applyTheme(
     IPSViewTheme::THEME_STANDARD,
@@ -60,11 +74,38 @@ $document->applyTheme(
     [],
     [],
     [],
-    ['mode' => IPSViewBackground::MODE_REMOVE]
+    [
+        'mode'      => IPSViewBackground::MODE_FILE,
+        'layout'    => IPSViewBackground::LAYOUT_STRETCH,
+        'scope'     => IPSViewBackground::SCOPE_ALL_PAGES,
+        'imageData' => $png,
+    ]
+);
+$allPages = $document->copy();
+foreach ($allPages->Pages as $page) {
+    assertTest(
+        $page->BackgroundImage === $allPages->Images[0]->ImageHash,
+        'The all-pages scope did not assign the image to every page.'
+    );
+    assertTest($page->BackgroundLayout === 'Stretch', 'The all-pages scope did not apply the layout to every page.');
+}
+assertTest(count($allPages->Images) === 1, 'The all-pages scope embedded an image more than once.');
+
+$document->applyTheme(
+    IPSViewTheme::THEME_STANDARD,
+    [],
+    [],
+    [],
+    [
+        'mode'  => IPSViewBackground::MODE_REMOVE,
+        'scope' => IPSViewBackground::SCOPE_ALL_PAGES,
+    ]
 );
 $removed = $document->copy();
-assertTest($removed->Pages[0]->BackgroundImage === 0, 'The main-page background was not removed.');
-assertTest($removed->Pages[0]->BackgroundLayout === '', 'The removed background retained a layout.');
+foreach ($removed->Pages as $page) {
+    assertTest($page->BackgroundImage === 0, 'The all-pages removal left a background image assigned.');
+    assertTest($page->BackgroundLayout === '', 'The all-pages removal left a background layout assigned.');
+}
 assertTest(count($removed->Images) === 1, 'Removing the background deleted a potentially shared image.');
 
 $svg = IPSViewThemePreview::createSvg(

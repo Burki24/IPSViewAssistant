@@ -262,7 +262,7 @@ final class IPSViewDocument
     /**
      * Reads the background image assigned to the main page.
      *
-     * @return array{mode: int, layout: string, imageData: string, width: int, height: int}
+     * @return array{mode: int, layout: string, scope: int, imageData: string, width: int, height: int}
      */
     public function extractBackground(): array
     {
