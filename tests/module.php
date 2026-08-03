@@ -7,6 +7,7 @@ require_once __DIR__ . '/bootstrap.php';
 $root = dirname(__DIR__);
 $moduleSource = file_get_contents($root . '/IPSView Assistant/module.php');
 $factorySource = file_get_contents($root . '/libs/IPSViewFactory.php');
+$startCheckSource = file_get_contents($root . '/libs/IPSViewStartCheck.php');
 $copyFactorySource = file_get_contents($root . '/libs/IPSViewCopyFactory.php');
 $effectsSource = file_get_contents($root . '/libs/IPSViewEffects.php');
 $typographySource = file_get_contents($root . '/libs/IPSViewTypography.php');
@@ -20,6 +21,7 @@ $form = json_decode(
 
 assertTest(is_string($moduleSource), 'The module source could not be read.');
 assertTest(is_string($factorySource), 'The IPSView factory source could not be read.');
+assertTest(is_string($startCheckSource), 'The IPSView start-check source could not be read.');
 assertTest(is_string($copyFactorySource), 'The IPSView copy factory source could not be read.');
 assertTest(is_string($effectsSource), 'The IPSView effects source could not be read.');
 assertTest(is_string($typographySource), 'The IPSView typography source could not be read.');
@@ -28,6 +30,10 @@ assertTest(str_contains($moduleSource, 'extends IPSModuleStrict'), 'The module d
 assertTest(str_contains($moduleSource, 'use ConfigurationFormHelper;'), 'The module does not use ConfigurationFormHelper.');
 assertTest(str_contains($moduleSource, 'public function GetConfigurationForm(): string'), 'The dynamic configuration form is missing.');
 assertTest(str_contains($moduleSource, 'public function CreateView('), 'The public CreateView method is missing.');
+assertTest(
+    str_contains($moduleSource, 'public function UpdateStartCheck('),
+    'The public start-check method is missing.'
+);
 assertTest(
     str_contains($moduleSource, 'public function UpdateAssistantMode('),
     'The public assistant mode method is missing.'
@@ -76,6 +82,10 @@ assertTest(str_contains($factorySource, 'IPS_SetMediaContent('), 'The factory do
 assertTest(str_contains($factorySource, 'IPS_SendMediaEvent('), 'The factory does not announce the media update.');
 assertTest(str_contains($factorySource, 'applyTheme('), 'The factory does not apply the selected theme.');
 assertTest(
+    str_contains($factorySource, 'IPSViewStartCheck::assertReady('),
+    'The View factory does not enforce the shared start check.'
+);
+assertTest(
     str_contains($copyFactorySource, 'private const IPSVIEW_MEDIA_TYPE = 0;'),
     'The copy factory does not use a runtime-safe IPSView media type.'
 );
@@ -118,6 +128,12 @@ function flattenFormItems(array $items): array
 
 $actions = flattenFormItems($form['actions'] ?? []);
 $button = null;
+$viewName = null;
+$targetCategory = null;
+$mainPageName = null;
+$startCheckPanel = null;
+$startCheckStatus = null;
+$runStartCheckButton = null;
 $copyButton = null;
 $assistantMode = null;
 $assistantModeInfo = null;
@@ -167,6 +183,30 @@ $backgroundScope = null;
 $colorFields = [];
 
 foreach ($actions as $action) {
+    if (($action['name'] ?? '') === 'ViewName') {
+        $viewName = $action;
+    }
+
+    if (($action['name'] ?? '') === 'TargetCategoryID') {
+        $targetCategory = $action;
+    }
+
+    if (($action['name'] ?? '') === 'MainPageName') {
+        $mainPageName = $action;
+    }
+
+    if (($action['name'] ?? '') === 'StartCheckPanel') {
+        $startCheckPanel = $action;
+    }
+
+    if (($action['name'] ?? '') === 'StartCheckStatus') {
+        $startCheckStatus = $action;
+    }
+
+    if (($action['name'] ?? '') === 'RunStartCheckButton') {
+        $runStartCheckButton = $action;
+    }
+
     if (($action['name'] ?? '') === 'AssistantMode') {
         $assistantMode = $action;
     }
@@ -361,6 +401,26 @@ foreach ($actions as $action) {
 }
 
 assertTest(is_array($button), 'The Create View button is missing from the form.');
+assertTest(is_array($startCheckPanel), 'The start-check panel is missing from the form.');
+assertTest(($startCheckPanel['expanded'] ?? false) === true, 'The start check must be visible immediately.');
+assertTest(is_array($startCheckStatus), 'The start-check status report is missing from the form.');
+assertTest(is_array($runStartCheckButton), 'The manual start-check button is missing from the form.');
+assertTest(
+    str_contains((string) ($runStartCheckButton['onClick'] ?? ''), 'IPSVIEWA_UpdateStartCheck('),
+    'The manual start-check button does not call the public module method.'
+);
+foreach ([$viewName, $targetCategory, $mainPageName, $aspectRatio, $orientation, $startGrid] as $startCheckField) {
+    assertTest(is_array($startCheckField), 'A start-check input field is missing from the form.');
+    assertTest(
+        str_contains((string) ($startCheckField['onChange'] ?? ''), 'IPSVIEWA_UpdateStartCheck('),
+        'A relevant View setting does not refresh the start check.'
+    );
+}
+assertTest(
+    str_contains($moduleSource, "UpdateFormField('CreateViewButton', 'enabled'")
+        && str_contains($moduleSource, 'IPSViewStartCheck::assertReady($startCheck);'),
+    'The start check does not control and protect View creation.'
+);
 assertTest(is_array($assistantMode), 'The assistant mode selection is missing from the form.');
 assertTest(($assistantMode['value'] ?? null) === 0, 'Quick start must be the default assistant mode.');
 assertTest(count($assistantMode['options'] ?? []) === 2, 'Both assistant modes must be available.');

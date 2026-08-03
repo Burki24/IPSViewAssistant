@@ -10,6 +10,7 @@ require_once __DIR__ . '/../libs/IPSViewTheme.php';
 require_once __DIR__ . '/../libs/IPSViewThemePreview.php';
 require_once __DIR__ . '/../libs/IPSViewDocument.php';
 require_once __DIR__ . '/../libs/IPSViewCopyFactory.php';
+require_once __DIR__ . '/../libs/IPSViewStartCheck.php';
 require_once __DIR__ . '/../libs/IPSViewFactory.php';
 require_once __DIR__ . '/../libs/IPSViewShape.php';
 require_once __DIR__ . '/../libs/IPSViewTypography.php';
@@ -22,6 +23,7 @@ use Burki24\IPSViewAssistant\IPSViewDocument;
 use Burki24\IPSViewAssistant\IPSViewEffects;
 use Burki24\IPSViewAssistant\IPSViewFactory;
 use Burki24\IPSViewAssistant\IPSViewShape;
+use Burki24\IPSViewAssistant\IPSViewStartCheck;
 use Burki24\IPSViewAssistant\IPSViewTheme;
 use Burki24\IPSViewAssistant\IPSViewThemePreview;
 use Burki24\IPSViewAssistant\IPSViewTypography;
@@ -98,6 +100,7 @@ class IPSViewAssistant extends IPSModuleStrict
         $form = $this->LoadConfigurationForm();
         $palette = IPSViewTheme::preset(IPSViewTheme::THEME_STANDARD);
         $startGrid = $this->previewStartGrid();
+        $background = $this->backgroundSettings();
 
         foreach (self::FORM_COLOR_FIELDS as $role => $field) {
             $this->setConfigurationFormField(
@@ -116,12 +119,11 @@ class IPSViewAssistant extends IPSModuleStrict
                 $palette,
                 IPSViewEffects::resolve(),
                 [],
-                $this->backgroundSettings(),
+                $background,
                 $startGrid
             )
         );
         $this->setConfigurationFormField($form, 'StartGrid', 'value', $startGrid);
-        $background = $this->backgroundSettings();
         $this->setConfigurationFormField($form, 'BackgroundImageMode', 'value', $background['mode']);
         $this->setConfigurationFormField($form, 'BackgroundImageLayout', 'value', $background['layout']);
         $this->setConfigurationFormField($form, 'BackgroundImageScope', 'value', $background['scope']);
@@ -149,6 +151,18 @@ class IPSViewAssistant extends IPSModuleStrict
         $this->setConfigurationFormField($form, 'AssistantMode', 'value', $assistantMode);
         $this->applyAssistantModeToForm($form, $assistantMode);
         $this->applyDesignerHandoverToForm($form);
+        $this->applyStartCheckToForm(
+            $form,
+            $this->startCheck(
+                'Neue IPSView',
+                0,
+                'Hauptseite',
+                IPSViewDocument::ASPECT_RATIO_16_9,
+                IPSViewDocument::ORIENTATION_LANDSCAPE,
+                IPSViewFactory::TEMPLATE_EMPTY,
+                $startGrid
+            )
+        );
 
         return $this->EncodeConfigurationForm($form);
     }
@@ -229,6 +243,18 @@ class IPSViewAssistant extends IPSModuleStrict
         int $StartGrid = IPSViewDocument::START_GRID_NONE
     ): string {
         try {
+            $startCheck = $this->startCheck(
+                $ViewName,
+                $TargetCategoryID,
+                $MainPageName,
+                $AspectRatio,
+                $Orientation,
+                $Template,
+                $StartGrid
+            );
+            $this->showStartCheck($startCheck);
+            IPSViewStartCheck::assertReady($startCheck);
+
             $factory = new IPSViewFactory(__DIR__ . '/../libs/templates');
             $mediaID = $factory->create(
                 $ViewName,
@@ -260,7 +286,7 @@ class IPSViewAssistant extends IPSModuleStrict
 
             return sprintf(
                 $this->Translate('The IPSView could not be created: %s'),
-                $exception->getMessage()
+                $this->Translate($exception->getMessage())
             );
         }
     }
@@ -635,6 +661,42 @@ class IPSViewAssistant extends IPSModuleStrict
             $this->UpdateFormField('ThemePreview', 'image', $preview);
         } catch (Throwable $exception) {
             $this->SendDebug('UpdateStartGridPreview', $exception->getMessage(), 0);
+        }
+    }
+
+    /**
+     * Rechecks whether the current form values are ready for creating a View.
+     */
+    public function UpdateStartCheck(
+        string $ViewName,
+        int $TargetCategoryID,
+        string $MainPageName,
+        int $AspectRatio,
+        int $Orientation,
+        int $Template,
+        int $StartGrid
+    ): void {
+        try {
+            $this->showStartCheck($this->startCheck(
+                $ViewName,
+                $TargetCategoryID,
+                $MainPageName,
+                $AspectRatio,
+                $Orientation,
+                $Template,
+                $StartGrid
+            ));
+        } catch (Throwable $exception) {
+            $this->SendDebug('UpdateStartCheck', $exception->getMessage(), 0);
+            $this->UpdateFormField(
+                'StartCheckStatus',
+                'caption',
+                sprintf(
+                    $this->Translate('🔴 The start check could not be completed: %s'),
+                    $exception->getMessage()
+                )
+            );
+            $this->UpdateFormField('CreateViewButton', 'enabled', false);
         }
     }
 
@@ -1197,6 +1259,74 @@ class IPSViewAssistant extends IPSModuleStrict
             'layout'    => $this->ReadAttributeString(self::ATTRIBUTE_BACKGROUND_LAYOUT),
             'scope'     => $this->ReadAttributeInteger(self::ATTRIBUTE_BACKGROUND_SCOPE),
             'imageData' => $this->ReadAttributeString(self::ATTRIBUTE_BACKGROUND_IMAGE),
+        ]);
+    }
+
+    /**
+     * @return array{status: int, ready: bool, checks: list<string>, warnings: list<string>, errors: list<string>}
+     */
+    private function startCheck(
+        string $viewName,
+        int $targetCategoryID,
+        string $mainPageName,
+        int $aspectRatio,
+        int $orientation,
+        int $template,
+        int $startGrid
+    ): array {
+        return IPSViewStartCheck::analyze(
+            $viewName,
+            $targetCategoryID,
+            $mainPageName,
+            $aspectRatio,
+            $orientation,
+            $template,
+            $startGrid,
+            $this->backgroundSettings()
+        );
+    }
+
+    /**
+     * @param array{status: int, ready: bool, checks: list<string>, warnings: list<string>, errors: list<string>} $report
+     */
+    private function showStartCheck(array $report): void
+    {
+        $this->UpdateFormField('StartCheckStatus', 'caption', $this->startCheckCaption($report));
+        $this->UpdateFormField('CreateViewButton', 'enabled', $report['ready']);
+    }
+
+    /**
+     * @param array<string, mixed>                                                                              $form
+     * @param array{status: int, ready: bool, checks: list<string>, warnings: list<string>, errors: list<string>} $report
+     */
+    private function applyStartCheckToForm(array &$form, array $report): void
+    {
+        $this->setConfigurationFormField($form, 'StartCheckStatus', 'caption', $this->startCheckCaption($report));
+        $this->setConfigurationFormField($form, 'CreateViewButton', 'enabled', $report['ready']);
+    }
+
+    /**
+     * @param array{status: int, ready: bool, checks: list<string>, warnings: list<string>, errors: list<string>} $report
+     */
+    private function startCheckCaption(array $report): string
+    {
+        if ($report['status'] === IPSViewStartCheck::STATUS_ERROR) {
+            $title = $this->Translate('🔴 Not ready yet');
+            $messages = [...$report['errors'], ...$report['warnings']];
+        } elseif ($report['status'] === IPSViewStartCheck::STATUS_WARNING) {
+            $title = $this->Translate('🟡 Ready with a note');
+            $messages = [...$report['warnings'], ...$report['checks']];
+        } else {
+            $title = $this->Translate('🟢 Ready to create');
+            $messages = $report['checks'];
+        }
+
+        return implode("\n", [
+            $title,
+            ...array_map(
+                fn (string $message): string => '• ' . $this->Translate($message),
+                $messages
+            ),
         ]);
     }
 

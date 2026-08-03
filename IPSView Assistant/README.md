@@ -21,6 +21,7 @@ Der **IPSView Assistant** erleichtert das Erstellen und Gestalten von IPSView-Pr
 - Einsatzprofile für Wandtablet, Tablet, Smartphone und Browser verwenden
 - Seitenverhältnis und Ausrichtung festlegen
 - Optional ein zwei- oder dreispaltiges Start-Raster für die Hauptseite vorbereiten
+- Konfiguration vor der Erstellung mit einem verständlichen Startcheck prüfen
 - Vorgefertigte Farbdesigns auswählen und individuell anpassen
 - Farben, Schatten, Transparenz und Farbverläufe einstellen
 - Schriftgröße, Schriftart, Ecken und Rahmen festlegen
@@ -81,6 +82,8 @@ Das **Einsatzprofil** belegt Seitenverhältnis, Ausrichtung und Vollbildmodus ge
 Der Assistant verwendet für jedes Verhältnis eine exakt proportionale logische Startgröße. Im Hochformat werden Breite und Höhe vertauscht.
 
 Das optionale **Start-Raster** bereitet eine leere Inhaltsseite für einen geordneten Einstieg im IPSView Designer vor. Da IPSView den nativen Rastermodus nur auf Standard- und Popup-Seiten unterstützt, legt der Assistant zusätzlich zur Hauptseite eine Standard-Inhaltsseite an und bindet sie über einen vollflächigen Seiten-Container ein. Die Auswahl **2 Spalten** bzw. **3 Spalten** verwendet dort eine relative Zellbreite von 50 % bzw. 33,333333 %. Die Designvorschau ordnet ihre Beispielkarten unmittelbar passend zur ausgewählten Spaltenzahl an und blendet dezente Rasterhilfen ein. Außer dem für die Anzeige notwendigen Seiten-Container werden keine Platzhalter oder Bedienelemente erzeugt. Später auf der Inhaltsseite hinzugefügte Bedienelemente werden durch den Rastermodus automatisch angeordnet; Reihenfolge und weitere Rasterwerte lassen sich dort über die Seiteneigenschaften ändern. Die IPSView-6.5-Dokumentation beschreibt den [Rastermodus in den Seiteneigenschaften](https://docu.brownson.at/viewdesigner/WebHelp/DesignerPropertiesPage.html) und die Einbindung von Standardseiten über einen [Seiten-Container](https://docu.brownson.at/viewdesigner/WebHelp/DesignerRepositoryTypePageContainer.html).
+
+Direkt vor den Aktionsschaltflächen fasst der **Startcheck** die wichtigsten Voraussetzungen zusammen. Er prüft Namen und Zielkategorie, erkennt eine bereits vorhandene gleichnamige View, validiert Format, Start-Raster und Hintergrundbild und sucht nach dem installierten IPSView Designer. Grün bedeutet, dass die View erstellt werden kann. Gelb kennzeichnet einen hilfreichen, aber nicht blockierenden Hinweis – beispielsweise ein nur auf die Hauptseite angewendetes Hintergrundbild bei aktiviertem Start-Raster. Rot nennt die zu korrigierenden Angaben und deaktiviert **View erstellen**. Änderungen an den grundlegenden View-Einstellungen aktualisieren den Bericht direkt; mit **Erneut prüfen** lässt er sich jederzeit vollständig aktualisieren. Beim Erstellen führt der Assistant dieselbe Prüfung unabhängig von der Anzeige nochmals verbindlich aus.
 
 | Seitenverhältnis | Logische Größe im Querformat |
 |---|---:|

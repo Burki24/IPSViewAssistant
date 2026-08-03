@@ -28,6 +28,7 @@ $requiredFiles = [
     'libs/IPSViewDocument.php',
     'libs/IPSViewUsageProfile.php',
     'libs/IPSViewCopyFactory.php',
+    'libs/IPSViewStartCheck.php',
     'libs/IPSViewFactory.php',
     'libs/templates/empty-view.json',
     'libs/fonts/NOTICE.md',
@@ -58,6 +59,7 @@ $requiredFiles = [
     'tests/theme.php',
     'tests/effects.php',
     'tests/appearance.php',
+    'tests/start_check.php',
     'tests/existing_view.php',
     'tests/stubs',
     '.style',
@@ -137,6 +139,8 @@ assertTest(str_contains($formJson, 'IPSVIEWA_MarkUsageProfileCustom'), 'The cust
 assertTest(str_contains($formJson, 'UsageProfileInfo'), 'The usage profile explanation is missing.');
 assertTest(str_contains($formJson, 'StartGrid'), 'The optional start grid selection is missing.');
 assertTest(str_contains($formJson, 'IPSVIEWA_UpdateStartGridPreview'), 'The live start-grid preview action is missing.');
+assertTest(str_contains($formJson, 'StartCheckPanel'), 'The visible start check is missing.');
+assertTest(str_contains($formJson, 'IPSVIEWA_UpdateStartCheck'), 'The start-check action is missing.');
 assertTest(str_contains($formJson, 'DesignerHandoverPanel'), 'The guided Designer handover is missing.');
 assertTest(!str_contains($formJson, 'OpenObjectButton'), 'The Designer handover must not open the generic media edit dialog.');
 assertTest(str_contains($formJson, 'double-click'), 'The Designer handover does not explain the required object-tree double-click.');

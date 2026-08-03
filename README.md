@@ -1,6 +1,6 @@
 # IPSView Assistant
 
-`IPSView Assistant` erleichtert das Erstellen und Gestalten von IPSView-Projekten direkt in Symcon. Ein übersichtlicher Schnellstart führt mit Einsatzprofilen für Wandtablet, Tablet, Smartphone und Browser, einem optionalen zwei- oder dreispaltigen Start-Raster und einem wählbaren Design durch die grundlegenden Einstellungen; im Expertenmodus können bestehende Views als separate Designkopie neu gestaltet werden. Das Original bleibt unverändert.
+`IPSView Assistant` erleichtert das Erstellen und Gestalten von IPSView-Projekten direkt in Symcon. Ein übersichtlicher Schnellstart führt mit Einsatzprofilen für Wandtablet, Tablet, Smartphone und Browser, einem optionalen zwei- oder dreispaltigen Start-Raster und einem wählbaren Design durch die grundlegenden Einstellungen. Ein Startcheck prüft die Konfiguration vor der Erstellung; im Expertenmodus können bestehende Views als separate Designkopie neu gestaltet werden. Das Original bleibt unverändert.
 
 Folgende Module enthält die Bibliothek:
 

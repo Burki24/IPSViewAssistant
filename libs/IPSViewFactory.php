@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Burki24\IPSViewAssistant;
 
-use InvalidArgumentException;
 use RuntimeException;
 use Throwable;
 
@@ -36,15 +35,16 @@ final class IPSViewFactory
     ): int {
         $viewName = trim($viewName);
         $mainPageName = trim($mainPageName);
-
-        $this->validateName($viewName, 'View');
-        $this->validateName($mainPageName, 'main page');
-        $this->validateTargetCategory($targetCategoryID);
-        $this->ensureUniqueViewName($viewName, $targetCategoryID);
-
-        if ($template !== self::TEMPLATE_EMPTY) {
-            throw new InvalidArgumentException('The selected template is not supported.');
-        }
+        IPSViewStartCheck::assertReady(IPSViewStartCheck::analyze(
+            $viewName,
+            $targetCategoryID,
+            $mainPageName,
+            $aspectRatio,
+            $orientation,
+            $template,
+            $startGrid,
+            $background
+        ));
 
         $mediaID = IPS_CreateMedia(0);
 
@@ -90,55 +90,4 @@ final class IPSViewFactory
         }
     }
 
-    /**
-     * Rejects empty and excessively long object names.
-     */
-    private function validateName(string $name, string $field): void
-    {
-        if ($name === '') {
-            throw new InvalidArgumentException(sprintf('The %s name must not be empty.', $field));
-        }
-
-        if (strlen($name) > 128) {
-            throw new InvalidArgumentException(sprintf('The %s name must not exceed 128 characters.', $field));
-        }
-    }
-
-    /**
-     * Accepts the Symcon root or a normal category as destination.
-     */
-    private function validateTargetCategory(int $targetCategoryID): void
-    {
-        if ($targetCategoryID === 0) {
-            return;
-        }
-
-        if (!IPS_ObjectExists($targetCategoryID)) {
-            throw new InvalidArgumentException('The selected target category does not exist.');
-        }
-
-        $object = IPS_GetObject($targetCategoryID);
-        if (($object['ObjectType'] ?? -1) !== 0) {
-            throw new InvalidArgumentException('The selected target object is not a category.');
-        }
-    }
-
-    /**
-     * Prevents a second IPSView with the same name in the target category.
-     */
-    private function ensureUniqueViewName(string $viewName, int $targetCategoryID): void
-    {
-        foreach (IPS_GetChildrenIDs($targetCategoryID) as $childID) {
-            $object = IPS_GetObject($childID);
-            if (($object['ObjectType'] ?? -1) !== 5) {
-                continue;
-            }
-
-            if (($object['ObjectName'] ?? '') === $viewName) {
-                throw new InvalidArgumentException(
-                    sprintf('An IPSView named "%s" already exists in the selected category.', $viewName)
-                );
-            }
-        }
-    }
 }
