@@ -55,6 +55,15 @@ assertTest(
     'The public custom usage profile method is missing.'
 );
 assertTest(
+    str_contains($moduleSource, 'public function UpdateQuickStartStep(')
+        && str_contains($moduleSource, 'public function UpdateQuickStartUsageProfile(')
+        && str_contains($moduleSource, 'public function UpdateQuickStartPreview(')
+        && str_contains($moduleSource, 'public function UpdateQuickStartBackground(')
+        && str_contains($moduleSource, 'public function UpdateQuickStartCheck(')
+        && str_contains($moduleSource, 'public function CreateQuickStartView('),
+    'The public quick-start wizard methods are incomplete.'
+);
+assertTest(
     str_contains($moduleSource, 'public function UpdateDesignerHandover('),
     'The public Designer handover method is missing.'
 );
@@ -144,6 +153,12 @@ function flattenFormItems(array $items): array
 }
 
 $actions = flattenFormItems($form['actions'] ?? []);
+$actionsByName = [];
+foreach ($actions as $action) {
+    if (isset($action['name']) && is_string($action['name'])) {
+        $actionsByName[$action['name']] = $action;
+    }
+}
 $button = null;
 $viewName = null;
 $targetCategory = null;
@@ -470,6 +485,82 @@ assertTest(
     'Changing the assistant mode does not call the public module method.'
 );
 assertTest(is_array($assistantModeInfo), 'The assistant mode explanation is missing from the form.');
+$quickStartPopup = $actionsByName['QuickStartWizardPopup'] ?? null;
+$quickStartProgress = $actionsByName['QuickStartWizardProgress'] ?? null;
+$quickStartCreateButton = $actionsByName['QuickStartCreateViewButton'] ?? null;
+$quickStartUsageProfile = $actionsByName['QuickStartUsageProfile'] ?? null;
+$quickStartAspectRatio = $actionsByName['QuickStartAspectRatio'] ?? null;
+$quickStartGrid = $actionsByName['QuickStartGrid'] ?? null;
+$quickStartTheme = $actionsByName['QuickStartTheme'] ?? null;
+$quickStartBackgroundFile = $actionsByName['QuickStartBackgroundFile'] ?? null;
+$quickStartOverwrite = $actionsByName['QuickStartOverwriteExistingView'] ?? null;
+$quickStartPreview = $actionsByName['QuickStartPreview'] ?? null;
+assertTest(is_array($quickStartPopup), 'The quick-start wizard button is missing.');
+assertTest(($quickStartPopup['type'] ?? '') === 'PopupButton', 'Quick start is not opened as a popup wizard.');
+assertTest(($quickStartPopup['caption'] ?? '') === 'Open quick start', 'The quick-start button caption is incorrect.');
+assertTest(($quickStartPopup['popup']['closeCaption'] ?? '') === 'Close', 'The quick-start wizard has no close action.');
+assertTest(is_array($quickStartProgress), 'The quick-start progress display is missing.');
+for ($step = 1; $step <= 4; ++$step) {
+    $stepPanel = $actionsByName['QuickStartStep' . $step] ?? null;
+    assertTest(is_array($stepPanel), sprintf('Quick-start step %d is missing.', $step));
+    assertTest(
+        ($stepPanel['visible'] ?? true) === ($step === 1),
+        sprintf('Quick-start step %d has an incorrect initial visibility.', $step)
+    );
+}
+$quickStartDefinition = json_encode($quickStartPopup, JSON_THROW_ON_ERROR);
+foreach ([1, 2, 3, 4] as $step) {
+    assertTest(
+        str_contains($quickStartDefinition, sprintf('IPSVIEWA_UpdateQuickStartStep($id, %d);', $step)),
+        sprintf('The wizard has no navigation path to quick-start step %d.', $step)
+    );
+}
+assertTest(
+    str_contains($quickStartDefinition, 'IPSVIEWA_UpdateQuickStartCheck('),
+    'The wizard does not run the start check before its final step.'
+);
+assertTest(is_array($quickStartUsageProfile), 'The wizard usage profile is missing.');
+assertTest(count($quickStartUsageProfile['options'] ?? []) === 5, 'The wizard does not offer all usage profiles.');
+assertTest(
+    str_contains((string) ($quickStartUsageProfile['onChange'] ?? ''), 'IPSVIEWA_UpdateQuickStartUsageProfile('),
+    'The wizard usage profile does not apply its format settings.'
+);
+assertTest(is_array($quickStartAspectRatio), 'The wizard aspect ratio is missing.');
+assertTest(count($quickStartAspectRatio['options'] ?? []) === 7, 'The wizard does not offer all aspect ratios.');
+assertTest(is_array($quickStartGrid), 'The wizard start grid is missing.');
+assertTest(array_column($quickStartGrid['options'] ?? [], 'value') === [0, 2, 3], 'The wizard start grid is incomplete.');
+assertTest(is_array($quickStartTheme), 'The wizard theme selection is missing.');
+assertTest(count($quickStartTheme['options'] ?? []) === 8, 'The wizard must offer the eight ready-made themes.');
+assertTest(
+    !in_array(3, array_column($quickStartTheme['options'] ?? [], 'value'), true),
+    'The custom theme must remain an advanced-mode function.'
+);
+assertTest(is_array($quickStartBackgroundFile), 'The wizard background file selection is missing.');
+assertTest(
+    ($quickStartBackgroundFile['extensions'] ?? '') === '.png,.jpg,.jpeg',
+    'The wizard background file filter is incorrect.'
+);
+assertTest(
+    str_ends_with((string) ($quickStartBackgroundFile['onChange'] ?? ''), ', true);'),
+    'The wizard does not distinguish an explicit background-file removal.'
+);
+assertTest(is_array($quickStartOverwrite), 'The wizard overwrite confirmation is missing.');
+assertTest(($quickStartOverwrite['visible'] ?? true) === false, 'Wizard overwrite must remain hidden without a conflict.');
+assertTest(is_array($quickStartCreateButton), 'The wizard Create View button is missing.');
+assertTest(
+    str_contains((string) ($quickStartCreateButton['onClick'] ?? ''), 'IPSVIEWA_CreateQuickStartView(')
+        && str_contains((string) ($quickStartCreateButton['onClick'] ?? ''), '$QuickStartOverwriteExistingView'),
+    'The wizard Create View button does not use the protected quick-start creation path.'
+);
+assertTest(is_array($quickStartPreview), 'The wizard design preview is missing.');
+assertTest(($quickStartPreview['width'] ?? '') === '700px', 'The wizard preview has an unexpected width.');
+assertTest(
+    str_contains($moduleSource, "'ViewSettingsPanel'")
+        && str_contains($moduleSource, "'DesignPanel'")
+        && str_contains($moduleSource, "'StartCheckPanel'")
+        && str_contains($moduleSource, "'QuickStartWizardPopup'"),
+    'The assistant modes do not separate the wizard from the direct expert workflow.'
+);
 assertTest(is_array($usageProfile), 'The usage profile selection is missing from the form.');
 assertTest(($usageProfile['value'] ?? null) === 0, 'The wall tablet must be the default usage profile.');
 assertTest(count($usageProfile['options'] ?? []) === 5, 'All usage profiles must be available.');
@@ -756,7 +847,8 @@ assertTest(
 );
 assertTest(
     str_contains($moduleSource, 'bool $ImageSelectionChanged')
-        && str_contains($moduleSource, '$ImageSelectionChanged' . "\n" . '                    ? $ImageData'),
+        && str_contains($moduleSource, 'storeBackgroundSettings(')
+        && str_contains($moduleSource, '$imageSelectionChanged' . "\n" . '                ? $imageData'),
     'The background preview cannot clear a previously persisted image explicitly.'
 );
 assertTest(

@@ -24,13 +24,425 @@
                 {
                     "type": "Label",
                     "name": "AssistantModeInfo",
-                    "caption": "Quick start shows only the settings needed for a first IPSView. All detailed design and copy functions remain available in Advanced mode."
+                    "caption": "Quick start opens a four-step wizard for the settings needed by a first IPSView. All detailed design and copy functions remain available in Advanced mode."
                 }
             ]
         },
         {
             "type": "Label",
             "caption": "Create a new IPSView without using the technical IPSView creation dialog."
+        },
+        {
+            "type": "PopupButton",
+            "name": "QuickStartWizardPopup",
+            "caption": "Open quick start",
+            "width": "280px",
+            "popup": {
+                "caption": "Quick start for a new IPSView",
+                "closeCaption": "Close",
+                "items": [
+                    {
+                        "type": "Label",
+                        "name": "QuickStartWizardProgress",
+                        "caption": "Step 1 of 4: Basic information"
+                    },
+                    {
+                        "type": "ExpansionPanel",
+                        "name": "QuickStartStep1",
+                        "caption": "1. Basic information",
+                        "expanded": true,
+                        "items": [
+                            {
+                                "type": "Select",
+                                "name": "QuickStartUsageProfile",
+                                "caption": "Usage profile",
+                                "value": 0,
+                                "width": "360px",
+                                "onChange": "IPSVIEWA_UpdateQuickStartUsageProfile($id, $QuickStartUsageProfile);",
+                                "options": [
+                                    {
+                                        "caption": "Wall tablet",
+                                        "value": 0
+                                    },
+                                    {
+                                        "caption": "Tablet",
+                                        "value": 1
+                                    },
+                                    {
+                                        "caption": "Smartphone",
+                                        "value": 2
+                                    },
+                                    {
+                                        "caption": "Browser",
+                                        "value": 3
+                                    },
+                                    {
+                                        "caption": "Custom",
+                                        "value": 4
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "Label",
+                                "name": "QuickStartUsageProfileInfo",
+                                "caption": "16:9 landscape, 1360 x 765 logical pixels, full screen. Recommended for a permanently installed control panel."
+                            },
+                            {
+                                "type": "RowLayout",
+                                "items": [
+                                    {
+                                        "type": "ValidationTextBox",
+                                        "name": "QuickStartViewName",
+                                        "caption": "View name",
+                                        "value": "Neue IPSView",
+                                        "width": "420px",
+                                        "onChange": "IPSVIEWA_ResetQuickStartOverwrite($id);"
+                                    },
+                                    {
+                                        "type": "SelectCategory",
+                                        "name": "QuickStartTargetCategoryID",
+                                        "caption": "Target category",
+                                        "value": 0,
+                                        "width": "420px",
+                                        "onChange": "IPSVIEWA_ResetQuickStartOverwrite($id);"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "Button",
+                                "caption": "Next: Format",
+                                "onClick": "IPSVIEWA_UpdateQuickStartStep($id, 2);"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "ExpansionPanel",
+                        "name": "QuickStartStep2",
+                        "caption": "2. Format and layout",
+                        "expanded": true,
+                        "visible": false,
+                        "items": [
+                            {
+                                "type": "ValidationTextBox",
+                                "name": "QuickStartMainPageName",
+                                "caption": "Main page name",
+                                "value": "Hauptseite",
+                                "width": "420px"
+                            },
+                            {
+                                "type": "RowLayout",
+                                "items": [
+                                    {
+                                        "type": "Select",
+                                        "name": "QuickStartAspectRatio",
+                                        "caption": "Aspect ratio",
+                                        "value": 2,
+                                        "width": "300px",
+                                        "onChange": "IPSVIEWA_MarkQuickStartUsageProfileCustom($id);",
+                                        "options": [
+                                            {
+                                                "caption": "Square (1:1)",
+                                                "value": 0
+                                            },
+                                            {
+                                                "caption": "Classic (4:3)",
+                                                "value": 1
+                                            },
+                                            {
+                                                "caption": "8:5 (16:10)",
+                                                "value": 3
+                                            },
+                                            {
+                                                "caption": "9:5 (18:10)",
+                                                "value": 4
+                                            },
+                                            {
+                                                "caption": "Ultra-wide (13:6)",
+                                                "value": 5
+                                            },
+                                            {
+                                                "caption": "Widescreen (16:9)",
+                                                "value": 2
+                                            },
+                                            {
+                                                "caption": "Ultra-wide (2:1)",
+                                                "value": 6
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "Select",
+                                        "name": "QuickStartOrientation",
+                                        "caption": "Orientation",
+                                        "value": 0,
+                                        "width": "260px",
+                                        "onChange": "IPSVIEWA_MarkQuickStartUsageProfileCustom($id);",
+                                        "options": [
+                                            {
+                                                "caption": "Landscape",
+                                                "value": 0
+                                            },
+                                            {
+                                                "caption": "Portrait",
+                                                "value": 1
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "CheckBox",
+                                        "name": "QuickStartFullScreen",
+                                        "caption": "Full screen",
+                                        "value": true,
+                                        "onChange": "IPSVIEWA_MarkQuickStartUsageProfileCustom($id);"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "Select",
+                                "name": "QuickStartGrid",
+                                "caption": "Start grid",
+                                "value": 0,
+                                "width": "300px",
+                                "onChange": "IPSVIEWA_UpdateQuickStartPreview($id, $QuickStartTheme, $QuickStartGrid);",
+                                "options": [
+                                    {
+                                        "caption": "No grid",
+                                        "value": 0
+                                    },
+                                    {
+                                        "caption": "2 columns",
+                                        "value": 2
+                                    },
+                                    {
+                                        "caption": "3 columns",
+                                        "value": 3
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "RowLayout",
+                                "items": [
+                                    {
+                                        "type": "Button",
+                                        "caption": "Back",
+                                        "onClick": "IPSVIEWA_UpdateQuickStartStep($id, 1);"
+                                    },
+                                    {
+                                        "type": "Button",
+                                        "caption": "Next: Design",
+                                        "onClick": "IPSVIEWA_UpdateQuickStartPreview($id, $QuickStartTheme, $QuickStartGrid); IPSVIEWA_UpdateQuickStartStep($id, 3);"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "type": "ExpansionPanel",
+                        "name": "QuickStartStep3",
+                        "caption": "3. Design and background",
+                        "expanded": true,
+                        "visible": false,
+                        "items": [
+                            {
+                                "type": "Select",
+                                "name": "QuickStartTheme",
+                                "caption": "Theme",
+                                "value": 0,
+                                "width": "360px",
+                                "onChange": "IPSVIEWA_UpdateQuickStartPreview($id, $QuickStartTheme, $QuickStartGrid);",
+                                "options": [
+                                    {
+                                        "caption": "IPSView Standard",
+                                        "value": 0
+                                    },
+                                    {
+                                        "caption": "Light",
+                                        "value": 1
+                                    },
+                                    {
+                                        "caption": "Dark",
+                                        "value": 2
+                                    },
+                                    {
+                                        "caption": "Warm",
+                                        "value": 4
+                                    },
+                                    {
+                                        "caption": "Cool",
+                                        "value": 5
+                                    },
+                                    {
+                                        "caption": "Earthy",
+                                        "value": 6
+                                    },
+                                    {
+                                        "caption": "Water",
+                                        "value": 7
+                                    },
+                                    {
+                                        "caption": "Sunny",
+                                        "value": 8
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "RowLayout",
+                                "items": [
+                                    {
+                                        "type": "Select",
+                                        "name": "QuickStartBackgroundMode",
+                                        "caption": "Background image action",
+                                        "value": 0,
+                                        "width": "300px",
+                                        "onChange": "IPSVIEWA_UpdateQuickStartBackground($id, $QuickStartBackgroundFile, $QuickStartBackgroundMode, $QuickStartBackgroundLayout, $QuickStartBackgroundScope, $QuickStartTheme, $QuickStartGrid, false);",
+                                        "options": [
+                                            {
+                                                "caption": "Preserve existing",
+                                                "value": 0
+                                            },
+                                            {
+                                                "caption": "Remove background image",
+                                                "value": 1
+                                            },
+                                            {
+                                                "caption": "Image file from this computer",
+                                                "value": 2
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "Select",
+                                        "name": "QuickStartBackgroundScope",
+                                        "caption": "Apply to",
+                                        "value": 0,
+                                        "visible": false,
+                                        "width": "260px",
+                                        "onChange": "IPSVIEWA_UpdateQuickStartBackground($id, $QuickStartBackgroundFile, $QuickStartBackgroundMode, $QuickStartBackgroundLayout, $QuickStartBackgroundScope, $QuickStartTheme, $QuickStartGrid, false);",
+                                        "options": [
+                                            {
+                                                "caption": "Main page only",
+                                                "value": 0
+                                            },
+                                            {
+                                                "caption": "All pages",
+                                                "value": 1
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "SelectFile",
+                                "name": "QuickStartBackgroundFile",
+                                "caption": "PNG or JPEG file",
+                                "extensions": ".png,.jpg,.jpeg",
+                                "visible": false,
+                                "width": "520px",
+                                "onChange": "IPSVIEWA_UpdateQuickStartBackground($id, $QuickStartBackgroundFile, 2, $QuickStartBackgroundLayout, $QuickStartBackgroundScope, $QuickStartTheme, $QuickStartGrid, true);"
+                            },
+                            {
+                                "type": "Select",
+                                "name": "QuickStartBackgroundLayout",
+                                "caption": "Image layout",
+                                "value": "Stretch",
+                                "visible": false,
+                                "width": "300px",
+                                "onChange": "IPSVIEWA_UpdateQuickStartBackground($id, $QuickStartBackgroundFile, $QuickStartBackgroundMode, $QuickStartBackgroundLayout, $QuickStartBackgroundScope, $QuickStartTheme, $QuickStartGrid, false);",
+                                "options": [
+                                    {
+                                        "caption": "Tiles",
+                                        "value": "Tile"
+                                    },
+                                    {
+                                        "caption": "Centered",
+                                        "value": "Center"
+                                    },
+                                    {
+                                        "caption": "Stretch",
+                                        "value": "Stretch"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "Label",
+                                "name": "QuickStartBackgroundStatus",
+                                "caption": "Background image changes are applied to the selected pages. PNG and JPEG files up to 10 MB are embedded directly in the IPSView."
+                            },
+                            {
+                                "type": "Image",
+                                "name": "QuickStartPreview",
+                                "image": "",
+                                "center": true,
+                                "width": "700px"
+                            },
+                            {
+                                "type": "RowLayout",
+                                "items": [
+                                    {
+                                        "type": "Button",
+                                        "caption": "Back",
+                                        "onClick": "IPSVIEWA_UpdateQuickStartStep($id, 2);"
+                                    },
+                                    {
+                                        "type": "Button",
+                                        "caption": "Next: Check",
+                                        "onClick": "IPSVIEWA_UpdateQuickStartCheck($id, $QuickStartViewName, $QuickStartTargetCategoryID, $QuickStartMainPageName, $QuickStartAspectRatio, $QuickStartOrientation, $QuickStartGrid, $QuickStartOverwriteExistingView); IPSVIEWA_UpdateQuickStartStep($id, 4);"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "type": "ExpansionPanel",
+                        "name": "QuickStartStep4",
+                        "caption": "4. Check and create",
+                        "expanded": true,
+                        "visible": false,
+                        "items": [
+                            {
+                                "type": "Label",
+                                "name": "QuickStartCheckStatus",
+                                "caption": "The start check is being prepared."
+                            },
+                            {
+                                "type": "CheckBox",
+                                "name": "QuickStartOverwriteExistingView",
+                                "caption": "Overwrite the existing View",
+                                "value": false,
+                                "visible": false,
+                                "onChange": "IPSVIEWA_UpdateQuickStartCheck($id, $QuickStartViewName, $QuickStartTargetCategoryID, $QuickStartMainPageName, $QuickStartAspectRatio, $QuickStartOrientation, $QuickStartGrid, $QuickStartOverwriteExistingView);"
+                            },
+                            {
+                                "type": "Label",
+                                "name": "QuickStartOverwriteExistingViewInfo",
+                                "caption": "The existing View keeps its object ID, but all pages, controls and settings are replaced.",
+                                "visible": false
+                            },
+                            {
+                                "type": "RowLayout",
+                                "items": [
+                                    {
+                                        "type": "Button",
+                                        "caption": "Back",
+                                        "onClick": "IPSVIEWA_UpdateQuickStartStep($id, 3);"
+                                    },
+                                    {
+                                        "type": "Button",
+                                        "caption": "Check again",
+                                        "onClick": "IPSVIEWA_UpdateQuickStartCheck($id, $QuickStartViewName, $QuickStartTargetCategoryID, $QuickStartMainPageName, $QuickStartAspectRatio, $QuickStartOrientation, $QuickStartGrid, $QuickStartOverwriteExistingView);"
+                                    },
+                                    {
+                                        "type": "Button",
+                                        "name": "QuickStartCreateViewButton",
+                                        "caption": "Create View",
+                                        "onClick": "echo IPSVIEWA_CreateQuickStartView($id, $QuickStartViewName, $QuickStartTargetCategoryID, $QuickStartAspectRatio, $QuickStartOrientation, $QuickStartMainPageName, $QuickStartTheme, $QuickStartFullScreen, $QuickStartGrid, $QuickStartOverwriteExistingView);"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
         },
         {
             "type": "ExpansionPanel",

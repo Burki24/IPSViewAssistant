@@ -51,13 +51,20 @@ Der IPSView Designer wird zum Öffnen, Bearbeiten und Speichern der erzeugten Vi
 
 #### 3.1 Assistentenmodus
 
-Beim ersten Öffnen ist der **Schnellstart** aktiv. Er zeigt nur die grundlegenden View-Einstellungen, eine fertige Designvorlage, die Vorschau und die Schaltfläche für das optionale Hintergrundbild. Die Hintergrundeinstellungen öffnen sich platzsparend in einem Dialog. Detailfarben, Effekte, Typografie, Formensprache und die Bearbeitung bestehender Views bleiben ausgeblendet.
+Beim ersten Öffnen ist der **Schnellstart** aktiv. Die Schaltfläche **Schnellstart öffnen** startet einen kompakten Wizard mit vier aufeinanderfolgenden Schritten:
+
+1. Einsatzprofil, Name und Zielkategorie festlegen.
+2. Format, Ausrichtung, Vollbild und optionales Start-Raster auswählen.
+3. Eine fertige Designvorlage und bei Bedarf ein Hintergrundbild auswählen und in der Vorschau prüfen.
+4. Den verbindlichen Startcheck ausführen und die View erstellen oder eine eindeutig erkannte gleichnamige IPSView bewusst überschreiben.
+
+Detailfarben, Effekte, Typografie, Formensprache und die Bearbeitung bestehender Views bleiben im Schnellstart ausgeblendet.
 
 Der **Expertenmodus** stellt sämtliche Funktionen des Assistants bereit. Der zuletzt gewählte Modus wird in der Instanz gespeichert und beim nächsten Öffnen wiederhergestellt.
 
 ### 4. Neue View erstellen
 
-Im Bereich **View-Einstellungen** werden die grundlegenden Eigenschaften der neuen View festgelegt. Für die erste View reicht der Schnellstart vollständig aus.
+Im Schnellstart werden die grundlegenden Eigenschaften der neuen View nacheinander abgefragt. Im Expertenmodus stehen dieselben Angaben weiterhin direkt im Bereich **View-Einstellungen** zur Verfügung.
 
 Das **Einsatzprofil** belegt Seitenverhältnis, Ausrichtung und Vollbildmodus gemeinsam vor. Sobald eine dieser Einstellungen manuell geändert wird, wechselt die Auswahl auf **Benutzerdefiniert**.
 

@@ -4,6 +4,7 @@
 
 ### Changed
 
+- Replaced the reduced direct quick-start form with a four-step PopupButton wizard for basic data, format, design/background and the final start check while retaining the direct workflow in Advanced mode.
 - Moved existing-View handling, detailed design settings and background-image options into focused Symcon PopupButton dialogs while keeping the live preview and primary creation workflow visible.
 - Replaced all generated WOFF2 preview subsets with the complete original IPSView TrueType font cuts.
 - Simplified the offline font loader so every preview style uses the matching unmodified IPSView font file.
