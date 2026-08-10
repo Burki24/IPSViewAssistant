@@ -40,17 +40,11 @@
             "popup": {
                 "caption": "Quick start for a new IPSView",
                 "closeCaption": "Close",
-                "items": [
+                "items": [],
+                "pages": [
                     {
-                        "type": "Label",
-                        "name": "QuickStartWizardProgress",
-                        "caption": "Step 1 of 4: Basic information"
-                    },
-                    {
-                        "type": "ExpansionPanel",
                         "name": "QuickStartStep1",
                         "caption": "1. Basic information",
-                        "expanded": true,
                         "items": [
                             {
                                 "type": "Select",
@@ -107,20 +101,12 @@
                                         "onChange": "IPSVIEWA_ResetQuickStartOverwrite($id);"
                                     }
                                 ]
-                            },
-                            {
-                                "type": "Button",
-                                "caption": "Next: Format",
-                                "onClick": "IPSVIEWA_UpdateQuickStartStep($id, 2);"
                             }
                         ]
                     },
                     {
-                        "type": "ExpansionPanel",
                         "name": "QuickStartStep2",
                         "caption": "2. Format and layout",
-                        "expanded": true,
-                        "visible": false,
                         "items": [
                             {
                                 "type": "ValidationTextBox",
@@ -218,30 +204,14 @@
                                         "value": 3
                                     }
                                 ]
-                            },
-                            {
-                                "type": "RowLayout",
-                                "items": [
-                                    {
-                                        "type": "Button",
-                                        "caption": "Back",
-                                        "onClick": "IPSVIEWA_UpdateQuickStartStep($id, 1);"
-                                    },
-                                    {
-                                        "type": "Button",
-                                        "caption": "Next: Design",
-                                        "onClick": "IPSVIEWA_UpdateQuickStartPreview($id, $QuickStartTheme, $QuickStartGrid); IPSVIEWA_UpdateQuickStartStep($id, 3);"
-                                    }
-                                ]
                             }
                         ]
                     },
                     {
-                        "type": "ExpansionPanel",
                         "name": "QuickStartStep3",
                         "caption": "3. Design and background",
-                        "expanded": true,
-                        "visible": false,
+                        "onConfirm": "IPSVIEWA_UpdateQuickStartCheck($id, $QuickStartViewName, $QuickStartTargetCategoryID, $QuickStartMainPageName, $QuickStartAspectRatio, $QuickStartOrientation, $QuickStartGrid, $QuickStartOverwriteExistingView);",
+                        "onUndo": "IPSVIEWA_ResetQuickStartOverwrite($id);",
                         "items": [
                             {
                                 "type": "Select",
@@ -374,30 +344,14 @@
                                 "image": "",
                                 "center": true,
                                 "width": "700px"
-                            },
-                            {
-                                "type": "RowLayout",
-                                "items": [
-                                    {
-                                        "type": "Button",
-                                        "caption": "Back",
-                                        "onClick": "IPSVIEWA_UpdateQuickStartStep($id, 2);"
-                                    },
-                                    {
-                                        "type": "Button",
-                                        "caption": "Next: Check",
-                                        "onClick": "IPSVIEWA_UpdateQuickStartCheck($id, $QuickStartViewName, $QuickStartTargetCategoryID, $QuickStartMainPageName, $QuickStartAspectRatio, $QuickStartOrientation, $QuickStartGrid, $QuickStartOverwriteExistingView); IPSVIEWA_UpdateQuickStartStep($id, 4);"
-                                    }
-                                ]
                             }
                         ]
                     },
                     {
-                        "type": "ExpansionPanel",
                         "name": "QuickStartStep4",
                         "caption": "4. Check and create",
-                        "expanded": true,
-                        "visible": false,
+                        "validate": "return IPSVIEWA_ValidateQuickStartCreation($id, $QuickStartViewName, $QuickStartTargetCategoryID, $QuickStartMainPageName, $QuickStartAspectRatio, $QuickStartOrientation, $QuickStartGrid, $QuickStartOverwriteExistingView);",
+                        "onConfirm": "echo IPSVIEWA_CreateQuickStartView($id, $QuickStartViewName, $QuickStartTargetCategoryID, $QuickStartAspectRatio, $QuickStartOrientation, $QuickStartMainPageName, $QuickStartTheme, $QuickStartFullScreen, $QuickStartGrid, $QuickStartOverwriteExistingView);",
                         "items": [
                             {
                                 "type": "Label",
@@ -417,27 +371,6 @@
                                 "name": "QuickStartOverwriteExistingViewInfo",
                                 "caption": "The existing View keeps its object ID, but all pages, controls and settings are replaced.",
                                 "visible": false
-                            },
-                            {
-                                "type": "RowLayout",
-                                "items": [
-                                    {
-                                        "type": "Button",
-                                        "caption": "Back",
-                                        "onClick": "IPSVIEWA_UpdateQuickStartStep($id, 3);"
-                                    },
-                                    {
-                                        "type": "Button",
-                                        "caption": "Check again",
-                                        "onClick": "IPSVIEWA_UpdateQuickStartCheck($id, $QuickStartViewName, $QuickStartTargetCategoryID, $QuickStartMainPageName, $QuickStartAspectRatio, $QuickStartOrientation, $QuickStartGrid, $QuickStartOverwriteExistingView);"
-                                    },
-                                    {
-                                        "type": "Button",
-                                        "name": "QuickStartCreateViewButton",
-                                        "caption": "Create View",
-                                        "onClick": "echo IPSVIEWA_CreateQuickStartView($id, $QuickStartViewName, $QuickStartTargetCategoryID, $QuickStartAspectRatio, $QuickStartOrientation, $QuickStartMainPageName, $QuickStartTheme, $QuickStartFullScreen, $QuickStartGrid, $QuickStartOverwriteExistingView);"
-                                    }
-                                ]
                             }
                         ]
                     }

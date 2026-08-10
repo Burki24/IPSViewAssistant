@@ -242,25 +242,6 @@ class IPSViewAssistant extends IPSModuleStrict
     }
 
     /**
-     * Shows one of the four quick-start wizard steps.
-     */
-    public function UpdateQuickStartStep(int $Step): void
-    {
-        $step = max(1, min(4, $Step));
-
-        for ($currentStep = 1; $currentStep <= 4; ++$currentStep) {
-            $this->UpdateFormField('QuickStartStep' . $currentStep, 'visible', $currentStep === $step);
-            $this->UpdateFormField('QuickStartStep' . $currentStep, 'expanded', $currentStep === $step);
-        }
-
-        $this->UpdateFormField(
-            'QuickStartWizardProgress',
-            'caption',
-            $this->quickStartStepCaption($step)
-        );
-    }
-
-    /**
      * Applies one ready-made device profile inside the quick-start wizard.
      */
     public function UpdateQuickStartUsageProfile(int $Profile): void
@@ -297,7 +278,6 @@ class IPSViewAssistant extends IPSModuleStrict
         $this->UpdateFormField('QuickStartOverwriteExistingView', 'visible', false);
         $this->UpdateFormField('QuickStartOverwriteExistingView', 'value', false);
         $this->UpdateFormField('QuickStartOverwriteExistingViewInfo', 'visible', false);
-        $this->UpdateFormField('QuickStartCreateViewButton', 'enabled', false);
         $this->UpdateFormField(
             'QuickStartCheckStatus',
             'caption',
@@ -917,9 +897,48 @@ class IPSViewAssistant extends IPSModuleStrict
                     $exception->getMessage()
                 )
             );
-            $this->UpdateFormField('QuickStartCreateViewButton', 'enabled', false);
             $this->UpdateFormField('QuickStartOverwriteExistingView', 'visible', false);
             $this->UpdateFormField('QuickStartOverwriteExistingViewInfo', 'visible', false);
+        }
+    }
+
+    /**
+     * Validates the final native wizard page before Symcon runs its confirmation action.
+     */
+    public function ValidateQuickStartCreation(
+        string $ViewName,
+        int $TargetCategoryID,
+        string $MainPageName,
+        int $AspectRatio,
+        int $Orientation,
+        int $StartGrid,
+        bool $OverwriteExistingView
+    ): string {
+        try {
+            $report = $this->startCheck(
+                $ViewName,
+                $TargetCategoryID,
+                $MainPageName,
+                $AspectRatio,
+                $Orientation,
+                IPSViewFactory::TEMPLATE_EMPTY,
+                $StartGrid,
+                $OverwriteExistingView
+            );
+            $this->showQuickStartCheck($report, $OverwriteExistingView);
+
+            return $report['ready']
+                ? ''
+                : $this->Translate(
+                    $report['errors'][0] ?? 'The View configuration is not ready for creation.'
+                );
+        } catch (Throwable $exception) {
+            $this->SendDebug('ValidateQuickStartCreation', $exception->getMessage(), 0);
+
+            return sprintf(
+                $this->Translate('The start check could not be completed: %s'),
+                $exception->getMessage()
+            );
         }
     }
 
@@ -1275,19 +1294,6 @@ class IPSViewAssistant extends IPSModuleStrict
     }
 
     /**
-     * Returns the localized progress text for one wizard step.
-     */
-    private function quickStartStepCaption(int $step): string
-    {
-        return $this->Translate(match ($step) {
-            2       => 'Step 2 of 4: Format and layout',
-            3       => 'Step 3 of 4: Design and background',
-            4       => 'Step 4 of 4: Check and create',
-            default => 'Step 1 of 4: Basic information',
-        });
-    }
-
-    /**
      * Restores the handover for the most recently created View when the form is reopened.
      *
      * @param array<string, mixed> $form
@@ -1420,6 +1426,12 @@ class IPSViewAssistant extends IPSModuleStrict
 
             if (isset($item['popup']['items']) && is_array($item['popup']['items'])) {
                 if ($this->setConfigurationFormFieldInItems($item['popup']['items'], $name, $property, $value)) {
+                    return true;
+                }
+            }
+
+            if (isset($item['popup']['pages']) && is_array($item['popup']['pages'])) {
+                if ($this->setConfigurationFormFieldInItems($item['popup']['pages'], $name, $property, $value)) {
                     return true;
                 }
             }
@@ -1777,7 +1789,6 @@ class IPSViewAssistant extends IPSModuleStrict
     private function showQuickStartCheck(array $report, bool $overwriteExisting = false): void
     {
         $this->UpdateFormField('QuickStartCheckStatus', 'caption', $this->startCheckCaption($report));
-        $this->UpdateFormField('QuickStartCreateViewButton', 'enabled', $report['ready']);
         $this->UpdateFormField('QuickStartOverwriteExistingView', 'visible', $report['overwriteAvailable']);
         $this->UpdateFormField('QuickStartOverwriteExistingView', 'value', $overwriteExisting);
         $this->UpdateFormField('QuickStartOverwriteExistingViewInfo', 'visible', $report['overwriteAvailable']);
@@ -1812,7 +1823,6 @@ class IPSViewAssistant extends IPSModuleStrict
             'caption',
             $this->startCheckCaption($report)
         );
-        $this->setConfigurationFormField($form, 'QuickStartCreateViewButton', 'enabled', $report['ready']);
         $this->setConfigurationFormField(
             $form,
             'QuickStartOverwriteExistingView',

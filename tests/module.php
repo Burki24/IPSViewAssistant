@@ -55,11 +55,11 @@ assertTest(
     'The public custom usage profile method is missing.'
 );
 assertTest(
-    str_contains($moduleSource, 'public function UpdateQuickStartStep(')
-        && str_contains($moduleSource, 'public function UpdateQuickStartUsageProfile(')
+    str_contains($moduleSource, 'public function UpdateQuickStartUsageProfile(')
         && str_contains($moduleSource, 'public function UpdateQuickStartPreview(')
         && str_contains($moduleSource, 'public function UpdateQuickStartBackground(')
         && str_contains($moduleSource, 'public function UpdateQuickStartCheck(')
+        && str_contains($moduleSource, 'public function ValidateQuickStartCreation(')
         && str_contains($moduleSource, 'public function CreateQuickStartView('),
     'The public quick-start wizard methods are incomplete.'
 );
@@ -146,6 +146,10 @@ function flattenFormItems(array $items): array
 
         if (isset($item['popup']['items']) && is_array($item['popup']['items'])) {
             $flat = [...$flat, ...flattenFormItems($item['popup']['items'])];
+        }
+
+        if (isset($item['popup']['pages']) && is_array($item['popup']['pages'])) {
+            $flat = [...$flat, ...flattenFormItems($item['popup']['pages'])];
         }
     }
 
@@ -486,8 +490,6 @@ assertTest(
 );
 assertTest(is_array($assistantModeInfo), 'The assistant mode explanation is missing from the form.');
 $quickStartPopup = $actionsByName['QuickStartWizardPopup'] ?? null;
-$quickStartProgress = $actionsByName['QuickStartWizardProgress'] ?? null;
-$quickStartCreateButton = $actionsByName['QuickStartCreateViewButton'] ?? null;
 $quickStartUsageProfile = $actionsByName['QuickStartUsageProfile'] ?? null;
 $quickStartAspectRatio = $actionsByName['QuickStartAspectRatio'] ?? null;
 $quickStartGrid = $actionsByName['QuickStartGrid'] ?? null;
@@ -499,25 +501,38 @@ assertTest(is_array($quickStartPopup), 'The quick-start wizard button is missing
 assertTest(($quickStartPopup['type'] ?? '') === 'PopupButton', 'Quick start is not opened as a popup wizard.');
 assertTest(($quickStartPopup['caption'] ?? '') === 'Open quick start', 'The quick-start button caption is incorrect.');
 assertTest(($quickStartPopup['popup']['closeCaption'] ?? '') === 'Close', 'The quick-start wizard has no close action.');
-assertTest(is_array($quickStartProgress), 'The quick-start progress display is missing.');
+$quickStartPages = $quickStartPopup['popup']['pages'] ?? [];
+assertTest(($quickStartPopup['popup']['items'] ?? null) === [], 'The native wizard still has legacy popup items.');
+assertTest(count($quickStartPages) === 4, 'The native quick-start wizard must have four pages.');
 for ($step = 1; $step <= 4; ++$step) {
-    $stepPanel = $actionsByName['QuickStartStep' . $step] ?? null;
-    assertTest(is_array($stepPanel), sprintf('Quick-start step %d is missing.', $step));
+    $stepPage = $quickStartPages[$step - 1] ?? null;
+    assertTest(is_array($stepPage), sprintf('Quick-start page %d is missing.', $step));
     assertTest(
-        ($stepPanel['visible'] ?? true) === ($step === 1),
-        sprintf('Quick-start step %d has an incorrect initial visibility.', $step)
+        ($stepPage['name'] ?? '') === 'QuickStartStep' . $step,
+        sprintf('Quick-start page %d has no stable page name.', $step)
     );
-}
-$quickStartDefinition = json_encode($quickStartPopup, JSON_THROW_ON_ERROR);
-foreach ([1, 2, 3, 4] as $step) {
     assertTest(
-        str_contains($quickStartDefinition, sprintf('IPSVIEWA_UpdateQuickStartStep($id, %d);', $step)),
-        sprintf('The wizard has no navigation path to quick-start step %d.', $step)
+        !isset($stepPage['type']) && is_array($stepPage['items'] ?? null),
+        sprintf('Quick-start page %d is not a native PopupButton page.', $step)
     );
 }
 assertTest(
-    str_contains($quickStartDefinition, 'IPSVIEWA_UpdateQuickStartCheck('),
+    str_contains((string) ($quickStartPages[2]['onConfirm'] ?? ''), 'IPSVIEWA_UpdateQuickStartCheck(')
+        && str_contains((string) ($quickStartPages[2]['onUndo'] ?? ''), 'IPSVIEWA_ResetQuickStartOverwrite('),
     'The wizard does not run the start check before its final step.'
+);
+assertTest(
+    str_contains((string) ($quickStartPages[3]['validate'] ?? ''), 'IPSVIEWA_ValidateQuickStartCreation('),
+    'The native wizard does not validate its final page.'
+);
+assertTest(
+    str_contains((string) ($quickStartPages[3]['onConfirm'] ?? ''), 'IPSVIEWA_CreateQuickStartView(')
+        && str_starts_with((string) ($quickStartPages[3]['onConfirm'] ?? ''), 'echo '),
+    'The native wizard does not create the View through its final confirmation action.'
+);
+assertTest(
+    str_contains($moduleSource, "isset(\$item['popup']['pages'])"),
+    'Dynamic form updates cannot reach fields inside native PopupButton pages.'
 );
 assertTest(is_array($quickStartUsageProfile), 'The wizard usage profile is missing.');
 assertTest(count($quickStartUsageProfile['options'] ?? []) === 5, 'The wizard does not offer all usage profiles.');
@@ -546,12 +561,6 @@ assertTest(
 );
 assertTest(is_array($quickStartOverwrite), 'The wizard overwrite confirmation is missing.');
 assertTest(($quickStartOverwrite['visible'] ?? true) === false, 'Wizard overwrite must remain hidden without a conflict.');
-assertTest(is_array($quickStartCreateButton), 'The wizard Create View button is missing.');
-assertTest(
-    str_contains((string) ($quickStartCreateButton['onClick'] ?? ''), 'IPSVIEWA_CreateQuickStartView(')
-        && str_contains((string) ($quickStartCreateButton['onClick'] ?? ''), '$QuickStartOverwriteExistingView'),
-    'The wizard Create View button does not use the protected quick-start creation path.'
-);
 assertTest(is_array($quickStartPreview), 'The wizard design preview is missing.');
 assertTest(($quickStartPreview['width'] ?? '') === '700px', 'The wizard preview has an unexpected width.');
 assertTest(

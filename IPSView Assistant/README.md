@@ -33,7 +33,7 @@ Der **IPSView Assistant** erleichtert das Erstellen und Gestalten von IPSView-Pr
 
 ### 2. Voraussetzungen
 
-- Symcon ab Version 9.0
+- Symcon ab Version 9.1
 - Installiertes und lizenziertes IPSView (Standard oder Professional)
 
 Der IPSView Designer wird zum Öffnen, Bearbeiten und Speichern der erzeugten View benötigt. Ist er nicht installiert oder kann der Assistant ihn nicht automatisch erkennen, bleibt die Erstellung möglich; der Startcheck zeigt dann einen gelben Hinweis.
@@ -51,7 +51,7 @@ Der IPSView Designer wird zum Öffnen, Bearbeiten und Speichern der erzeugten Vi
 
 #### 3.1 Assistentenmodus
 
-Beim ersten Öffnen ist der **Schnellstart** aktiv. Die Schaltfläche **Schnellstart öffnen** startet einen kompakten Wizard mit vier aufeinanderfolgenden Schritten:
+Beim ersten Öffnen ist der **Schnellstart** aktiv. Die Schaltfläche **Schnellstart öffnen** startet einen nativen Symcon-Wizard mit vier aufeinanderfolgenden Seiten und den automatisch eingeblendeten Aktionen **Zurück**, **Weiter** und **OK**:
 
 1. Einsatzprofil, Name und Zielkategorie festlegen.
 2. Format, Ausrichtung, Vollbild und optionales Start-Raster auswählen.

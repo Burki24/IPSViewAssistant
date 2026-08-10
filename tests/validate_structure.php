@@ -103,7 +103,7 @@ $template = json_decode(
     JSON_THROW_ON_ERROR
 );
 
-assertTest($library['compatibility']['version'] === '9.0', 'The minimum Symcon version must be 9.0.');
+assertTest($library['compatibility']['version'] === '9.1', 'The native PopupButton wizard requires Symcon 9.1.');
 assertTest($module['name'] === 'IPSView Assistant', 'The module name is incorrect.');
 assertTest($module['prefix'] === 'IPSVIEWA', 'The public module prefix is incorrect.');
 assertTest($module['aliases'] === [], 'The module aliases field must be an empty array.');
