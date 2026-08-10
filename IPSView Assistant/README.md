@@ -51,13 +51,20 @@ Der IPSView Designer wird zum Öffnen, Bearbeiten und Speichern der erzeugten Vi
 
 #### 3.1 Assistentenmodus
 
-Beim ersten Öffnen ist der **Schnellstart** aktiv. Er zeigt nur die grundlegenden View-Einstellungen, eine fertige Designvorlage, die Vorschau und das optionale Hintergrundbild. Detailfarben, Effekte, Typografie, Formensprache und die Bearbeitung bestehender Views bleiben ausgeblendet.
+Beim ersten Öffnen ist der **Schnellstart** aktiv. Die Schaltfläche **Schnellstart öffnen** startet einen kompakten Wizard mit vier aufeinanderfolgenden Schritten:
+
+1. Einsatzprofil, Name und Zielkategorie festlegen.
+2. Format, Ausrichtung, Vollbild und optionales Start-Raster auswählen.
+3. Eine fertige Designvorlage und bei Bedarf ein Hintergrundbild auswählen und in der Vorschau prüfen.
+4. Den verbindlichen Startcheck ausführen und die View erstellen oder eine eindeutig erkannte gleichnamige IPSView bewusst überschreiben.
+
+Detailfarben, Effekte, Typografie, Formensprache und die Bearbeitung bestehender Views bleiben im Schnellstart ausgeblendet.
 
 Der **Expertenmodus** stellt sämtliche Funktionen des Assistants bereit. Der zuletzt gewählte Modus wird in der Instanz gespeichert und beim nächsten Öffnen wiederhergestellt.
 
 ### 4. Neue View erstellen
 
-Im Bereich **View-Einstellungen** werden die grundlegenden Eigenschaften der neuen View festgelegt. Für die erste View reicht der Schnellstart vollständig aus.
+Im Schnellstart werden die grundlegenden Eigenschaften der neuen View nacheinander abgefragt. Im Expertenmodus stehen dieselben Angaben weiterhin direkt im Bereich **View-Einstellungen** zur Verfügung.
 
 Das **Einsatzprofil** belegt Seitenverhältnis, Ausrichtung und Vollbildmodus gemeinsam vor. Sobald eine dieser Einstellungen manuell geändert wird, wechselt die Auswahl auf **Benutzerdefiniert**.
 
@@ -103,7 +110,7 @@ Danach im Bereich **Design** die gewünschte Gestaltung auswählen. Mit **View e
 
 ### 5. Bestehende View gestalten
 
-Der nur im Expertenmodus sichtbare Bereich **Bestehende View** dient dazu, das Design eines vorhandenen IPSView-Projekts zu übernehmen und auf einer Kopie zu verändern.
+Die nur im Expertenmodus sichtbare Schaltfläche **Bestehende View** öffnet die Einstellungen, mit denen das Design eines vorhandenen IPSView-Projekts übernommen und auf einer Kopie verändert werden kann.
 
 1. Unter **Quell-IPSView** das vorhandene IPSView-Medienobjekt auswählen.
 2. Der Assistant liest das bestehende Design ein und überträgt die erkannten Farben in die Designfelder.
@@ -118,6 +125,8 @@ Nach dem Laden zeigt der Assistant unter anderem an, wie viele Seiten und Bedien
 Die Quell-IPSView bleibt bei diesem Vorgang immer unverändert. Wird später erneut dieselbe Quell-View geladen und die Kopie unter demselben Namen in derselben Zielkategorie gespeichert, aktualisiert der Assistant die bereits angelegte Designkopie.
 
 ### 6. Design einstellen
+
+Die Designvorlage und die Live-Vorschau bleiben direkt im Formular sichtbar. Die umfangreicheren Einstellungen für Farben, Effekte, Typografie und Formensprache befinden sich im Dialog **Designdetails**; das Hintergrundbild wird über einen eigenen Dialog bearbeitet. Änderungen aus beiden Dialogen aktualisieren die sichtbare Vorschau weiterhin unmittelbar.
 
 #### 6.1 Designvorlagen
 

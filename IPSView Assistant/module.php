@@ -101,6 +101,13 @@ class IPSViewAssistant extends IPSModuleStrict
         $palette = IPSViewTheme::preset(IPSViewTheme::THEME_STANDARD);
         $startGrid = $this->previewStartGrid();
         $background = $this->backgroundSettings();
+        $preview = IPSViewThemePreview::createDataUri(
+            $palette,
+            IPSViewEffects::resolve(),
+            [],
+            $background,
+            $startGrid
+        );
 
         foreach (self::FORM_COLOR_FIELDS as $role => $field) {
             $this->setConfigurationFormField(
@@ -115,18 +122,17 @@ class IPSViewAssistant extends IPSModuleStrict
             $form,
             'ThemePreview',
             'image',
-            IPSViewThemePreview::createDataUri(
-                $palette,
-                IPSViewEffects::resolve(),
-                [],
-                $background,
-                $startGrid
-            )
+            $preview
         );
+        $this->setConfigurationFormField($form, 'QuickStartPreview', 'image', $preview);
         $this->setConfigurationFormField($form, 'StartGrid', 'value', $startGrid);
+        $this->setConfigurationFormField($form, 'QuickStartGrid', 'value', $startGrid);
         $this->setConfigurationFormField($form, 'BackgroundImageMode', 'value', $background['mode']);
         $this->setConfigurationFormField($form, 'BackgroundImageLayout', 'value', $background['layout']);
         $this->setConfigurationFormField($form, 'BackgroundImageScope', 'value', $background['scope']);
+        $this->setConfigurationFormField($form, 'QuickStartBackgroundMode', 'value', $background['mode']);
+        $this->setConfigurationFormField($form, 'QuickStartBackgroundLayout', 'value', $background['layout']);
+        $this->setConfigurationFormField($form, 'QuickStartBackgroundScope', 'value', $background['scope']);
         $this->setConfigurationFormField(
             $form,
             'BackgroundImageFile',
@@ -145,24 +151,41 @@ class IPSViewAssistant extends IPSModuleStrict
             'visible',
             $background['mode'] !== IPSViewBackground::MODE_PRESERVE
         );
+        $this->setConfigurationFormField(
+            $form,
+            'QuickStartBackgroundFile',
+            'visible',
+            $background['mode'] === IPSViewBackground::MODE_FILE
+        );
+        $this->setConfigurationFormField(
+            $form,
+            'QuickStartBackgroundLayout',
+            'visible',
+            $background['mode'] === IPSViewBackground::MODE_FILE
+        );
+        $this->setConfigurationFormField(
+            $form,
+            'QuickStartBackgroundScope',
+            'visible',
+            $background['mode'] !== IPSViewBackground::MODE_PRESERVE
+        );
         $assistantMode = $this->normalizeAssistantMode(
             $this->ReadAttributeInteger(self::ATTRIBUTE_ASSISTANT_MODE)
         );
         $this->setConfigurationFormField($form, 'AssistantMode', 'value', $assistantMode);
         $this->applyAssistantModeToForm($form, $assistantMode);
         $this->applyDesignerHandoverToForm($form);
-        $this->applyStartCheckToForm(
-            $form,
-            $this->startCheck(
-                'Neue IPSView',
-                0,
-                'Hauptseite',
-                IPSViewDocument::ASPECT_RATIO_16_9,
-                IPSViewDocument::ORIENTATION_LANDSCAPE,
-                IPSViewFactory::TEMPLATE_EMPTY,
-                $startGrid
-            )
+        $startCheck = $this->startCheck(
+            'Neue IPSView',
+            0,
+            'Hauptseite',
+            IPSViewDocument::ASPECT_RATIO_16_9,
+            IPSViewDocument::ORIENTATION_LANDSCAPE,
+            IPSViewFactory::TEMPLATE_EMPTY,
+            $startGrid
         );
+        $this->applyStartCheckToForm($form, $startCheck);
+        $this->applyQuickStartCheckToForm($form, $startCheck);
 
         return $this->EncodeConfigurationForm($form);
     }
@@ -178,6 +201,10 @@ class IPSViewAssistant extends IPSModuleStrict
 
         foreach ($this->advancedModeFields() as $field) {
             $this->UpdateFormField($field, 'visible', $advanced);
+        }
+
+        foreach ($this->quickStartModeFields() as $field) {
+            $this->UpdateFormField($field, 'visible', !$advanced);
         }
 
         $this->UpdateFormField('AssistantMode', 'value', $mode);
@@ -212,6 +239,70 @@ class IPSViewAssistant extends IPSModuleStrict
         $profile = IPSViewUsageProfile::PROFILE_CUSTOM;
         $this->UpdateFormField('UsageProfile', 'value', $profile);
         $this->UpdateFormField('UsageProfileInfo', 'caption', $this->usageProfileInfo($profile));
+    }
+
+    /**
+     * Shows one of the four quick-start wizard steps.
+     */
+    public function UpdateQuickStartStep(int $Step): void
+    {
+        $step = max(1, min(4, $Step));
+
+        for ($currentStep = 1; $currentStep <= 4; ++$currentStep) {
+            $this->UpdateFormField('QuickStartStep' . $currentStep, 'visible', $currentStep === $step);
+            $this->UpdateFormField('QuickStartStep' . $currentStep, 'expanded', $currentStep === $step);
+        }
+
+        $this->UpdateFormField(
+            'QuickStartWizardProgress',
+            'caption',
+            $this->quickStartStepCaption($step)
+        );
+    }
+
+    /**
+     * Applies one ready-made device profile inside the quick-start wizard.
+     */
+    public function UpdateQuickStartUsageProfile(int $Profile): void
+    {
+        $profile = $this->normalizeUsageProfile($Profile);
+        $this->UpdateFormField('QuickStartUsageProfile', 'value', $profile);
+        $this->UpdateFormField('QuickStartUsageProfileInfo', 'caption', $this->usageProfileInfo($profile));
+
+        if ($profile === IPSViewUsageProfile::PROFILE_CUSTOM) {
+            return;
+        }
+
+        $settings = IPSViewUsageProfile::resolve($profile);
+        $this->UpdateFormField('QuickStartAspectRatio', 'value', $settings['aspectRatio']);
+        $this->UpdateFormField('QuickStartOrientation', 'value', $settings['orientation']);
+        $this->UpdateFormField('QuickStartFullScreen', 'value', $settings['fullScreen']);
+    }
+
+    /**
+     * Marks manually adjusted quick-start dimensions as a custom usage profile.
+     */
+    public function MarkQuickStartUsageProfileCustom(): void
+    {
+        $profile = IPSViewUsageProfile::PROFILE_CUSTOM;
+        $this->UpdateFormField('QuickStartUsageProfile', 'value', $profile);
+        $this->UpdateFormField('QuickStartUsageProfileInfo', 'caption', $this->usageProfileInfo($profile));
+    }
+
+    /**
+     * Invalidates a previous overwrite decision after changing its identity fields.
+     */
+    public function ResetQuickStartOverwrite(): void
+    {
+        $this->UpdateFormField('QuickStartOverwriteExistingView', 'visible', false);
+        $this->UpdateFormField('QuickStartOverwriteExistingView', 'value', false);
+        $this->UpdateFormField('QuickStartOverwriteExistingViewInfo', 'visible', false);
+        $this->UpdateFormField('QuickStartCreateViewButton', 'enabled', false);
+        $this->UpdateFormField(
+            'QuickStartCheckStatus',
+            'caption',
+            $this->Translate('The start check is being prepared.')
+        );
     }
 
     /**
@@ -709,6 +800,27 @@ class IPSViewAssistant extends IPSModuleStrict
     }
 
     /**
+     * Refreshes the design preview inside the quick-start wizard.
+     */
+    public function UpdateQuickStartPreview(int $Theme, int $StartGrid): void
+    {
+        try {
+            $theme = $this->normalizeQuickStartTheme($Theme);
+            $startGrid = $this->normalizeStartGrid($StartGrid);
+            $this->WriteAttributeInteger(self::ATTRIBUTE_PREVIEW_START_GRID, $startGrid);
+            $this->UpdateFormField('QuickStartTheme', 'value', $theme);
+            $this->UpdateFormField('QuickStartGrid', 'value', $startGrid);
+            $this->UpdateFormField(
+                'QuickStartPreview',
+                'image',
+                $this->createQuickStartPreview($theme, $startGrid, $this->backgroundSettings())
+            );
+        } catch (Throwable $exception) {
+            $this->SendDebug('UpdateQuickStartPreview', $exception->getMessage(), 0);
+        }
+    }
+
+    /**
      * Rechecks whether the current form values are ready for creating a View.
      */
     public function UpdateStartCheck(
@@ -773,6 +885,86 @@ class IPSViewAssistant extends IPSModuleStrict
     }
 
     /**
+     * Rechecks the values collected by the quick-start wizard.
+     */
+    public function UpdateQuickStartCheck(
+        string $ViewName,
+        int $TargetCategoryID,
+        string $MainPageName,
+        int $AspectRatio,
+        int $Orientation,
+        int $StartGrid,
+        bool $OverwriteExistingView
+    ): void {
+        try {
+            $this->showQuickStartCheck($this->startCheck(
+                $ViewName,
+                $TargetCategoryID,
+                $MainPageName,
+                $AspectRatio,
+                $Orientation,
+                IPSViewFactory::TEMPLATE_EMPTY,
+                $StartGrid,
+                $OverwriteExistingView
+            ), $OverwriteExistingView);
+        } catch (Throwable $exception) {
+            $this->SendDebug('UpdateQuickStartCheck', $exception->getMessage(), 0);
+            $this->UpdateFormField(
+                'QuickStartCheckStatus',
+                'caption',
+                sprintf(
+                    $this->Translate('🔴 The start check could not be completed: %s'),
+                    $exception->getMessage()
+                )
+            );
+            $this->UpdateFormField('QuickStartCreateViewButton', 'enabled', false);
+            $this->UpdateFormField('QuickStartOverwriteExistingView', 'visible', false);
+            $this->UpdateFormField('QuickStartOverwriteExistingViewInfo', 'visible', false);
+        }
+    }
+
+    /**
+     * Creates an empty IPSView from the compact wizard selections.
+     */
+    public function CreateQuickStartView(
+        string $ViewName,
+        int $TargetCategoryID,
+        int $AspectRatio,
+        int $Orientation,
+        string $MainPageName,
+        int $Theme,
+        bool $FullScreen,
+        int $StartGrid,
+        bool $OverwriteExistingView
+    ): string {
+        $this->UpdateQuickStartCheck(
+            $ViewName,
+            $TargetCategoryID,
+            $MainPageName,
+            $AspectRatio,
+            $Orientation,
+            $StartGrid,
+            $OverwriteExistingView
+        );
+
+        return $this->CreateOrOverwriteView(
+            $ViewName,
+            $TargetCategoryID,
+            $AspectRatio,
+            $Orientation,
+            IPSViewFactory::TEMPLATE_EMPTY,
+            $MainPageName,
+            $this->normalizeQuickStartTheme($Theme),
+            '',
+            '',
+            '',
+            $FullScreen,
+            $this->normalizeStartGrid($StartGrid),
+            $OverwriteExistingView
+        );
+    }
+
+    /**
      * Stores the local background selection and refreshes the design preview.
      *
      * An empty image clears the persisted upload only when the file selection itself changed.
@@ -787,20 +979,13 @@ class IPSViewAssistant extends IPSModuleStrict
         bool $ImageSelectionChanged
     ): void {
         try {
-            $storedImage = $this->ReadAttributeString(self::ATTRIBUTE_BACKGROUND_IMAGE);
-            $settings = IPSViewBackground::resolve([
-                'mode'      => $Mode,
-                'layout'    => $Layout,
-                'scope'     => $this->ReadAttributeInteger(self::ATTRIBUTE_BACKGROUND_SCOPE),
-                'imageData' => $ImageSelectionChanged
-                    ? $ImageData
-                    : ($ImageData !== '' ? $ImageData : $storedImage),
-            ]);
-            IPSViewBackground::preview($settings);
-            $this->WriteAttributeString(self::ATTRIBUTE_BACKGROUND_IMAGE, $settings['imageData']);
-            $this->WriteAttributeInteger(self::ATTRIBUTE_BACKGROUND_MODE, $settings['mode']);
-            $this->WriteAttributeString(self::ATTRIBUTE_BACKGROUND_LAYOUT, $settings['layout']);
-            $this->WriteAttributeInteger(self::ATTRIBUTE_BACKGROUND_SCOPE, $settings['scope']);
+            $settings = $this->storeBackgroundSettings(
+                $ImageData,
+                $Mode,
+                $Layout,
+                $this->ReadAttributeInteger(self::ATTRIBUTE_BACKGROUND_SCOPE),
+                $ImageSelectionChanged
+            );
             $fileVisible = $settings['mode'] === IPSViewBackground::MODE_FILE;
             $this->UpdateFormField('BackgroundImageMode', 'value', $settings['mode']);
             $this->UpdateFormField('BackgroundImageFile', 'visible', $fileVisible);
@@ -833,6 +1018,59 @@ class IPSViewAssistant extends IPSModuleStrict
         } catch (Throwable $exception) {
             $this->SendDebug('UpdateBackgroundPreview', $exception->getMessage(), 0);
             $this->UpdateFormField('BackgroundImageStatus', 'caption', $exception->getMessage());
+        }
+    }
+
+    /**
+     * Stores a background selection from the wizard and refreshes its preview.
+     */
+    public function UpdateQuickStartBackground(
+        string $ImageData,
+        int $Mode,
+        string $Layout,
+        int $Scope,
+        int $Theme,
+        int $StartGrid,
+        bool $ImageSelectionChanged
+    ): void {
+        try {
+            $settings = $this->storeBackgroundSettings(
+                $ImageData,
+                $Mode,
+                $Layout,
+                $Scope,
+                $ImageSelectionChanged
+            );
+            $fileVisible = $settings['mode'] === IPSViewBackground::MODE_FILE;
+            $this->UpdateFormField('QuickStartBackgroundMode', 'value', $settings['mode']);
+            $this->UpdateFormField('QuickStartBackgroundFile', 'visible', $fileVisible);
+            $this->UpdateFormField('QuickStartBackgroundLayout', 'visible', $fileVisible);
+            $this->UpdateFormField(
+                'QuickStartBackgroundScope',
+                'visible',
+                $settings['mode'] !== IPSViewBackground::MODE_PRESERVE
+            );
+            $this->UpdateFormField(
+                'QuickStartBackgroundStatus',
+                'caption',
+                $this->Translate(
+                    $settings['mode'] === IPSViewBackground::MODE_FILE && $settings['imageData'] === ''
+                        ? 'Please select a PNG or JPEG background image.'
+                        : 'Background image changes are applied to the selected pages. PNG and JPEG files up to 10 MB are embedded directly in the IPSView.'
+                )
+            );
+            $this->UpdateFormField(
+                'QuickStartPreview',
+                'image',
+                $this->createQuickStartPreview(
+                    $this->normalizeQuickStartTheme($Theme),
+                    $this->normalizeStartGrid($StartGrid),
+                    $settings
+                )
+            );
+        } catch (Throwable $exception) {
+            $this->SendDebug('UpdateQuickStartBackground', $exception->getMessage(), 0);
+            $this->UpdateFormField('QuickStartBackgroundStatus', 'caption', $exception->getMessage());
         }
     }
 
@@ -881,6 +1119,10 @@ class IPSViewAssistant extends IPSModuleStrict
             $this->setConfigurationFormField($form, $field, 'visible', $advanced);
         }
 
+        foreach ($this->quickStartModeFields() as $field) {
+            $this->setConfigurationFormField($form, $field, 'visible', !$advanced);
+        }
+
         $this->setConfigurationFormField(
             $form,
             'AssistantModeInfo',
@@ -903,11 +1145,27 @@ class IPSViewAssistant extends IPSModuleStrict
     private function advancedModeFields(): array
     {
         return [
+            'ViewSettingsPanel',
+            'DesignPanel',
+            'StartCheckPanel',
+            'CreateViewButton',
             'Template',
-            'ExistingViewPanel',
-            'ThemeColorsPanel',
+            'ExistingViewPopup',
+            'ThemeDetailsPopup',
             'SaveStyledCopyButton',
             'StyledCopyInfo',
+        ];
+    }
+
+    /**
+     * Returns the stable field names that are visible only in quick-start mode.
+     *
+     * @return list<string>
+     */
+    private function quickStartModeFields(): array
+    {
+        return [
+            'QuickStartWizardPopup',
         ];
     }
 
@@ -930,7 +1188,7 @@ class IPSViewAssistant extends IPSModuleStrict
             return $this->Translate('Advanced mode shows all design details and the functions for existing IPSViews.');
         }
 
-        return $this->Translate('Quick start shows only the settings needed for a first IPSView. All detailed design and copy functions remain available in Advanced mode.');
+        return $this->Translate('Quick start opens a four-step wizard for the settings needed by a first IPSView. All detailed design and copy functions remain available in Advanced mode.');
     }
 
     /**
@@ -953,6 +1211,27 @@ class IPSViewAssistant extends IPSModuleStrict
         return IPSViewUsageProfile::isSelectable($profile)
             ? $profile
             : IPSViewUsageProfile::PROFILE_WALL_TABLET;
+    }
+
+    /**
+     * Falls back to the standard theme because custom colors belong to advanced mode.
+     */
+    private function normalizeQuickStartTheme(int $theme): int
+    {
+        return in_array(
+            $theme,
+            [
+                IPSViewTheme::THEME_STANDARD,
+                IPSViewTheme::THEME_LIGHT,
+                IPSViewTheme::THEME_DARK,
+                IPSViewTheme::THEME_WARM,
+                IPSViewTheme::THEME_COOL,
+                IPSViewTheme::THEME_EARTHY,
+                IPSViewTheme::THEME_WATER,
+                IPSViewTheme::THEME_SUNNY,
+            ],
+            true
+        ) ? $theme : IPSViewTheme::THEME_STANDARD;
     }
 
     /**
@@ -992,6 +1271,19 @@ class IPSViewAssistant extends IPSModuleStrict
             IPSViewUsageProfile::PROFILE_BROWSER    => '16:9 landscape, 1360 x 765 logical pixels, window mode. Recommended for use in a browser.',
             IPSViewUsageProfile::PROFILE_CUSTOM     => 'Aspect ratio, orientation and full-screen mode can be selected freely.',
             default                                 => '16:9 landscape, 1360 x 765 logical pixels, full screen. Recommended for a permanently installed control panel.',
+        });
+    }
+
+    /**
+     * Returns the localized progress text for one wizard step.
+     */
+    private function quickStartStepCaption(int $step): string
+    {
+        return $this->Translate(match ($step) {
+            2       => 'Step 2 of 4: Format and layout',
+            3       => 'Step 3 of 4: Design and background',
+            4       => 'Step 4 of 4: Check and create',
+            default => 'Step 1 of 4: Basic information',
         });
     }
 
@@ -1122,6 +1414,12 @@ class IPSViewAssistant extends IPSModuleStrict
 
             if (isset($item['items']) && is_array($item['items'])) {
                 if ($this->setConfigurationFormFieldInItems($item['items'], $name, $property, $value)) {
+                    return true;
+                }
+            }
+
+            if (isset($item['popup']['items']) && is_array($item['popup']['items'])) {
+                if ($this->setConfigurationFormFieldInItems($item['popup']['items'], $name, $property, $value)) {
                     return true;
                 }
             }
@@ -1384,6 +1682,52 @@ class IPSViewAssistant extends IPSModuleStrict
     }
 
     /**
+     * Validates and persists one background-image selection.
+     *
+     * @return array{mode: int, layout: string, scope: int, imageData: string}
+     */
+    private function storeBackgroundSettings(
+        string $imageData,
+        int $mode,
+        string $layout,
+        int $scope,
+        bool $imageSelectionChanged
+    ): array {
+        $storedImage = $this->ReadAttributeString(self::ATTRIBUTE_BACKGROUND_IMAGE);
+        $settings = IPSViewBackground::resolve([
+            'mode'      => $mode,
+            'layout'    => $layout,
+            'scope'     => $scope,
+            'imageData' => $imageSelectionChanged
+                ? $imageData
+                : ($imageData !== '' ? $imageData : $storedImage),
+        ]);
+        IPSViewBackground::preview($settings);
+        $this->WriteAttributeString(self::ATTRIBUTE_BACKGROUND_IMAGE, $settings['imageData']);
+        $this->WriteAttributeInteger(self::ATTRIBUTE_BACKGROUND_MODE, $settings['mode']);
+        $this->WriteAttributeString(self::ATTRIBUTE_BACKGROUND_LAYOUT, $settings['layout']);
+        $this->WriteAttributeInteger(self::ATTRIBUTE_BACKGROUND_SCOPE, $settings['scope']);
+
+        return $settings;
+    }
+
+    /**
+     * Creates the wizard preview from preset-only design settings.
+     *
+     * @param array{mode: int, layout: string, scope: int, imageData: string} $background
+     */
+    private function createQuickStartPreview(int $theme, int $startGrid, array $background): string
+    {
+        return IPSViewThemePreview::createDataUri(
+            IPSViewTheme::preset($theme),
+            IPSViewEffects::resolve(),
+            [],
+            $background,
+            $startGrid
+        );
+    }
+
+    /**
      * Analyzes the current creation inputs together with the persisted background settings.
      *
      * @return array{status: int, ready: bool, overwriteAvailable: bool, checks: list<string>, warnings: list<string>, errors: list<string>}
@@ -1426,6 +1770,20 @@ class IPSViewAssistant extends IPSModuleStrict
     }
 
     /**
+     * Writes a start-check report to the quick-start wizard.
+     *
+     * @param array{status: int, ready: bool, overwriteAvailable: bool, checks: list<string>, warnings: list<string>, errors: list<string>} $report
+     */
+    private function showQuickStartCheck(array $report, bool $overwriteExisting = false): void
+    {
+        $this->UpdateFormField('QuickStartCheckStatus', 'caption', $this->startCheckCaption($report));
+        $this->UpdateFormField('QuickStartCreateViewButton', 'enabled', $report['ready']);
+        $this->UpdateFormField('QuickStartOverwriteExistingView', 'visible', $report['overwriteAvailable']);
+        $this->UpdateFormField('QuickStartOverwriteExistingView', 'value', $overwriteExisting);
+        $this->UpdateFormField('QuickStartOverwriteExistingViewInfo', 'visible', $report['overwriteAvailable']);
+    }
+
+    /**
      * Applies the initial start-check report to the form definition before rendering.
      *
      * @param array<string, mixed>                                                                              $form
@@ -1438,6 +1796,36 @@ class IPSViewAssistant extends IPSModuleStrict
         $this->setConfigurationFormField($form, 'OverwriteExistingView', 'visible', $report['overwriteAvailable']);
         $this->setConfigurationFormField($form, 'OverwriteExistingView', 'value', false);
         $this->setConfigurationFormField($form, 'OverwriteExistingViewInfo', 'visible', $report['overwriteAvailable']);
+    }
+
+    /**
+     * Applies the initial start-check report to the quick-start wizard.
+     *
+     * @param array<string, mixed>                                                                              $form
+     * @param array{status: int, ready: bool, overwriteAvailable: bool, checks: list<string>, warnings: list<string>, errors: list<string>} $report
+     */
+    private function applyQuickStartCheckToForm(array &$form, array $report): void
+    {
+        $this->setConfigurationFormField(
+            $form,
+            'QuickStartCheckStatus',
+            'caption',
+            $this->startCheckCaption($report)
+        );
+        $this->setConfigurationFormField($form, 'QuickStartCreateViewButton', 'enabled', $report['ready']);
+        $this->setConfigurationFormField(
+            $form,
+            'QuickStartOverwriteExistingView',
+            'visible',
+            $report['overwriteAvailable']
+        );
+        $this->setConfigurationFormField($form, 'QuickStartOverwriteExistingView', 'value', false);
+        $this->setConfigurationFormField(
+            $form,
+            'QuickStartOverwriteExistingViewInfo',
+            'visible',
+            $report['overwriteAvailable']
+        );
     }
 
     /**
