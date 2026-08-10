@@ -134,6 +134,10 @@ function flattenFormItems(array $items): array
         if (isset($item['items']) && is_array($item['items'])) {
             $flat = [...$flat, ...flattenFormItems($item['items'])];
         }
+
+        if (isset($item['popup']['items']) && is_array($item['popup']['items'])) {
+            $flat = [...$flat, ...flattenFormItems($item['popup']['items'])];
+        }
     }
 
     return $flat;
@@ -286,7 +290,7 @@ foreach ($actions as $action) {
         $designerHandoverInitialInfo = $action;
     }
 
-    if (($action['name'] ?? '') === 'ExistingViewPanel') {
+    if (($action['name'] ?? '') === 'ExistingViewPopup') {
         $existingViewPanel = $action;
     }
 
@@ -398,7 +402,7 @@ foreach ($actions as $action) {
         $customBorderWidth = $action;
     }
 
-    if (($action['name'] ?? '') === 'BackgroundImagePanel') {
+    if (($action['name'] ?? '') === 'BackgroundImagePopup') {
         $backgroundPanel = $action;
     }
 
@@ -512,7 +516,8 @@ assertTest(
 );
 assertTest(is_array($existingViewPanel), 'The existing View panel has no stable form name.');
 assertTest(($existingViewPanel['visible'] ?? true) === false, 'Existing Views must be hidden in quick start.');
-assertTest(($existingViewPanel['expanded'] ?? true) === false, 'The existing View panel must start collapsed.');
+assertTest(($existingViewPanel['type'] ?? '') === 'PopupButton', 'Existing View settings are not opened as a popup.');
+assertTest(($existingViewPanel['popup']['closeCaption'] ?? '') === 'Close', 'The existing View popup has no close action.');
 assertTest(is_array($templateSelect), 'The internal template selection is missing from the form.');
 assertTest(($templateSelect['visible'] ?? true) === false, 'The internal template selection must be hidden in quick start.');
 assertTest(is_array($styledCopyInfo), 'The styled copy explanation has no stable form name.');
@@ -522,8 +527,8 @@ assertTest(
     'The selected assistant mode is not persisted.'
 );
 assertTest(
-    str_contains($moduleSource, "'ExistingViewPanel'")
-        && str_contains($moduleSource, "'ThemeColorsPanel'")
+    str_contains($moduleSource, "'ExistingViewPopup'")
+        && str_contains($moduleSource, "'ThemeDetailsPopup'")
         && str_contains($moduleSource, "'SaveStyledCopyButton'"),
     'The advanced mode does not control all advanced form areas.'
 );
@@ -718,7 +723,8 @@ assertTest(
     str_contains($shapeSource, 'public static function apply('),
     'The IPSView form language cannot be applied.'
 );
-assertTest(is_array($backgroundPanel), 'The main-page background panel is missing.');
+assertTest(is_array($backgroundPanel), 'The background-image popup is missing.');
+assertTest(($backgroundPanel['type'] ?? '') === 'PopupButton', 'Background image settings are not opened as a popup.');
 assertTest(is_array($backgroundMode), 'The background mode selection is missing.');
 assertTest(count($backgroundMode['options'] ?? []) === 3, 'The background selection does not offer all modes.');
 assertTest(is_array($backgroundFile), 'The local background file selection is missing.');
@@ -771,26 +777,31 @@ foreach ($actions as $position => $action) {
     if (($action['name'] ?? '') === 'ThemeWorkspace') {
         $workspace = $action;
     }
-    if (($action['name'] ?? '') === 'ThemeColorsPanel') {
+    if (($action['name'] ?? '') === 'ThemeDetailsPopup') {
         $colorsPanel = $action;
     }
     if (($action['name'] ?? '') === 'ThemePreviewPanel') {
         $previewPanel = $action;
         $previewPanelPosition = $position;
     }
-    if (($action['name'] ?? '') === 'BackgroundImagePanel') {
+    if (($action['name'] ?? '') === 'BackgroundImagePopup') {
         $backgroundPanelPosition = $position;
     }
 }
 assertTest(is_array($workspace) && ($workspace['type'] ?? '') === 'RowLayout', 'The responsive theme workspace is missing.');
-assertTest(($colorsPanel['width'] ?? '') === '820px', 'The color panel must have a readable responsive base width.');
-assertTest(($colorsPanel['visible'] ?? true) === false, 'Detailed design colors must be hidden in quick start.');
+assertTest(($colorsPanel['type'] ?? '') === 'PopupButton', 'The design details are not opened as a popup.');
+assertTest(($colorsPanel['width'] ?? '') === '240px', 'The design popup button has an unexpected width.');
+assertTest(($colorsPanel['visible'] ?? true) === false, 'Detailed design settings must be hidden in quick start.');
 assertTest(($previewPanel['width'] ?? '') === '700px', 'The preview panel must have a compact responsive base width.');
 assertTest(
     is_int($previewPanelPosition)
         && is_int($backgroundPanelPosition)
         && $previewPanelPosition < $backgroundPanelPosition,
-    'The preview must remain beside the main settings before the background panel wraps to a new row.'
+    'The preview must remain between the design and background popup buttons.'
+);
+assertTest(
+    str_contains($moduleSource, "\$item['popup']['items']"),
+    'Dynamic initial form values cannot reach fields nested inside popups.'
 );
 assertTest(count($colorFields) === 12, 'The form must expose exactly twelve semantic color roles.');
 

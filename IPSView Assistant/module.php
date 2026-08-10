@@ -904,8 +904,8 @@ class IPSViewAssistant extends IPSModuleStrict
     {
         return [
             'Template',
-            'ExistingViewPanel',
-            'ThemeColorsPanel',
+            'ExistingViewPopup',
+            'ThemeDetailsPopup',
             'SaveStyledCopyButton',
             'StyledCopyInfo',
         ];
@@ -1122,6 +1122,12 @@ class IPSViewAssistant extends IPSModuleStrict
 
             if (isset($item['items']) && is_array($item['items'])) {
                 if ($this->setConfigurationFormFieldInItems($item['items'], $name, $property, $value)) {
+                    return true;
+                }
+            }
+
+            if (isset($item['popup']['items']) && is_array($item['popup']['items'])) {
+                if ($this->setConfigurationFormFieldInItems($item['popup']['items'], $name, $property, $value)) {
                     return true;
                 }
             }

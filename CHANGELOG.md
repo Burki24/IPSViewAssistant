@@ -4,6 +4,7 @@
 
 ### Changed
 
+- Moved existing-View handling, detailed design settings and background-image options into focused Symcon PopupButton dialogs while keeping the live preview and primary creation workflow visible.
 - Replaced all generated WOFF2 preview subsets with the complete original IPSView TrueType font cuts.
 - Simplified the offline font loader so every preview style uses the matching unmodified IPSView font file.
 - Replaced the Segment7 preview substitute with the original G7 Segment 7 S5 font supplied by IPSView.

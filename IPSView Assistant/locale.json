@@ -129,6 +129,8 @@
             "Error": "Fehler",
             "Preview": "Vorschau",
             "Existing View": "Bestehende View",
+            "Design details": "Designdetails",
+            "Close": "Schließen",
             "Select an existing IPSView. Its design is loaded into the semantic color controls; the original is never changed.": "Wähle eine bestehende IPSView aus. Ihr Design wird in die verständlichen Farbfelder geladen; das Original wird niemals verändert.",
             "Source IPSView": "Quell-IPSView",
             "Copy name": "Name der Kopie",

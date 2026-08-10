@@ -121,7 +121,9 @@ $form = json_decode(
 $formJson = json_encode($form, JSON_THROW_ON_ERROR);
 assertTest(str_contains($formJson, 'ThemePreview'), 'The live theme preview is missing.');
 assertTest(str_contains($formJson, 'ThemeWorkspace'), 'The responsive theme workspace is missing.');
-assertTest(str_contains($formJson, 'ThemeColorsPanel'), 'The theme color panel is missing.');
+assertTest(str_contains($formJson, 'ThemeDetailsPopup'), 'The design details popup is missing.');
+assertTest(str_contains($formJson, 'BackgroundImagePopup'), 'The background image popup is missing.');
+assertTest(str_contains($formJson, 'ExistingViewPopup'), 'The existing View popup is missing.');
 assertTest(str_contains($formJson, 'ThemePreviewPanel'), 'The theme preview panel is missing.');
 assertTest(str_contains($formJson, 'SelectColor'), 'The semantic color controls are missing.');
 assertTest(str_contains($formJson, 'IPSVIEWA_ApplyThemePreset'), 'The theme preset action is missing.');
