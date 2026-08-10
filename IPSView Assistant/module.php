@@ -1120,13 +1120,19 @@ class IPSViewAssistant extends IPSModuleStrict
         $this->UpdateFormField(
             'FontBoldMode',
             'options',
-            $this->fontFormatOptions('Bold', $capabilities['bold'])
+            json_encode(
+                $this->fontFormatOptions('Bold', $capabilities['bold']),
+                JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE
+            )
         );
         $this->UpdateFormField('FontBoldMode', 'value', $appearance['fontBoldMode']);
         $this->UpdateFormField(
             'FontItalicMode',
             'options',
-            $this->fontFormatOptions('Italic', $capabilities['italic'])
+            json_encode(
+                $this->fontFormatOptions('Italic', $capabilities['italic']),
+                JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE
+            )
         );
         $this->UpdateFormField('FontItalicMode', 'value', $appearance['fontItalicMode']);
         $this->UpdateFormField('FontUnderlineMode', 'value', $appearance['fontUnderlineMode']);

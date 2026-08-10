@@ -843,9 +843,17 @@ assertTest(
 assertTest(
     str_contains($moduleSource, "fontFormatOptions('Bold', \$capabilities['bold'])")
         && str_contains($moduleSource, "fontFormatOptions('Italic', \$capabilities['italic'])")
+        && preg_match(
+            "/'options',\\s*json_encode\\(\\s*\\\$this->fontFormatOptions\\('Bold'/",
+            $moduleSource
+        ) === 1
+        && preg_match(
+            "/'options',\\s*json_encode\\(\\s*\\\$this->fontFormatOptions\\('Italic'/",
+            $moduleSource
+        ) === 1
         && !str_contains($moduleSource, "UpdateFormField('FontBoldMode', 'enabled'")
         && !str_contains($moduleSource, "UpdateFormField('FontItalicMode', 'enabled'"),
-    'Unavailable font cuts do not disable only their individual Select options.'
+    'Unavailable font cuts are not passed as JSON-encoded individual Select options.'
 );
 assertTest(is_array($customFontSize), 'The custom base font size is missing.');
 assertTest(($customFontSize['minimum'] ?? null) === 8, 'The custom font size minimum is incorrect.');
