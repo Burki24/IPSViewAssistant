@@ -60,7 +60,7 @@ Beim ersten Öffnen ist der **Schnellstart** aktiv. Die Schaltfläche **Schnells
 
 Detailfarben, Effekte, Typografie, Formensprache und die Bearbeitung bestehender Views bleiben im Schnellstart ausgeblendet.
 
-Der **Expertenmodus** stellt sämtliche Funktionen des Assistants bereit. Der zuletzt gewählte Modus wird in der Instanz gespeichert und beim nächsten Öffnen wiederhergestellt.
+Der **Expertenmodus** stellt sämtliche Funktionen des Assistants bereit. Der zuletzt gewählte Modus wird in der Instanz gespeichert und beim nächsten Öffnen wiederhergestellt. Kurze, gleichrangige Entscheidungen wie Assistentenmodus, Ausrichtung, Start-Raster und Bildanordnung werden als direkt sichtbare Radioauswahl dargestellt; umfangreichere Auswahllisten bleiben kompakte Dropdowns.
 
 ### 4. Neue View erstellen
 
@@ -255,7 +255,7 @@ Fett und Kursiv werden nur angeboten, wenn IPSView den passenden echten Schrifts
 | BebasNeue | – | – | – | ✓ |
 | Segment7 | – | – | – | ✓ |
 
-Wird eine Schriftart ohne fetten oder kursiven Schnitt gewählt, stellt der Assistant die betreffende Auswahl automatisch auf **Normal** und deaktiviert das Auswahlfeld. Unterstreichen ist unabhängig von der Schriftart möglich.
+Wird eine Schriftart ohne fetten oder kursiven Schnitt gewählt, stellt der Assistant die betreffende Auswahl automatisch auf **Normal**. Die nicht verfügbare Option **Fett** beziehungsweise **Kursiv** bleibt zur Orientierung sichtbar, ist aber nicht auswählbar; **Normal** und die übrigen Optionen bleiben bedienbar. Unterstreichen ist unabhängig von der Schriftart möglich.
 
 Die Schriftformatierung wirkt nur auf bereits vorhandene Bedienelemente einer Designkopie. Welche Bedienelemente angepasst werden, richtet sich nach dem gewählten **Gestaltungsumfang**. Eine neu angelegte leere View enthält noch keine Bedienelemente, auf die Fett, Kursiv oder Unterstrichen angewendet werden könnten.
 

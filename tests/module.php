@@ -482,6 +482,10 @@ assertTest(
     'The start check does not control and protect View creation.'
 );
 assertTest(is_array($assistantMode), 'The assistant mode selection is missing from the form.');
+assertTest(
+    ($assistantMode['type'] ?? '') === 'RadioButtonGroup',
+    'The two assistant modes are not presented as a radio-button choice.'
+);
 assertTest(($assistantMode['value'] ?? null) === 0, 'Quick start must be the default assistant mode.');
 assertTest(count($assistantMode['options'] ?? []) === 2, 'Both assistant modes must be available.');
 assertTest(
@@ -563,6 +567,24 @@ assertTest(is_array($quickStartOverwrite), 'The wizard overwrite confirmation is
 assertTest(($quickStartOverwrite['visible'] ?? true) === false, 'Wizard overwrite must remain hidden without a conflict.');
 assertTest(is_array($quickStartPreview), 'The wizard design preview is missing.');
 assertTest(($quickStartPreview['width'] ?? '') === '700px', 'The wizard preview has an unexpected width.');
+$radioButtonFields = [
+    'AssistantMode',
+    'QuickStartOrientation',
+    'QuickStartGrid',
+    'QuickStartBackgroundScope',
+    'QuickStartBackgroundLayout',
+    'Orientation',
+    'StartGrid',
+    'GradientDirection',
+    'BackgroundImageScope',
+    'BackgroundImageLayout',
+];
+foreach ($radioButtonFields as $radioButtonField) {
+    assertTest(
+        ($actionsByName[$radioButtonField]['type'] ?? '') === 'RadioButtonGroup',
+        sprintf('The compact choice "%s" is not rendered as a RadioButtonGroup.', $radioButtonField)
+    );
+}
 assertTest(
     str_contains($moduleSource, "'ViewSettingsPanel'")
         && str_contains($moduleSource, "'DesignPanel'")
@@ -791,14 +813,39 @@ assertTest(count($typographyStyle['options'] ?? []) === 5, 'The typography size 
 assertTest(is_array($fontFamilyMode), 'The font family selection is missing.');
 assertTest(count($fontFamilyMode['options'] ?? []) === 9, 'The font family selection does not offer all IPSView fonts.');
 assertTest(is_array($fontBoldMode), 'The font weight selection is missing.');
+assertTest(($fontBoldMode['type'] ?? '') === 'Select', 'Font weight must remain a compact Select.');
 assertTest(count($fontBoldMode['options'] ?? []) === 3, 'The font weight selection does not offer all modes.');
 assertTest(is_array($fontItalicMode), 'The font style selection is missing.');
+assertTest(($fontItalicMode['type'] ?? '') === 'Select', 'Font style must remain a compact Select.');
 assertTest(count($fontItalicMode['options'] ?? []) === 3, 'The font style selection does not offer all modes.');
 assertTest(is_array($fontUnderlineMode), 'The underline selection is missing.');
 assertTest(count($fontUnderlineMode['options'] ?? []) === 3, 'The underline selection does not offer all modes.');
 assertTest(
     str_contains((string) ($fontBoldMode['onChange'] ?? ''), 'IPSVIEWA_UpdateAppearancePreview('),
     'Changing the font weight does not refresh the appearance preview.'
+);
+$boldOption = array_values(array_filter(
+    $fontBoldMode['options'] ?? [],
+    static fn (array $option): bool => ($option['value'] ?? null) === 2
+))[0] ?? null;
+$italicOption = array_values(array_filter(
+    $fontItalicMode['options'] ?? [],
+    static fn (array $option): bool => ($option['value'] ?? null) === 2
+))[0] ?? null;
+assertTest(
+    is_array($boldOption) && ($boldOption['enabled'] ?? null) === true,
+    'The bold option cannot be disabled independently by Symcon 9.1.'
+);
+assertTest(
+    is_array($italicOption) && ($italicOption['enabled'] ?? null) === true,
+    'The italic option cannot be disabled independently by Symcon 9.1.'
+);
+assertTest(
+    str_contains($moduleSource, "fontFormatOptions('Bold', \$capabilities['bold'])")
+        && str_contains($moduleSource, "fontFormatOptions('Italic', \$capabilities['italic'])")
+        && !str_contains($moduleSource, "UpdateFormField('FontBoldMode', 'enabled'")
+        && !str_contains($moduleSource, "UpdateFormField('FontItalicMode', 'enabled'"),
+    'Unavailable font cuts do not disable only their individual Select options.'
 );
 assertTest(is_array($customFontSize), 'The custom base font size is missing.');
 assertTest(($customFontSize['minimum'] ?? null) === 8, 'The custom font size minimum is incorrect.');

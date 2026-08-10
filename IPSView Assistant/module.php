@@ -1117,12 +1117,43 @@ class IPSViewAssistant extends IPSModuleStrict
         $appearance = IPSViewTypography::resolve($appearance);
         $capabilities = IPSViewTypography::selectedCapabilities($appearance);
 
+        $this->UpdateFormField(
+            'FontBoldMode',
+            'options',
+            $this->fontFormatOptions('Bold', $capabilities['bold'])
+        );
         $this->UpdateFormField('FontBoldMode', 'value', $appearance['fontBoldMode']);
-        $this->UpdateFormField('FontBoldMode', 'enabled', $capabilities['bold']);
+        $this->UpdateFormField(
+            'FontItalicMode',
+            'options',
+            $this->fontFormatOptions('Italic', $capabilities['italic'])
+        );
         $this->UpdateFormField('FontItalicMode', 'value', $appearance['fontItalicMode']);
-        $this->UpdateFormField('FontItalicMode', 'enabled', $capabilities['italic']);
         $this->UpdateFormField('FontUnderlineMode', 'value', $appearance['fontUnderlineMode']);
-        $this->UpdateFormField('FontUnderlineMode', 'enabled', $capabilities['underline']);
+    }
+
+    /**
+     * Builds one font-format Select while disabling only an unavailable active style.
+     *
+     * @return list<array{caption: string, value: int, enabled?: bool}>
+     */
+    private function fontFormatOptions(string $activeCaption, bool $activeEnabled): array
+    {
+        return [
+            [
+                'caption' => $this->Translate('Preserve existing'),
+                'value'   => IPSViewTypography::FORMAT_PRESERVE,
+            ],
+            [
+                'caption' => $this->Translate('Normal'),
+                'value'   => IPSViewTypography::FORMAT_OFF,
+            ],
+            [
+                'caption' => $this->Translate($activeCaption),
+                'value'   => IPSViewTypography::FORMAT_ON,
+                'enabled' => $activeEnabled,
+            ],
+        ];
     }
 
     /**

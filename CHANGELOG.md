@@ -4,6 +4,8 @@
 
 ### Changed
 
+- Presented compact, equal-ranking choices such as assistant mode, orientation, start grid, gradient direction and background layout as native Symcon 9.1 RadioButtonGroup fields.
+- Kept unavailable bold and italic font styles visible but disabled only their individual Select options instead of locking the complete font-format field.
 - Converted quick start to the native four-page PopupButton wizard introduced with Symcon 9.1, including automatic back/next navigation, final validation and creation through the wizard confirmation.
 - Moved existing-View handling, detailed design settings and background-image options into focused Symcon PopupButton dialogs while keeping the live preview and primary creation workflow visible.
 - Replaced all generated WOFF2 preview subsets with the complete original IPSView TrueType font cuts.

@@ -4,7 +4,7 @@
             "type": "RowLayout",
             "items": [
                 {
-                    "type": "Select",
+                    "type": "RadioButtonGroup",
                     "name": "AssistantMode",
                     "caption": "Assistant mode",
                     "value": 0,
@@ -157,7 +157,7 @@
                                         ]
                                     },
                                     {
-                                        "type": "Select",
+                                        "type": "RadioButtonGroup",
                                         "name": "QuickStartOrientation",
                                         "caption": "Orientation",
                                         "value": 0,
@@ -184,7 +184,7 @@
                                 ]
                             },
                             {
-                                "type": "Select",
+                                "type": "RadioButtonGroup",
                                 "name": "QuickStartGrid",
                                 "caption": "Start grid",
                                 "value": 0,
@@ -281,7 +281,7 @@
                                         ]
                                     },
                                     {
-                                        "type": "Select",
+                                        "type": "RadioButtonGroup",
                                         "name": "QuickStartBackgroundScope",
                                         "caption": "Apply to",
                                         "value": 0,
@@ -311,7 +311,7 @@
                                 "onChange": "IPSVIEWA_UpdateQuickStartBackground($id, $QuickStartBackgroundFile, 2, $QuickStartBackgroundLayout, $QuickStartBackgroundScope, $QuickStartTheme, $QuickStartGrid, true);"
                             },
                             {
-                                "type": "Select",
+                                "type": "RadioButtonGroup",
                                 "name": "QuickStartBackgroundLayout",
                                 "caption": "Image layout",
                                 "value": "Stretch",
@@ -490,7 +490,7 @@
                             ]
                         },
                         {
-                            "type": "Select",
+                            "type": "RadioButtonGroup",
                             "name": "Orientation",
                             "caption": "Orientation",
                             "value": 0,
@@ -519,7 +519,7 @@
                     "type": "RowLayout",
                     "items": [
                         {
-                            "type": "Select",
+                            "type": "RadioButtonGroup",
                             "name": "StartGrid",
                             "caption": "Start grid",
                             "value": 0,
@@ -954,7 +954,7 @@
                                                 "type": "RowLayout",
                                                 "items": [
                                                     {
-                                                        "type": "Select",
+                                                        "type": "RadioButtonGroup",
                                                         "name": "GradientDirection",
                                                         "caption": "Gradient direction",
                                                         "value": 0,
@@ -1091,7 +1091,8 @@
                                                             },
                                                             {
                                                                 "caption": "Bold",
-                                                                "value": 2
+                                                                "value": 2,
+                                                                "enabled": true
                                                             }
                                                         ]
                                                     },
@@ -1113,7 +1114,8 @@
                                                             },
                                                             {
                                                                 "caption": "Italic",
-                                                                "value": 2
+                                                                "value": 2,
+                                                                "enabled": true
                                                             }
                                                         ]
                                                     },
@@ -1143,7 +1145,7 @@
                                             },
                                             {
                                                 "type": "Label",
-                                                "caption": "Bold and italic are available only when IPSView provides the matching font cut. Underlining is available for every font. Font formatting is applied to existing controls according to the selected design scope."
+                                                "caption": "Unavailable bold or italic options remain visible but disabled. Underlining is available for every font. Font formatting is applied to existing controls according to the selected design scope."
                                             },
                                             {
                                                 "type": "Label",
@@ -1331,7 +1333,7 @@
                                         ]
                                     },
                                     {
-                                        "type": "Select",
+                                        "type": "RadioButtonGroup",
                                         "name": "BackgroundImageScope",
                                         "caption": "Apply to",
                                         "value": 0,
@@ -1359,7 +1361,7 @@
                                         "onChange": "IPSVIEWA_UpdateBackgroundPreview($id, $BackgroundImageFile, 2, $BackgroundImageLayout, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"fontBoldMode\" => $FontBoldMode, \"fontItalicMode\" => $FontItalicMode, \"fontUnderlineMode\" => $FontUnderlineMode, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES), true);"
                                     },
                                     {
-                                        "type": "Select",
+                                        "type": "RadioButtonGroup",
                                         "name": "BackgroundImageLayout",
                                         "caption": "Image layout",
                                         "value": "Stretch",
