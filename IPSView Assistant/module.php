@@ -98,6 +98,12 @@ class IPSViewAssistant extends IPSModuleStrict
     public function GetConfigurationForm(): string
     {
         $form = $this->LoadConfigurationForm();
+        $this->setConfigurationFormField(
+            $form,
+            'FontFamilyMode',
+            'options',
+            IPSViewTypography::fontFamilyOptions($this->Translate('Preserve existing'))
+        );
         $palette = IPSViewTheme::preset(IPSViewTheme::THEME_STANDARD);
         $startGrid = $this->previewStartGrid();
         $background = $this->backgroundSettings();

@@ -6,6 +6,9 @@
     "helpers": {
         "ConfigurationFormHelper": {
             "target": "libs/helper/ConfigurationFormHelper.php"
+        },
+        "IPSViewFontCatalogHelper": {
+            "target": "libs/helper/IPSViewFontCatalogHelper.php"
         }
     }
 }

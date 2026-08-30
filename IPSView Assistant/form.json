@@ -1029,44 +1029,7 @@
                                                         "value": 0,
                                                         "width": "360px",
                                                         "onChange": "IPSVIEWA_UpdateAppearancePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"fontBoldMode\" => $FontBoldMode, \"fontItalicMode\" => $FontItalicMode, \"fontUnderlineMode\" => $FontUnderlineMode, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));",
-                                                        "options": [
-                                                            {
-                                                                "caption": "Preserve existing",
-                                                                "value": 0
-                                                            },
-                                                            {
-                                                                "caption": "Roboto",
-                                                                "value": 1
-                                                            },
-                                                            {
-                                                                "caption": "RobotoMono",
-                                                                "value": 2
-                                                            },
-                                                            {
-                                                                "caption": "DancingScript",
-                                                                "value": 3
-                                                            },
-                                                            {
-                                                                "caption": "IndieFlower",
-                                                                "value": 4
-                                                            },
-                                                            {
-                                                                "caption": "OpenSans",
-                                                                "value": 5
-                                                            },
-                                                            {
-                                                                "caption": "PTSans",
-                                                                "value": 6
-                                                            },
-                                                            {
-                                                                "caption": "BebasNeue",
-                                                                "value": 7
-                                                            },
-                                                            {
-                                                                "caption": "Segment7",
-                                                                "value": 8
-                                                            }
-                                                        ]
+                                                        "options": []
                                                     }
                                                 ]
                                             },

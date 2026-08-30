@@ -811,7 +811,14 @@ assertTest(is_array($appearancePanel), 'The typography and form-language panel i
 assertTest(is_array($typographyStyle), 'The typography size selection is missing.');
 assertTest(count($typographyStyle['options'] ?? []) === 5, 'The typography size selection does not offer all modes.');
 assertTest(is_array($fontFamilyMode), 'The font family selection is missing.');
-assertTest(count($fontFamilyMode['options'] ?? []) === 9, 'The font family selection does not offer all IPSView fonts.');
+assertTest(
+    ($fontFamilyMode['options'] ?? []) === [],
+    'The static form must not duplicate the shared IPSView font catalogue.'
+);
+assertTest(
+    str_contains($moduleSource, 'IPSViewTypography::fontFamilyOptions('),
+    'The dynamic form does not populate fonts from the shared IPSView catalogue.'
+);
 assertTest(is_array($fontBoldMode), 'The font weight selection is missing.');
 assertTest(($fontBoldMode['type'] ?? '') === 'Select', 'Font weight must remain a compact Select.');
 assertTest(count($fontBoldMode['options'] ?? []) === 3, 'The font weight selection does not offer all modes.');

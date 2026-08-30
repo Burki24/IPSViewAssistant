@@ -16,6 +16,7 @@ use Burki24\IPSViewAssistant\IPSViewShape;
 use Burki24\IPSViewAssistant\IPSViewTheme;
 use Burki24\IPSViewAssistant\IPSViewThemePreview;
 use Burki24\IPSViewAssistant\IPSViewTypography;
+use Burki24\SymconModuleHelper\IPSViewFontCatalogHelper;
 
 $templatePath = dirname(__DIR__) . '/libs/templates/empty-view.json';
 $sourceDocument = IPSViewDocument::fromTemplate($templatePath);
@@ -46,15 +47,22 @@ $source->Pages[0]->Controls = [
 $json = json_encode($source, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
 
 $supportedFonts = [
-    IPSViewTypography::FONT_ROBOTO         => 'Roboto',
-    IPSViewTypography::FONT_ROBOTO_MONO    => 'RobotoMono',
-    IPSViewTypography::FONT_DANCING_SCRIPT => 'DancingScript',
-    IPSViewTypography::FONT_INDIE_FLOWER   => 'IndieFlower',
-    IPSViewTypography::FONT_OPEN_SANS      => 'OpenSans',
-    IPSViewTypography::FONT_PT_SANS        => 'PTSans',
-    IPSViewTypography::FONT_BEBAS_NEUE     => 'BebasNeue',
-    IPSViewTypography::FONT_SEGMENT_7      => 'Segment7',
+    IPSViewTypography::FONT_ROBOTO         => IPSViewFontCatalogHelper::FONT_ROBOTO,
+    IPSViewTypography::FONT_ROBOTO_MONO    => IPSViewFontCatalogHelper::FONT_ROBOTO_MONO,
+    IPSViewTypography::FONT_DANCING_SCRIPT => IPSViewFontCatalogHelper::FONT_DANCING_SCRIPT,
+    IPSViewTypography::FONT_INDIE_FLOWER   => IPSViewFontCatalogHelper::FONT_INDIE_FLOWER,
+    IPSViewTypography::FONT_OPEN_SANS      => IPSViewFontCatalogHelper::FONT_OPEN_SANS,
+    IPSViewTypography::FONT_PT_SANS        => IPSViewFontCatalogHelper::FONT_PT_SANS,
+    IPSViewTypography::FONT_BEBAS_NEUE     => IPSViewFontCatalogHelper::FONT_BEBAS_NEUE,
+    IPSViewTypography::FONT_SEGMENT_7      => IPSViewFontCatalogHelper::FONT_SEGMENT_7,
 ];
+
+$fontOptions = IPSViewTypography::fontFamilyOptions();
+assertTest(count($fontOptions) === 9, 'The shared font catalogue is not exposed completely by the Assistant.');
+assertTest(
+    array_column(array_slice($fontOptions, 1), 'caption') === array_column(IPSViewFontCatalogHelper::options(), 'caption'),
+    'The Assistant font labels are not sourced from the shared catalogue.'
+);
 
 foreach ($supportedFonts as $fontMode => $fontFamily) {
     $fontDocument = IPSViewDocument::fromJson($json);
