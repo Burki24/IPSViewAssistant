@@ -11,6 +11,11 @@
       "version": "1.0.0",
       "sha256": "8f352af086f4ac98b57e5768d15f538301c54cb41e5f8d1d41c62330592bc660",
       "path": "libs/helper/IPSViewFontCatalogHelper.php"
+    },
+    "IPSViewStylePresetHelper": {
+      "version": "1.0.0",
+      "sha256": "81a8a2ec7cc2a1469fa7b987b3dd31b4bc11feff98da70795dbf74f3f1f5391f",
+      "path": "libs/helper/IPSViewStylePresetHelper.php"
     }
   }
 }

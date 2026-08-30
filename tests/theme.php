@@ -15,6 +15,7 @@ use Burki24\IPSViewAssistant\IPSViewDocument;
 use Burki24\IPSViewAssistant\IPSViewTheme;
 use Burki24\IPSViewAssistant\IPSViewThemePreview;
 use Burki24\IPSViewAssistant\IPSViewTypography;
+use Burki24\SymconModuleHelper\IPSViewStylePresetHelper;
 
 /**
  * Converts one IPSView color object to #RRGGBB.
@@ -154,6 +155,49 @@ foreach ($additionalPresets as $theme => $expectedColors) {
     );
 }
 
+$centralPresetMapping = [
+    IPSViewTheme::THEME_STANDARD => IPSViewStylePresetHelper::PRESET_STANDARD,
+    IPSViewTheme::THEME_LIGHT    => IPSViewStylePresetHelper::PRESET_LIGHT,
+    IPSViewTheme::THEME_DARK     => IPSViewStylePresetHelper::PRESET_DARK,
+    IPSViewTheme::THEME_WARM     => IPSViewStylePresetHelper::PRESET_WARM,
+    IPSViewTheme::THEME_COOL     => IPSViewStylePresetHelper::PRESET_COOL,
+    IPSViewTheme::THEME_EARTHY   => IPSViewStylePresetHelper::PRESET_EARTHY,
+    IPSViewTheme::THEME_WATER    => IPSViewStylePresetHelper::PRESET_WATER,
+    IPSViewTheme::THEME_SUNNY    => IPSViewStylePresetHelper::PRESET_SUNNY,
+];
+
+assertTest(
+    [
+        IPSViewTheme::THEME_STANDARD,
+        IPSViewTheme::THEME_LIGHT,
+        IPSViewTheme::THEME_DARK,
+        IPSViewTheme::THEME_CUSTOM,
+        IPSViewTheme::THEME_WARM,
+        IPSViewTheme::THEME_COOL,
+        IPSViewTheme::THEME_EARTHY,
+        IPSViewTheme::THEME_WATER,
+        IPSViewTheme::THEME_SUNNY,
+    ] === [0, 1, 2, 3, 4, 5, 6, 7, 8],
+    'Existing Assistant theme IDs must remain unchanged.'
+);
+
+foreach ($centralPresetMapping as $theme => $preset) {
+    assertTest(
+        IPSViewTheme::preset($theme) === IPSViewStylePresetHelper::palette($preset),
+        'The Assistant theme must delegate to the matching central preset: ' . $preset
+    );
+}
+
+$themeSource = (string) file_get_contents(dirname(__DIR__) . '/libs/IPSViewTheme.php');
+assertTest(
+    str_contains($themeSource, 'IPSViewStylePresetHelper::palette'),
+    'IPSViewTheme must consume the central preset helper.'
+);
+assertTest(
+    !str_contains($themeSource, "self::THEME_LIGHT => ["),
+    'IPSViewTheme must no longer contain its own predefined palette arrays.'
+);
+
 $allowedColors = array_values($darkPalette);
 $allowedColors[] = IPSViewTheme::mix($darkPalette[IPSViewTheme::ROLE_VIEW_BACKGROUND], '#000000', 0.68);
 
@@ -205,7 +249,6 @@ assertTest(
     'Hexadecimal colors are not converted to SelectColor integers.'
 );
 
-$themeSource = (string) file_get_contents(dirname(__DIR__) . '/libs/IPSViewTheme.php');
 assertTest(
     !str_contains($themeSource, '$color->Type = 0;'),
     'Theme application must not flatten existing IPSView gradient or pattern types.'
