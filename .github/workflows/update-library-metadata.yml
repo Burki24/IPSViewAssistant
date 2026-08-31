@@ -83,11 +83,12 @@ jobs:
           echo "commit_date=$commit_date" >> "$GITHUB_OUTPUT"
           echo "short_sha=$short_sha" >> "$GITHUB_OUTPUT"
 
-      - name: Update library.json
+      - name: Update library metadata and README badge
         shell: bash
         run: |
           python3 .github/scripts/update_library_metadata.py \
             --file library.json \
+            --readme README.md \
             --sha "${{ github.sha }}" \
             --date "${{ steps.source.outputs.commit_date }}" \
             --increment "${{ steps.source.outputs.increment }}" \
@@ -102,8 +103,8 @@ jobs:
         run: |
           set -euo pipefail
 
-          if git diff --quiet -- library.json; then
-            echo "library.json is already up to date."
+          if git diff --quiet -- library.json README.md; then
+            echo "library.json and README.md are already up to date."
             exit 0
           fi
 
@@ -112,6 +113,6 @@ jobs:
 
           version=$(python3 -c 'import json; print(json.load(open("library.json", encoding="utf-8"))["version"])')
 
-          git add library.json
+          git add library.json README.md
           git commit -m "CHORE: Update library metadata to v${version} (${SHORT_SHA})"
           git push origin "HEAD:${GITHUB_REF_NAME}"

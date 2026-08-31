@@ -11,6 +11,11 @@ from typing import Any
 
 VERSION_PATTERN = re.compile(r"^(\d+)\.(\d+)$")
 SHA_PATTERN = re.compile(r"^[0-9a-fA-F]{40}$")
+README_VERSION_PATTERN = re.compile(
+    r"(\[!\[Modul Version\]\(https://img\.shields\.io/badge/Modul%20Version-)"
+    r"\d+\.\d+"
+    r"(-blue\.svg\)\]\(library\.json\))"
+)
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -18,6 +23,7 @@ def parse_arguments() -> argparse.Namespace:
         description="Update Symcon library version, build and date metadata."
     )
     parser.add_argument("--file", required=True, type=Path)
+    parser.add_argument("--readme", required=True, type=Path)
     parser.add_argument("--sha", required=True)
     parser.add_argument("--date", required=True, type=int)
     parser.add_argument("--increment", required=True, type=int)
@@ -75,6 +81,27 @@ def calculate_build(commit_sha: str) -> int:
     return int(commit_sha[:7], 16)
 
 
+def render_readme_version(path: Path, version: str) -> str:
+    try:
+        content = path.read_text(encoding="utf-8")
+    except FileNotFoundError as exc:
+        raise SystemExit(f"README file not found: {path}") from exc
+
+    matches = list(README_VERSION_PATTERN.finditer(content))
+    if len(matches) != 1:
+        raise SystemExit(
+            f"Expected exactly one IPSViewAssistant module version badge in {path}, "
+            f"found {len(matches)}."
+        )
+
+    updated = README_VERSION_PATTERN.sub(
+        rf"\g<1>{version}\g<2>",
+        content,
+        count=1,
+    )
+    return updated
+
+
 def main() -> None:
     args = parse_arguments()
 
@@ -94,14 +121,17 @@ def main() -> None:
     library["build"] = new_build
     library["date"] = args.date
 
+    updated_readme = render_readme_version(args.readme, new_version)
+
     args.file.write_text(
         json.dumps(library, ensure_ascii=False, indent=4) + "\n",
         encoding="utf-8",
         newline="\n",
     )
+    args.readme.write_text(updated_readme, encoding="utf-8", newline="\n")
 
     print(
-        f"Updated {args.file}: "
+        f"Updated {args.file} and {args.readme}: "
         f"file version {file_version}, base version {base_version} -> {new_version}, "
         f"build {new_build}, date {args.date}"
     )
