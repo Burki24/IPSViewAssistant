@@ -194,7 +194,7 @@ assertTest(
     'IPSViewTheme must consume the central preset helper.'
 );
 assertTest(
-    !str_contains($themeSource, "self::THEME_LIGHT => ["),
+    !str_contains($themeSource, 'self::THEME_LIGHT => ['),
     'IPSViewTheme must no longer contain its own predefined palette arrays.'
 );
 
