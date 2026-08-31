@@ -98,6 +98,18 @@ assertTest(
     IPSViewStyleProfileExchange::decodeFileData('data:application/json;base64,' . base64_encode($json)) === $json,
     'A JSON data URI from SelectFile was not decoded.'
 );
+assertTest(
+    IPSViewStyleProfileExchange::decodeFileData(
+        'data:application/json;charset=utf-8;base64,' . base64_encode($json)
+    ) === $json,
+    'A parameterized JSON data URI from SelectFile was not decoded.'
+);
+assertTest(
+    IPSViewStyleProfileExchange::decodeFileData(
+        'data:application/json;charset=UTF-8;profile=ipsview;BASE64,' . base64_encode($json)
+    ) === $json,
+    'A JSON data URI with multiple parameters or uppercase BASE64 was not decoded.'
+);
 
 $customStyle = $style;
 $customStyle['LabelBackground'] = '#123456';

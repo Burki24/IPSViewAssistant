@@ -105,7 +105,7 @@ final class IPSViewStyleProfileExchange
             throw new InvalidArgumentException('The selected style profile file is empty.');
         }
 
-        if (preg_match('/^data:[^;,]+;base64,(.*)$/s', $fileData, $matches) === 1) {
+        if (preg_match('/^data:[^,]*;base64,(.*)$/is', $fileData, $matches) === 1) {
             $fileData = $matches[1];
         }
 

@@ -315,6 +315,8 @@ Für den Export stehen zwei Wege zur Verfügung:
 
 Importiert werden können sowohl eine lokale `.json`-Datei als auch ein zuvor gespeichertes Symcon-Dokumentmedium. Nach erfolgreichem Import wechselt der Designeditor auf **Benutzerdefiniert** und übernimmt Farben, Effekte, Typografie, Ecken und Rahmen. Das importierte Profil kann damit direkt als Ausgangspunkt für weitere Änderungen verwendet und anschließend erneut exportiert werden.
 
+Der lokale Dateiimport verarbeitet die von Symcon gelieferten Dateidaten als JSON-Klartext, Base64 oder Base64-Data-URI. Auch Data-URIs mit zusätzlichen Parametern wie `charset=utf-8` werden unterstützt.
+
 Ein Style Profile V1 enthält unter anderem die universellen Flächen-, Text-, Rahmen- und Statusfarben, Deckkräfte, Schriftfamilie und Schriftschnitt, Schriftgröße und Skalierung, Rahmen- und Linienwerte, Schattenparameter sowie Verlaufs- und Inaktivitätsstärke. **Nicht** Bestandteil des Profils sind Hintergrundbilder, View-Format und Ausrichtung, Seitengeltungsbereich, Bedienelement-Zuordnungen, Medien-IDs oder andere projektspezifische Daten. Diese Werte bleiben bewusst Aufgabe der jeweiligen View beziehungsweise des verwendenden Moduls.
 Die Assistant-spezifische **Unterstreichung** und die **Verlaufsrichtung** sind ebenfalls keine eigenen Felder des portablen Vertrags: Übertragen werden der kanonische Schriftschnitt und die Verlaufsstärke. Beim Import eines Profils verwendet der Assistant für den Verlauf deshalb die portable Standardrichtung „dunkler“.
 
