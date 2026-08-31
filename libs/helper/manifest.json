@@ -8,9 +8,19 @@
             "path": "libs/helper/ConfigurationFormHelper.php"
         },
         "IPSViewControlThemeHelper": {
-            "version": "1.0.1",
-            "sha256": "953839f21968a6fe9ecaa3684ca887b2789dc7b5b96d32562d253dc56823febc",
-            "path": "libs/helper/IPSViewControlThemeHelper.php"
+            "version": "1.0.2",
+            "sha256": "099e3e32d0840d13a6ca95277b31fdaa7378137db3d88ba96c3617582df3eae0",
+            "path": "libs/helper/IPSViewControlThemeHelper.php",
+            "source_sha": "7da6c6cc0bbdadf478f57c763ca79858e530afaa",
+            "dependencies": [
+                {
+                    "name": "IPSViewStylePresetHelper",
+                    "version": "1.0.1",
+                    "sha256": "770bfc48051a908b55e931f6d4eba6e8984ba73b4aa78cd987470006c7b3a9e7",
+                    "path": "libs/helper/IPSViewStylePresetHelper.php",
+                    "source_sha": "7da6c6cc0bbdadf478f57c763ca79858e530afaa"
+                }
+            ]
         },
         "IPSViewFontCatalogHelper": {
             "version": "1.0.0",
