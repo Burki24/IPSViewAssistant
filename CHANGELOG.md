@@ -17,6 +17,9 @@
 
 ### Added
 
+- Portable Style Profile V1 export and import in Advanced mode, including deterministic JSON, reusable Symcon document media, shared profile validation and editor population.
+- Lossless no-edit profile round-trips that preserve canonical fields not exposed independently by the Assistant; edited profiles are rebuilt from the visible Assistant semantics.
+- Shared `IPSViewStyleProfileHelper` integration and helper synchronization against the authoritative `dev-popup` branch.
 - Added an explicit, start-check-controlled overwrite option for one unambiguous same-name IPSView while retaining its object ID and rolling back failed content writes.
 - Added local PNG/JPEG background images for the main page or all pages, including preserve, remove, tile, center and stretch modes.
 - Embedded selected images directly in IPSView documents with content reuse and live SVG preview support.

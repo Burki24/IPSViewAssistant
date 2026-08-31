@@ -17,6 +17,9 @@ $requiredFiles = [
     'IPSView Assistant/form.json',
     'IPSView Assistant/locale.json',
     'libs/helper/ConfigurationFormHelper.php',
+    'libs/helper/IPSViewFontCatalogHelper.php',
+    'libs/helper/IPSViewStylePresetHelper.php',
+    'libs/helper/IPSViewStyleProfileHelper.php',
     'libs/helper/manifest.json',
     'libs/IPSViewTheme.php',
     'libs/IPSViewDesignerHandover.php',
@@ -29,6 +32,7 @@ $requiredFiles = [
     'libs/IPSViewUsageProfile.php',
     'libs/IPSViewCopyFactory.php',
     'libs/IPSViewStartCheck.php',
+    'libs/IPSViewStyleProfileExchange.php',
     'libs/IPSViewFactory.php',
     'libs/templates/empty-view.json',
     'libs/fonts/NOTICE.md',
@@ -57,6 +61,7 @@ $requiredFiles = [
     'libs/fonts/RobotoMono-RegularItalic.ttf',
     'libs/fonts/Segment7-Regular.ttf',
     'tests/theme.php',
+    'tests/style_profile.php',
     'tests/effects.php',
     'tests/appearance.php',
     'tests/start_check.php',
@@ -121,6 +126,11 @@ $form = json_decode(
 $formJson = json_encode($form, JSON_THROW_ON_ERROR);
 assertTest(str_contains($formJson, 'ThemePreview'), 'The live theme preview is missing.');
 assertTest(str_contains($formJson, 'ThemeWorkspace'), 'The responsive theme workspace is missing.');
+assertTest(str_contains($formJson, 'StyleProfilePanel'), 'The Style Profile exchange panel is missing.');
+assertTest(str_contains($formJson, 'IPSVIEWA_ExportStyleProfileJson'), 'The Style Profile JSON export action is missing.');
+assertTest(str_contains($formJson, 'IPSVIEWA_SaveStyleProfileMedia'), 'The Style Profile media export action is missing.');
+assertTest(str_contains($formJson, 'IPSVIEWA_ImportStyleProfileFile'), 'The Style Profile file import action is missing.');
+assertTest(str_contains($formJson, 'IPSVIEWA_ImportStyleProfileMedia'), 'The Style Profile media import action is missing.');
 assertTest(str_contains($formJson, 'ThemeDetailsPopup'), 'The design details popup is missing.');
 assertTest(str_contains($formJson, 'BackgroundImagePopup'), 'The background image popup is missing.');
 assertTest(str_contains($formJson, 'ExistingViewPopup'), 'The existing View popup is missing.');

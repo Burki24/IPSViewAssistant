@@ -30,6 +30,7 @@ Der **IPSView Assistant** erleichtert das Erstellen und Gestalten von IPSView-Pr
 - Nach der Erstellung eine geführte Übergabe zum ersten Bedienelement im IPSView Designer erhalten
 - Bestehende IPSView laden und als separate Designkopie neu gestalten
 - Bereits angelegte Designkopie bei späteren Speichervorgängen aktualisieren
+- Designs als portables Style Profile V1 als JSON oder Symcon-Dokumentmedium exportieren und wieder importieren
 
 ### 2. Voraussetzungen
 
@@ -302,6 +303,54 @@ Für die Hauptseite oder alle Seiten kann ein PNG- oder JPEG-Bild vom aktuell ve
 Unter **Anwenden auf** lässt sich auswählen, ob die Änderung nur die **Hauptseite** oder **alle Seiten** betrifft. Das gilt sowohl für das Zuweisen eines Bildes und seiner Anordnung als auch für das Entfernen vorhandener Hintergrundbilder. Bei **Nur Hauptseite** bleiben alle anderen Seiten unverändert.
 
 Die Bildanordnung kann auf **Kacheln**, **Zentriert** oder **Strecken** gesetzt werden. Identische bereits eingebettete Bilder werden wiederverwendet und auch bei mehreren Seiten nur einmal gespeichert.
+
+#### 6.9 Style Profile V1 exportieren und importieren
+
+Der aufklappbare Bereich **Stilprofile** im Expertenmodus stellt das universelle Austauschformat **Style Profile V1** bereit. Das Profil ist unabhängig von den internen Theme-Nummern des Assistants und enthält einen vollständigen, validierten Snapshot der portablen Designwerte. Dadurch kann ein im Assistant erstellter Stil beispielsweise von OpenCalendar oder einem anderen Consumer des gemeinsamen `IPSViewStyleHelper` verwendet werden.
+
+Für den Export stehen zwei Wege zur Verfügung:
+
+- **JSON exportieren** gibt das vollständige Profil als formatierten JSON-Text zurück. Dieser kann als `.json` gespeichert oder über die öffentliche Funktion `IPSVIEWA_ExportStyleProfileJson()` in eigenen Skripten weiterverarbeitet werden.
+- **Als Symcon-Medium speichern** legt in der gewählten Zielkategorie ein Dokumentmedium an. Existiert dort bereits ein gleichnamiges gültiges Style Profile V1, wird genau dieses Medium sicher aktualisiert. Gleichnamige andere Objekte oder Dokumente werden nicht überschrieben.
+
+Importiert werden können sowohl eine lokale `.json`-Datei als auch ein zuvor gespeichertes Symcon-Dokumentmedium. Nach erfolgreichem Import wechselt der Designeditor auf **Benutzerdefiniert** und übernimmt Farben, Effekte, Typografie, Ecken und Rahmen. Das importierte Profil kann damit direkt als Ausgangspunkt für weitere Änderungen verwendet und anschließend erneut exportiert werden.
+
+Ein Style Profile V1 enthält unter anderem die universellen Flächen-, Text-, Rahmen- und Statusfarben, Deckkräfte, Schriftfamilie und Schriftschnitt, Schriftgröße und Skalierung, Rahmen- und Linienwerte, Schattenparameter sowie Verlaufs- und Inaktivitätsstärke. **Nicht** Bestandteil des Profils sind Hintergrundbilder, View-Format und Ausrichtung, Seitengeltungsbereich, Bedienelement-Zuordnungen, Medien-IDs oder andere projektspezifische Daten. Diese Werte bleiben bewusst Aufgabe der jeweiligen View beziehungsweise des verwendenden Moduls.
+Die Assistant-spezifische **Unterstreichung** und die **Verlaufsrichtung** sind ebenfalls keine eigenen Felder des portablen Vertrags: Übertragen werden der kanonische Schriftschnitt und die Verlaufsstärke. Beim Import eines Profils verwendet der Assistant für den Verlauf deshalb die portable Standardrichtung „dunkler“.
+
+Beim Import kann ein Profil einzelne universelle Werte enthalten, die der Assistant nicht als getrennte Bedienelemente anbietet, zum Beispiel unterschiedliche Deckkräfte für mehrere Flächen, eine separate Linienbreite oder eine abweichende Schriftskalierung. Solange nach dem Import **keine Designänderung** vorgenommen wird, bleiben diese kanonischen Werte bei einem erneuten Export vollständig und unverändert erhalten. Sobald ein sichtbarer Designwert geändert wird, erzeugt der Assistant einen neuen vollständigen Profil-Snapshot aus seinen aktuellen Editorwerten. Nicht separat editierbare Werte werden dabei auf die definierten Assistant-Standardsemantiken normalisiert. Dadurch bleiben unveränderte Roundtrips verlustfrei, während bearbeitete Profile keine unsichtbaren Altwerte mitführen.
+
+Die im Profil gespeicherte Schriftfamilie verwendet die gemeinsamen kanonischen IPSView-Namen. Die portable Familie `system` kann unverändert durchgereicht werden; für die sichtbare Bearbeitung zeigt der Assistant in diesem Fall Roboto als editierbaren Ausgangspunkt. Ohne Designänderung bleibt beim erneuten Export trotzdem `system` erhalten.
+
+Die zugehörigen öffentlichen Funktionen sind:
+
+```php
+$json = IPSVIEWA_ExportStyleProfileJson(
+    12345,
+    'Mein Stil',
+    'Optionaler Beschreibungstext',
+    $theme,
+    $paletteJson,
+    $effectsJson,
+    $appearanceJson
+);
+
+$message = IPSVIEWA_SaveStyleProfileMedia(
+    12345,
+    'Mein Stil',
+    'Optionaler Beschreibungstext',
+    0,
+    $theme,
+    $paletteJson,
+    $effectsJson,
+    $appearanceJson
+);
+
+$message = IPSVIEWA_ImportStyleProfileFile(12345, $jsonOrBase64FileData);
+$message = IPSVIEWA_ImportStyleProfileMedia(12345, $mediaID);
+```
+
+Für die normale Bedienung sind diese Skriptaufrufe nicht erforderlich; dieselben Funktionen stehen direkt im Bereich **Stilprofile** zur Verfügung.
 
 ### 7. Gestaltungsumfang bei bestehenden Views
 

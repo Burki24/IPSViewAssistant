@@ -11,6 +11,8 @@ IPSView Assistant erleichtert das Erstellen und Gestalten von IPSView-Projekten 
 
 Ein nativer vierseitiger Schnellstart-Wizard führt mit Einsatzprofilen für Wandtablet, Tablet, Smartphone und Browser, einem optionalen zwei- oder dreispaltigen Start-Raster und einem wählbaren Design durch die grundlegenden Einstellungen. Ein Startcheck prüft die Konfiguration vor der Erstellung und erlaubt das bewusste Überschreiben einer eindeutig erkannten gleichnamigen IPSView; im Expertenmodus können bestehende Views als separate Designkopie neu gestaltet werden. Das Original bleibt unverändert.
 
+Im Expertenmodus können Designs außerdem als portables **Style Profile V1** exportiert und wieder importiert werden. Der Assistant unterstützt vollständiges JSON sowie wiederverwendbare Symcon-Dokumentmedien. Ein importiertes Profil befüllt den Designeditor und kann anschließend angepasst und erneut exportiert werden.
+
 Folgende Module enthält die Bibliothek:
 
 - **IPSView Assistant** ([Dokumentation](IPSView%20Assistant/README.md)) – Erstellt neue IPSView-Projekte oder gestaltet bestehende Views über eine sichere Kopie.

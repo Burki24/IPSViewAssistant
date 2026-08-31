@@ -11,6 +11,7 @@ require_once __DIR__ . '/../libs/IPSViewThemePreview.php';
 require_once __DIR__ . '/../libs/IPSViewDocument.php';
 require_once __DIR__ . '/../libs/IPSViewCopyFactory.php';
 require_once __DIR__ . '/../libs/IPSViewStartCheck.php';
+require_once __DIR__ . '/../libs/IPSViewStyleProfileExchange.php';
 require_once __DIR__ . '/../libs/IPSViewFactory.php';
 require_once __DIR__ . '/../libs/IPSViewShape.php';
 require_once __DIR__ . '/../libs/IPSViewTypography.php';
@@ -24,6 +25,7 @@ use Burki24\IPSViewAssistant\IPSViewEffects;
 use Burki24\IPSViewAssistant\IPSViewFactory;
 use Burki24\IPSViewAssistant\IPSViewShape;
 use Burki24\IPSViewAssistant\IPSViewStartCheck;
+use Burki24\IPSViewAssistant\IPSViewStyleProfileExchange;
 use Burki24\IPSViewAssistant\IPSViewTheme;
 use Burki24\IPSViewAssistant\IPSViewThemePreview;
 use Burki24\IPSViewAssistant\IPSViewTypography;
@@ -46,6 +48,7 @@ class IPSViewAssistant extends IPSModuleStrict
     private const ATTRIBUTE_PREVIEW_START_GRID = 'PreviewStartGrid';
     private const ATTRIBUTE_LAST_CREATED_VIEW_ID = 'LastCreatedViewID';
     private const ATTRIBUTE_DESIGNER_OBJECT_ID = 'DesignerObjectID';
+    private const ATTRIBUTE_IMPORTED_STYLE_PROFILE = 'ImportedStyleProfile';
 
     /**
      * @var array<string, string>
@@ -81,6 +84,7 @@ class IPSViewAssistant extends IPSModuleStrict
         $this->RegisterAttributeInteger(self::ATTRIBUTE_PREVIEW_START_GRID, IPSViewDocument::START_GRID_NONE);
         $this->RegisterAttributeInteger(self::ATTRIBUTE_LAST_CREATED_VIEW_ID, 0);
         $this->RegisterAttributeInteger(self::ATTRIBUTE_DESIGNER_OBJECT_ID, 1);
+        $this->RegisterAttributeString(self::ATTRIBUTE_IMPORTED_STYLE_PROFILE, '');
     }
 
     /**
@@ -104,13 +108,22 @@ class IPSViewAssistant extends IPSModuleStrict
             'options',
             IPSViewTypography::fontFamilyOptions($this->Translate('Preserve existing'))
         );
-        $palette = IPSViewTheme::preset(IPSViewTheme::THEME_STANDARD);
+        $importState = $this->readStyleProfileImportState();
+        $palette = $importState === null
+            ? IPSViewTheme::preset(IPSViewTheme::THEME_STANDARD)
+            : $importState['editor']['palette'];
+        $effects = $importState === null
+            ? IPSViewEffects::resolve()
+            : $importState['editor']['effects'];
+        $appearance = $importState === null
+            ? []
+            : $importState['editor']['appearance'];
         $startGrid = $this->previewStartGrid();
         $background = $this->backgroundSettings();
         $preview = IPSViewThemePreview::createDataUri(
             $palette,
-            IPSViewEffects::resolve(),
-            [],
+            $effects,
+            $appearance,
             $background,
             $startGrid
         );
@@ -122,6 +135,10 @@ class IPSViewAssistant extends IPSModuleStrict
                 'value',
                 IPSViewTheme::toFormColor($palette[$role])
             );
+        }
+
+        if ($importState !== null) {
+            $this->applyStyleProfileStateToForm($form, $importState);
         }
 
         $this->setConfigurationFormField(
@@ -417,6 +434,7 @@ class IPSViewAssistant extends IPSModuleStrict
      */
     public function LoadExistingView(int $SourceViewID, string $Effects = '', string $Appearance = ''): void
     {
+        $this->clearStyleProfileImportState();
         try {
             $factory = new IPSViewCopyFactory();
             $sourceInspection = $factory->inspect($SourceViewID);
@@ -634,6 +652,142 @@ class IPSViewAssistant extends IPSModuleStrict
     }
 
     /**
+     * Exports the current Assistant design as a portable Style Profile V1 JSON document.
+     */
+    public function ExportStyleProfileJson(
+        string $Name,
+        string $Description,
+        int $Theme,
+        string $ThemePalette = '',
+        string $Effects = '',
+        string $Appearance = ''
+    ): string {
+        try {
+            $json = $this->createStyleProfileJson(
+                $Name,
+                $Description,
+                $Theme,
+                $ThemePalette,
+                $Effects,
+                $Appearance
+            );
+            $this->UpdateFormField(
+                'StyleProfileStatus',
+                'caption',
+                sprintf($this->Translate('Style profile "%s" was exported as JSON.'), trim($Name))
+            );
+
+            return $json;
+        } catch (Throwable $exception) {
+            $this->SendDebug('ExportStyleProfileJson', $exception->getMessage(), 0);
+            $message = sprintf(
+                $this->Translate('The style profile could not be exported: %s'),
+                $exception->getMessage()
+            );
+            $this->UpdateFormField('StyleProfileStatus', 'caption', $message);
+
+            return $message;
+        }
+    }
+
+    /**
+     * Saves the current Assistant design as a reusable Style Profile V1 Symcon document media object.
+     */
+    public function SaveStyleProfileMedia(
+        string $Name,
+        string $Description,
+        int $TargetCategoryID,
+        int $Theme,
+        string $ThemePalette = '',
+        string $Effects = '',
+        string $Appearance = ''
+    ): string {
+        try {
+            $name = trim($Name);
+            $json = $this->createStyleProfileJson(
+                $name,
+                $Description,
+                $Theme,
+                $ThemePalette,
+                $Effects,
+                $Appearance
+            );
+            $mediaID = $this->writeStyleProfileMedia($name, $TargetCategoryID, $json);
+            $message = sprintf(
+                $this->Translate('Style profile "%s" was saved as Symcon media object %d.'),
+                $name,
+                $mediaID
+            );
+            $this->UpdateFormField('StyleProfileStatus', 'caption', $message);
+
+            return $message;
+        } catch (Throwable $exception) {
+            $this->SendDebug('SaveStyleProfileMedia', $exception->getMessage(), 0);
+            $message = sprintf(
+                $this->Translate('The style profile could not be saved as a Symcon media object: %s'),
+                $exception->getMessage()
+            );
+            $this->UpdateFormField('StyleProfileStatus', 'caption', $message);
+
+            return $message;
+        }
+    }
+
+    /**
+     * Imports a Style Profile V1 selected through a Symcon SelectFile field.
+     */
+    public function ImportStyleProfileFile(string $FileData): string
+    {
+        try {
+            return $this->applyStyleProfileImport(
+                IPSViewStyleProfileExchange::decodeFileData($FileData)
+            );
+        } catch (Throwable $exception) {
+            $this->SendDebug('ImportStyleProfileFile', $exception->getMessage(), 0);
+            $message = sprintf(
+                $this->Translate('The style profile file could not be imported: %s'),
+                $exception->getMessage()
+            );
+            $this->UpdateFormField('StyleProfileStatus', 'caption', $message);
+
+            return $message;
+        }
+    }
+
+    /**
+     * Imports a Style Profile V1 stored in a Symcon document media object.
+     */
+    public function ImportStyleProfileMedia(int $MediaID): string
+    {
+        try {
+            if ($MediaID <= 0 || !IPS_MediaExists($MediaID)) {
+                throw new RuntimeException(
+                    $this->Translate('The selected Style Profile media object does not exist.')
+                );
+            }
+
+            $encoded = IPS_GetMediaContent($MediaID);
+            $json = is_string($encoded) ? base64_decode($encoded, true) : false;
+            if (!is_string($json) || trim($json) === '') {
+                throw new RuntimeException(
+                    $this->Translate('The selected Style Profile media object does not contain readable content.')
+                );
+            }
+
+            return $this->applyStyleProfileImport($json);
+        } catch (Throwable $exception) {
+            $this->SendDebug('ImportStyleProfileMedia', $exception->getMessage(), 0);
+            $message = sprintf(
+                $this->Translate('The style profile media could not be imported: %s'),
+                $exception->getMessage()
+            );
+            $this->UpdateFormField('StyleProfileStatus', 'caption', $message);
+
+            return $message;
+        }
+    }
+
+    /**
      * Loads one preset into the semantic color fields and refreshes the preview.
      */
     public function ApplyThemePreset(
@@ -642,6 +796,7 @@ class IPSViewAssistant extends IPSModuleStrict
         string $Effects = '',
         string $Appearance = ''
     ): void {
+        $this->clearStyleProfileImportState();
         try {
             $palette = IPSViewTheme::resolvePalette($Theme, $this->decodePalette($ThemePalette));
             $this->UpdateFormField('Theme', 'value', $Theme);
@@ -670,6 +825,7 @@ class IPSViewAssistant extends IPSModuleStrict
         string $Effects = '',
         string $Appearance = ''
     ): void {
+        $this->clearStyleProfileImportState();
         try {
             $palette = IPSViewTheme::resolvePalette(
                 IPSViewTheme::THEME_CUSTOM,
@@ -701,6 +857,7 @@ class IPSViewAssistant extends IPSModuleStrict
         string $Effects = '',
         string $Appearance = ''
     ): void {
+        $this->clearStyleProfileImportState();
         try {
             $palette = IPSViewTheme::resolvePalette(
                 IPSViewTheme::THEME_CUSTOM,
@@ -731,6 +888,7 @@ class IPSViewAssistant extends IPSModuleStrict
         string $Effects = '',
         string $Appearance = ''
     ): void {
+        $this->clearStyleProfileImportState();
         try {
             $palette = IPSViewTheme::resolvePalette(
                 IPSViewTheme::THEME_CUSTOM,
@@ -1111,6 +1269,350 @@ class IPSViewAssistant extends IPSModuleStrict
             $this->SendDebug('UpdateBackgroundScope', $exception->getMessage(), 0);
             $this->UpdateFormField('BackgroundImageStatus', 'caption', $exception->getMessage());
         }
+    }
+
+    /**
+     * Creates one validated Style Profile V1 JSON document from the current form values.
+     */
+    private function createStyleProfileJson(
+        string $name,
+        string $description,
+        int $theme,
+        string $themePalette,
+        string $effects,
+        string $appearance
+    ): string {
+        $palette = IPSViewTheme::resolvePalette($theme, $this->decodePalette($themePalette));
+        $importState = $this->readStyleProfileImportState();
+        $metadata = $this->styleProfileMetadata($description, $importState);
+
+        return IPSViewStyleProfileExchange::exportJson(
+            trim($name),
+            $palette,
+            $this->decodeEffects($effects),
+            $this->decodeAppearance($appearance),
+            $metadata,
+            $importState
+        );
+    }
+
+    /**
+     * Preserves imported origin metadata for an untouched round-trip and creates fresh metadata after edits.
+     *
+     * @param array<string,mixed>|null $importState
+     *
+     * @return array<string,string>
+     */
+    private function styleProfileMetadata(string $description, ?array $importState): array
+    {
+        $metadata = [];
+        $description = trim($description);
+        if ($description !== '') {
+            $metadata['description'] = $description;
+        }
+
+        $profile = is_array($importState['profile'] ?? null) ? $importState['profile'] : null;
+        if ($profile !== null) {
+            foreach (['createdBy', 'createdAt'] as $key) {
+                if (is_string($profile[$key] ?? null) && trim($profile[$key]) !== '') {
+                    $metadata[$key] = $profile[$key];
+                }
+            }
+
+            return $metadata;
+        }
+
+        $metadata['createdBy'] = 'IPSView Assistant';
+        $metadata['createdAt'] = date(DATE_ATOM);
+
+        return $metadata;
+    }
+
+    /**
+     * Writes or safely updates one Style Profile V1 document media object.
+     */
+    private function writeStyleProfileMedia(string $name, int $targetCategoryID, string $json): int
+    {
+        $this->validateStyleProfileTargetCategory($targetCategoryID);
+        IPSViewStyleProfileExchange::importJson($json);
+
+        $existingID = IPS_GetObjectIDByName($name, $targetCategoryID);
+        if (is_int($existingID) && $existingID > 0) {
+            if (!IPS_MediaExists($existingID)) {
+                throw new RuntimeException(
+                    sprintf(
+                        $this->Translate('An object named "%s" already exists in the target category and is not a media object.'),
+                        $name
+                    )
+                );
+            }
+
+            $media = IPS_GetMedia($existingID);
+            $documentType = defined('MEDIATYPE_DOCUMENT') ? MEDIATYPE_DOCUMENT : 5;
+            if ((int) ($media['MediaType'] ?? -1) !== $documentType) {
+                throw new RuntimeException(
+                    sprintf($this->Translate('The existing media object named "%s" is not a document.'), $name)
+                );
+            }
+
+            $previousContent = IPS_GetMediaContent($existingID);
+            $previousJson = is_string($previousContent) ? base64_decode($previousContent, true) : false;
+            try {
+                if (!is_string($previousJson) || trim($previousJson) === '') {
+                    throw new RuntimeException('empty');
+                }
+                IPSViewStyleProfileExchange::importJson($previousJson);
+            } catch (Throwable) {
+                throw new RuntimeException(
+                    sprintf(
+                        $this->Translate('The existing document named "%s" is not a valid Style Profile V1 and will not be overwritten.'),
+                        $name
+                    )
+                );
+            }
+
+            try {
+                if (!IPS_SetMediaContent($existingID, base64_encode($json))) {
+                    throw new RuntimeException($this->Translate('The Style Profile media content could not be written.'));
+                }
+                IPS_SendMediaEvent($existingID);
+
+                return $existingID;
+            } catch (Throwable $exception) {
+                try {
+                    IPS_SetMediaContent($existingID, $previousContent);
+                    IPS_SendMediaEvent($existingID);
+                } catch (Throwable) {
+                }
+
+                throw $exception;
+            }
+        }
+
+        $documentType = defined('MEDIATYPE_DOCUMENT') ? MEDIATYPE_DOCUMENT : 5;
+        $mediaID = IPS_CreateMedia($documentType);
+        try {
+            IPS_SetName($mediaID, $name);
+            IPS_SetParent($mediaID, $targetCategoryID);
+            $mediaFile = IPS_GetKernelDir()
+                . 'media'
+                . DIRECTORY_SEPARATOR
+                . $mediaID
+                . '.ipsview-style.json';
+            if (!IPS_SetMediaFile($mediaID, $mediaFile, false)) {
+                throw new RuntimeException($this->Translate('The Style Profile media file could not be assigned.'));
+            }
+            if (!IPS_SetMediaContent($mediaID, base64_encode($json))) {
+                throw new RuntimeException($this->Translate('The Style Profile media content could not be written.'));
+            }
+            IPS_SendMediaEvent($mediaID);
+
+            return $mediaID;
+        } catch (Throwable $exception) {
+            if (IPS_MediaExists($mediaID)) {
+                IPS_DeleteMedia($mediaID, true);
+            }
+
+            throw $exception;
+        }
+    }
+
+    /** Validates the category selected for a Style Profile media object. */
+    private function validateStyleProfileTargetCategory(int $targetCategoryID): void
+    {
+        if ($targetCategoryID === 0) {
+            return;
+        }
+        if (!IPS_ObjectExists($targetCategoryID)) {
+            throw new RuntimeException(
+                $this->Translate('The selected Style Profile target category does not exist.')
+            );
+        }
+
+        $object = IPS_GetObject($targetCategoryID);
+        if ((int) ($object['ObjectType'] ?? -1) !== 0) {
+            throw new RuntimeException(
+                $this->Translate('The selected Style Profile target object is not a category.')
+            );
+        }
+    }
+
+    /**
+     * Imports one profile, stores its exact canonical baseline and populates all visible design controls.
+     */
+    private function applyStyleProfileImport(string $json): string
+    {
+        $state = IPSViewStyleProfileExchange::importJson($json);
+        $this->WriteAttributeString(
+            self::ATTRIBUTE_IMPORTED_STYLE_PROFILE,
+            json_encode(
+                $state,
+                JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION
+            )
+        );
+        $this->applyStyleProfileStateToOpenForm($state);
+
+        $name = (string) $state['profile']['name'];
+        $message = sprintf($this->Translate('Style profile "%s" was imported successfully.'), $name);
+        $this->UpdateFormField('StyleProfileStatus', 'caption', $message);
+
+        return $message;
+    }
+
+    /**
+     * @return array{profile: array<string,mixed>, editor: array{palette: array<string,string>, effects: array<string,int>, appearance: array<string,mixed>}}|null
+     */
+    private function readStyleProfileImportState(): ?array
+    {
+        $json = trim($this->ReadAttributeString(self::ATTRIBUTE_IMPORTED_STYLE_PROFILE));
+        if ($json === '') {
+            return null;
+        }
+
+        try {
+            $decoded = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+            if (!is_array($decoded) || !is_array($decoded['profile'] ?? null)) {
+                return null;
+            }
+
+            return IPSViewStyleProfileExchange::importState($decoded['profile']);
+        } catch (Throwable) {
+            return null;
+        }
+    }
+
+    /** Clears a previously imported lossless baseline after an actual editor change. */
+    private function clearStyleProfileImportState(): void
+    {
+        if ($this->ReadAttributeString(self::ATTRIBUTE_IMPORTED_STYLE_PROFILE) !== '') {
+            $this->WriteAttributeString(self::ATTRIBUTE_IMPORTED_STYLE_PROFILE, '');
+            $this->UpdateFormField(
+                'StyleProfileStatus',
+                'caption',
+                $this->Translate('The imported style profile has been modified. The next export rebuilds a complete profile from the visible Assistant values.')
+            );
+        }
+    }
+
+    /**
+     * Applies an imported profile state to the initial dynamic configuration form.
+     *
+     * @param array<string,mixed> $form
+     * @param array{profile: array<string,mixed>, editor: array{palette: array<string,string>, effects: array<string,int>, appearance: array<string,mixed>}} $state
+     */
+    private function applyStyleProfileStateToForm(array &$form, array $state): void
+    {
+        $profile = $state['profile'];
+        $editor = $state['editor'];
+        $effects = $editor['effects'];
+        $appearance = $editor['appearance'];
+
+        $this->setConfigurationFormField($form, 'Theme', 'value', IPSViewTheme::THEME_CUSTOM);
+        $this->setConfigurationFormField($form, 'StyleProfileName', 'value', $profile['name']);
+        $this->setConfigurationFormField(
+            $form,
+            'StyleProfileDescription',
+            'value',
+            is_string($profile['description'] ?? null) ? $profile['description'] : ''
+        );
+        $this->setConfigurationFormField(
+            $form,
+            'StyleProfileStatus',
+            'caption',
+            sprintf($this->Translate('Style profile "%s" is loaded. The visible editor values can be changed and exported again.'), $profile['name'])
+        );
+
+        foreach ($this->styleProfileEffectFormValues($effects) as $field => $value) {
+            $this->setConfigurationFormField($form, $field, 'value', $value);
+        }
+        foreach ($this->styleProfileAppearanceFormValues($appearance) as $field => $value) {
+            $this->setConfigurationFormField($form, $field, 'value', $value);
+        }
+
+        $capabilities = IPSViewTypography::selectedCapabilities($appearance);
+        $this->setConfigurationFormField(
+            $form,
+            'FontBoldMode',
+            'options',
+            $this->fontFormatOptions('Bold', $capabilities['bold'])
+        );
+        $this->setConfigurationFormField(
+            $form,
+            'FontItalicMode',
+            'options',
+            $this->fontFormatOptions('Italic', $capabilities['italic'])
+        );
+    }
+
+    /**
+     * Applies an imported profile state to an already open form.
+     *
+     * @param array{profile: array<string,mixed>, editor: array{palette: array<string,string>, effects: array<string,int>, appearance: array<string,mixed>}} $state
+     */
+    private function applyStyleProfileStateToOpenForm(array $state): void
+    {
+        $profile = $state['profile'];
+        $editor = $state['editor'];
+        $palette = $editor['palette'];
+        $effects = $editor['effects'];
+        $appearance = $editor['appearance'];
+
+        $this->UpdateFormField('Theme', 'value', IPSViewTheme::THEME_CUSTOM);
+        $this->updateColorFields($palette);
+        foreach ($this->styleProfileEffectFormValues($effects) as $field => $value) {
+            $this->UpdateFormField($field, 'value', $value);
+        }
+        foreach ($this->styleProfileAppearanceFormValues($appearance) as $field => $value) {
+            $this->UpdateFormField($field, 'value', $value);
+        }
+        $this->updateFontStyleFields($appearance);
+        $this->UpdateFormField('StyleProfileName', 'value', $profile['name']);
+        $this->UpdateFormField(
+            'StyleProfileDescription',
+            'value',
+            is_string($profile['description'] ?? null) ? $profile['description'] : ''
+        );
+        $this->UpdateFormField(
+            'ThemePreview',
+            'image',
+            IPSViewThemePreview::createDataUri(
+                $palette,
+                $effects,
+                $appearance,
+                $this->backgroundSettings(),
+                $this->previewStartGrid()
+            )
+        );
+    }
+
+    /** @param array<string,int> $effects */
+    private function styleProfileEffectFormValues(array $effects): array
+    {
+        return [
+            'ShadowStyle'         => $effects['shadowStyle'],
+            'TransparencyMode'    => $effects['transparencyMode'],
+            'TransparencyPercent' => $effects['transparencyPercent'],
+            'GradientStyle'       => $effects['gradientStyle'],
+            'GradientDirection'   => $effects['gradientDirection']
+        ];
+    }
+
+    /** @param array<string,mixed> $appearance */
+    private function styleProfileAppearanceFormValues(array $appearance): array
+    {
+        return [
+            'TypographyStyle'    => $appearance['typographyStyle'],
+            'FontFamilyMode'     => $appearance['fontFamilyMode'],
+            'CustomFontFamily'   => $appearance['customFontFamily'],
+            'CustomFontSize'     => $appearance['customFontSize'],
+            'FontBoldMode'       => $appearance['fontBoldMode'],
+            'FontItalicMode'     => $appearance['fontItalicMode'],
+            'FontUnderlineMode'  => $appearance['fontUnderlineMode'],
+            'CornerStyle'        => $appearance['cornerStyle'],
+            'CustomCornerRadius' => $appearance['customCornerRadius'],
+            'BorderStyle'        => $appearance['borderStyle'],
+            'CustomBorderWidth'  => $appearance['customBorderWidth']
+        ];
     }
 
     /**

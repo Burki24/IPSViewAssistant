@@ -12,6 +12,7 @@ $copyFactorySource = file_get_contents($root . '/libs/IPSViewCopyFactory.php');
 $effectsSource = file_get_contents($root . '/libs/IPSViewEffects.php');
 $typographySource = file_get_contents($root . '/libs/IPSViewTypography.php');
 $shapeSource = file_get_contents($root . '/libs/IPSViewShape.php');
+$styleProfileSource = file_get_contents($root . '/libs/IPSViewStyleProfileExchange.php');
 $form = json_decode(
     (string) file_get_contents($root . '/IPSView Assistant/form.json'),
     true,
@@ -26,6 +27,7 @@ assertTest(is_string($copyFactorySource), 'The IPSView copy factory source could
 assertTest(is_string($effectsSource), 'The IPSView effects source could not be read.');
 assertTest(is_string($typographySource), 'The IPSView typography source could not be read.');
 assertTest(is_string($shapeSource), 'The IPSView shape source could not be read.');
+assertTest(is_string($styleProfileSource), 'The IPSView Style Profile exchange source could not be read.');
 assertTest(str_contains($moduleSource, 'extends IPSModuleStrict'), 'The module does not use IPSModuleStrict.');
 assertTest(str_contains($moduleSource, 'use ConfigurationFormHelper;'), 'The module does not use ConfigurationFormHelper.');
 assertTest(str_contains($moduleSource, 'public function GetConfigurationForm(): string'), 'The dynamic configuration form is missing.');
@@ -88,6 +90,22 @@ assertTest(
 assertTest(
     str_contains($moduleSource, 'public function UpdateStartGridPreview('),
     'The public start-grid preview method is missing.'
+);
+assertTest(
+    str_contains($moduleSource, 'public function ExportStyleProfileJson(')
+        && str_contains($moduleSource, 'public function SaveStyleProfileMedia(')
+        && str_contains($moduleSource, 'public function ImportStyleProfileFile(')
+        && str_contains($moduleSource, 'public function ImportStyleProfileMedia('),
+    'The public Style Profile exchange methods are incomplete.'
+);
+assertTest(
+    str_contains($moduleSource, "RegisterAttributeString(self::ATTRIBUTE_IMPORTED_STYLE_PROFILE, '')"),
+    'The module does not persist the imported Style Profile round-trip baseline.'
+);
+assertTest(
+    str_contains($moduleSource, 'IPSViewStyleProfileExchange::exportJson(')
+        && str_contains($moduleSource, 'IPSViewStyleProfileExchange::importJson('),
+    'The module does not delegate Style Profile validation to the shared exchange layer.'
 );
 assertTest(
     str_contains($moduleSource, 'updateFontStyleFields('),
@@ -977,5 +995,37 @@ foreach ($colorFields as $field) {
     assertTest(($field['width'] ?? '') === '360px', 'Semantic color fields must remain fully readable in the color panel.');
     assertTest(is_int($field['value'] ?? null), 'SelectColor values must use the Symcon integer format.');
 }
+
+$styleProfilePanel = $actionsByName['StyleProfilePanel'] ?? null;
+$styleProfileName = $actionsByName['StyleProfileName'] ?? null;
+$styleProfileDescription = $actionsByName['StyleProfileDescription'] ?? null;
+$styleProfileTargetCategory = $actionsByName['StyleProfileTargetCategoryID'] ?? null;
+$styleProfileImportFile = $actionsByName['StyleProfileImportFile'] ?? null;
+$styleProfileImportMedia = $actionsByName['StyleProfileImportMediaID'] ?? null;
+$styleProfileStatus = $actionsByName['StyleProfileStatus'] ?? null;
+assertTest(is_array($styleProfilePanel), 'The Style Profile panel is missing from the module form.');
+assertTest(($styleProfilePanel['type'] ?? '') === 'ExpansionPanel', 'Style Profile exchange must use a compact expansion panel.');
+assertTest(is_array($styleProfileName), 'The Style Profile name field is missing.');
+assertTest(is_array($styleProfileDescription), 'The Style Profile description field is missing.');
+assertTest(is_array($styleProfileTargetCategory), 'The Style Profile media target category is missing.');
+assertTest(is_array($styleProfileImportFile), 'The Style Profile JSON file selector is missing.');
+assertTest(($styleProfileImportFile['extensions'] ?? '') === '.json', 'The Style Profile file selector must be limited to JSON.');
+assertTest(
+    str_contains((string) ($styleProfileImportFile['onChange'] ?? ''), 'IPSVIEWA_ImportStyleProfileFile('),
+    'The Style Profile file selector does not trigger an import.'
+);
+assertTest(is_array($styleProfileImportMedia), 'The Style Profile media selector is missing.');
+assertTest(is_array($styleProfileStatus), 'The Style Profile status line is missing.');
+assertTest(
+    str_contains($formJson = json_encode($form, JSON_THROW_ON_ERROR), 'IPSVIEWA_ExportStyleProfileJson(')
+        && str_contains($formJson, 'IPSVIEWA_SaveStyleProfileMedia(')
+        && str_contains($formJson, 'IPSVIEWA_ImportStyleProfileMedia('),
+    'The Style Profile form actions are incomplete.'
+);
+assertTest(
+    str_contains($styleProfileSource, 'IPSViewStyleProfileHelper::normalizeStyle(')
+        && str_contains($styleProfileSource, 'matchesImportedEditor('),
+    'The exchange layer does not provide canonical validation and lossless no-edit round-trips.'
+);
 
 echo "IPSView Assistant module tests passed.\n";
