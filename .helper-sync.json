@@ -6,6 +6,15 @@
     "helpers": {
         "ConfigurationFormHelper": {
             "target": "libs/helper/ConfigurationFormHelper.php"
+        },
+        "IPSViewFontCatalogHelper": {
+            "target": "libs/helper/IPSViewFontCatalogHelper.php"
+        },
+        "IPSViewStylePresetHelper": {
+            "target": "libs/helper/IPSViewStylePresetHelper.php"
+        },
+        "IPSViewStyleProfileHelper": {
+            "target": "libs/helper/IPSViewStyleProfileHelper.php"
         }
     }
 }

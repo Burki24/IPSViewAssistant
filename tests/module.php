@@ -12,6 +12,7 @@ $copyFactorySource = file_get_contents($root . '/libs/IPSViewCopyFactory.php');
 $effectsSource = file_get_contents($root . '/libs/IPSViewEffects.php');
 $typographySource = file_get_contents($root . '/libs/IPSViewTypography.php');
 $shapeSource = file_get_contents($root . '/libs/IPSViewShape.php');
+$styleProfileSource = file_get_contents($root . '/libs/IPSViewStyleProfileExchange.php');
 $form = json_decode(
     (string) file_get_contents($root . '/IPSView Assistant/form.json'),
     true,
@@ -26,6 +27,7 @@ assertTest(is_string($copyFactorySource), 'The IPSView copy factory source could
 assertTest(is_string($effectsSource), 'The IPSView effects source could not be read.');
 assertTest(is_string($typographySource), 'The IPSView typography source could not be read.');
 assertTest(is_string($shapeSource), 'The IPSView shape source could not be read.');
+assertTest(is_string($styleProfileSource), 'The IPSView Style Profile exchange source could not be read.');
 assertTest(str_contains($moduleSource, 'extends IPSModuleStrict'), 'The module does not use IPSModuleStrict.');
 assertTest(str_contains($moduleSource, 'use ConfigurationFormHelper;'), 'The module does not use ConfigurationFormHelper.');
 assertTest(str_contains($moduleSource, 'public function GetConfigurationForm(): string'), 'The dynamic configuration form is missing.');
@@ -55,11 +57,11 @@ assertTest(
     'The public custom usage profile method is missing.'
 );
 assertTest(
-    str_contains($moduleSource, 'public function UpdateQuickStartStep(')
-        && str_contains($moduleSource, 'public function UpdateQuickStartUsageProfile(')
+    str_contains($moduleSource, 'public function UpdateQuickStartUsageProfile(')
         && str_contains($moduleSource, 'public function UpdateQuickStartPreview(')
         && str_contains($moduleSource, 'public function UpdateQuickStartBackground(')
         && str_contains($moduleSource, 'public function UpdateQuickStartCheck(')
+        && str_contains($moduleSource, 'public function ValidateQuickStartCreation(')
         && str_contains($moduleSource, 'public function CreateQuickStartView('),
     'The public quick-start wizard methods are incomplete.'
 );
@@ -88,6 +90,22 @@ assertTest(
 assertTest(
     str_contains($moduleSource, 'public function UpdateStartGridPreview('),
     'The public start-grid preview method is missing.'
+);
+assertTest(
+    str_contains($moduleSource, 'public function ExportStyleProfileJson(')
+        && str_contains($moduleSource, 'public function SaveStyleProfileMedia(')
+        && str_contains($moduleSource, 'public function ImportStyleProfileFile(')
+        && str_contains($moduleSource, 'public function ImportStyleProfileMedia('),
+    'The public Style Profile exchange methods are incomplete.'
+);
+assertTest(
+    str_contains($moduleSource, "RegisterAttributeString(self::ATTRIBUTE_IMPORTED_STYLE_PROFILE, '')"),
+    'The module does not persist the imported Style Profile round-trip baseline.'
+);
+assertTest(
+    str_contains($moduleSource, 'IPSViewStyleProfileExchange::exportJson(')
+        && str_contains($moduleSource, 'IPSViewStyleProfileExchange::importJson('),
+    'The module does not delegate Style Profile validation to the shared exchange layer.'
 );
 assertTest(
     str_contains($moduleSource, 'updateFontStyleFields('),
@@ -146,6 +164,10 @@ function flattenFormItems(array $items): array
 
         if (isset($item['popup']['items']) && is_array($item['popup']['items'])) {
             $flat = [...$flat, ...flattenFormItems($item['popup']['items'])];
+        }
+
+        if (isset($item['popup']['pages']) && is_array($item['popup']['pages'])) {
+            $flat = [...$flat, ...flattenFormItems($item['popup']['pages'])];
         }
     }
 
@@ -478,6 +500,10 @@ assertTest(
     'The start check does not control and protect View creation.'
 );
 assertTest(is_array($assistantMode), 'The assistant mode selection is missing from the form.');
+assertTest(
+    ($assistantMode['type'] ?? '') === 'RadioButtonGroup',
+    'The two assistant modes are not presented as a radio-button choice.'
+);
 assertTest(($assistantMode['value'] ?? null) === 0, 'Quick start must be the default assistant mode.');
 assertTest(count($assistantMode['options'] ?? []) === 2, 'Both assistant modes must be available.');
 assertTest(
@@ -486,8 +512,6 @@ assertTest(
 );
 assertTest(is_array($assistantModeInfo), 'The assistant mode explanation is missing from the form.');
 $quickStartPopup = $actionsByName['QuickStartWizardPopup'] ?? null;
-$quickStartProgress = $actionsByName['QuickStartWizardProgress'] ?? null;
-$quickStartCreateButton = $actionsByName['QuickStartCreateViewButton'] ?? null;
 $quickStartUsageProfile = $actionsByName['QuickStartUsageProfile'] ?? null;
 $quickStartAspectRatio = $actionsByName['QuickStartAspectRatio'] ?? null;
 $quickStartGrid = $actionsByName['QuickStartGrid'] ?? null;
@@ -499,25 +523,38 @@ assertTest(is_array($quickStartPopup), 'The quick-start wizard button is missing
 assertTest(($quickStartPopup['type'] ?? '') === 'PopupButton', 'Quick start is not opened as a popup wizard.');
 assertTest(($quickStartPopup['caption'] ?? '') === 'Open quick start', 'The quick-start button caption is incorrect.');
 assertTest(($quickStartPopup['popup']['closeCaption'] ?? '') === 'Close', 'The quick-start wizard has no close action.');
-assertTest(is_array($quickStartProgress), 'The quick-start progress display is missing.');
+$quickStartPages = $quickStartPopup['popup']['pages'] ?? [];
+assertTest(($quickStartPopup['popup']['items'] ?? null) === [], 'The native wizard still has legacy popup items.');
+assertTest(count($quickStartPages) === 4, 'The native quick-start wizard must have four pages.');
 for ($step = 1; $step <= 4; ++$step) {
-    $stepPanel = $actionsByName['QuickStartStep' . $step] ?? null;
-    assertTest(is_array($stepPanel), sprintf('Quick-start step %d is missing.', $step));
+    $stepPage = $quickStartPages[$step - 1] ?? null;
+    assertTest(is_array($stepPage), sprintf('Quick-start page %d is missing.', $step));
     assertTest(
-        ($stepPanel['visible'] ?? true) === ($step === 1),
-        sprintf('Quick-start step %d has an incorrect initial visibility.', $step)
+        ($stepPage['name'] ?? '') === 'QuickStartStep' . $step,
+        sprintf('Quick-start page %d has no stable page name.', $step)
     );
-}
-$quickStartDefinition = json_encode($quickStartPopup, JSON_THROW_ON_ERROR);
-foreach ([1, 2, 3, 4] as $step) {
     assertTest(
-        str_contains($quickStartDefinition, sprintf('IPSVIEWA_UpdateQuickStartStep($id, %d);', $step)),
-        sprintf('The wizard has no navigation path to quick-start step %d.', $step)
+        !isset($stepPage['type']) && is_array($stepPage['items'] ?? null),
+        sprintf('Quick-start page %d is not a native PopupButton page.', $step)
     );
 }
 assertTest(
-    str_contains($quickStartDefinition, 'IPSVIEWA_UpdateQuickStartCheck('),
+    str_contains((string) ($quickStartPages[2]['onConfirm'] ?? ''), 'IPSVIEWA_UpdateQuickStartCheck(')
+        && str_contains((string) ($quickStartPages[2]['onUndo'] ?? ''), 'IPSVIEWA_ResetQuickStartOverwrite('),
     'The wizard does not run the start check before its final step.'
+);
+assertTest(
+    str_contains((string) ($quickStartPages[3]['validate'] ?? ''), 'IPSVIEWA_ValidateQuickStartCreation('),
+    'The native wizard does not validate its final page.'
+);
+assertTest(
+    str_contains((string) ($quickStartPages[3]['onConfirm'] ?? ''), 'IPSVIEWA_CreateQuickStartView(')
+        && str_starts_with((string) ($quickStartPages[3]['onConfirm'] ?? ''), 'echo '),
+    'The native wizard does not create the View through its final confirmation action.'
+);
+assertTest(
+    str_contains($moduleSource, "isset(\$item['popup']['pages'])"),
+    'Dynamic form updates cannot reach fields inside native PopupButton pages.'
 );
 assertTest(is_array($quickStartUsageProfile), 'The wizard usage profile is missing.');
 assertTest(count($quickStartUsageProfile['options'] ?? []) === 5, 'The wizard does not offer all usage profiles.');
@@ -546,14 +583,26 @@ assertTest(
 );
 assertTest(is_array($quickStartOverwrite), 'The wizard overwrite confirmation is missing.');
 assertTest(($quickStartOverwrite['visible'] ?? true) === false, 'Wizard overwrite must remain hidden without a conflict.');
-assertTest(is_array($quickStartCreateButton), 'The wizard Create View button is missing.');
-assertTest(
-    str_contains((string) ($quickStartCreateButton['onClick'] ?? ''), 'IPSVIEWA_CreateQuickStartView(')
-        && str_contains((string) ($quickStartCreateButton['onClick'] ?? ''), '$QuickStartOverwriteExistingView'),
-    'The wizard Create View button does not use the protected quick-start creation path.'
-);
 assertTest(is_array($quickStartPreview), 'The wizard design preview is missing.');
 assertTest(($quickStartPreview['width'] ?? '') === '700px', 'The wizard preview has an unexpected width.');
+$radioButtonFields = [
+    'AssistantMode',
+    'QuickStartOrientation',
+    'QuickStartGrid',
+    'QuickStartBackgroundScope',
+    'QuickStartBackgroundLayout',
+    'Orientation',
+    'StartGrid',
+    'GradientDirection',
+    'BackgroundImageScope',
+    'BackgroundImageLayout',
+];
+foreach ($radioButtonFields as $radioButtonField) {
+    assertTest(
+        ($actionsByName[$radioButtonField]['type'] ?? '') === 'RadioButtonGroup',
+        sprintf('The compact choice "%s" is not rendered as a RadioButtonGroup.', $radioButtonField)
+    );
+}
 assertTest(
     str_contains($moduleSource, "'ViewSettingsPanel'")
         && str_contains($moduleSource, "'DesignPanel'")
@@ -780,16 +829,56 @@ assertTest(is_array($appearancePanel), 'The typography and form-language panel i
 assertTest(is_array($typographyStyle), 'The typography size selection is missing.');
 assertTest(count($typographyStyle['options'] ?? []) === 5, 'The typography size selection does not offer all modes.');
 assertTest(is_array($fontFamilyMode), 'The font family selection is missing.');
-assertTest(count($fontFamilyMode['options'] ?? []) === 9, 'The font family selection does not offer all IPSView fonts.');
+assertTest(
+    ($fontFamilyMode['options'] ?? []) === [],
+    'The static form must not duplicate the shared IPSView font catalogue.'
+);
+assertTest(
+    str_contains($moduleSource, 'IPSViewTypography::fontFamilyOptions('),
+    'The dynamic form does not populate fonts from the shared IPSView catalogue.'
+);
 assertTest(is_array($fontBoldMode), 'The font weight selection is missing.');
+assertTest(($fontBoldMode['type'] ?? '') === 'Select', 'Font weight must remain a compact Select.');
 assertTest(count($fontBoldMode['options'] ?? []) === 3, 'The font weight selection does not offer all modes.');
 assertTest(is_array($fontItalicMode), 'The font style selection is missing.');
+assertTest(($fontItalicMode['type'] ?? '') === 'Select', 'Font style must remain a compact Select.');
 assertTest(count($fontItalicMode['options'] ?? []) === 3, 'The font style selection does not offer all modes.');
 assertTest(is_array($fontUnderlineMode), 'The underline selection is missing.');
 assertTest(count($fontUnderlineMode['options'] ?? []) === 3, 'The underline selection does not offer all modes.');
 assertTest(
     str_contains((string) ($fontBoldMode['onChange'] ?? ''), 'IPSVIEWA_UpdateAppearancePreview('),
     'Changing the font weight does not refresh the appearance preview.'
+);
+$boldOption = array_values(array_filter(
+    $fontBoldMode['options'] ?? [],
+    static fn (array $option): bool => ($option['value'] ?? null) === 2
+))[0] ?? null;
+$italicOption = array_values(array_filter(
+    $fontItalicMode['options'] ?? [],
+    static fn (array $option): bool => ($option['value'] ?? null) === 2
+))[0] ?? null;
+assertTest(
+    is_array($boldOption) && ($boldOption['enabled'] ?? null) === true,
+    'The bold option cannot be disabled independently by Symcon 9.1.'
+);
+assertTest(
+    is_array($italicOption) && ($italicOption['enabled'] ?? null) === true,
+    'The italic option cannot be disabled independently by Symcon 9.1.'
+);
+assertTest(
+    str_contains($moduleSource, "fontFormatOptions('Bold', \$capabilities['bold'])")
+        && str_contains($moduleSource, "fontFormatOptions('Italic', \$capabilities['italic'])")
+        && preg_match(
+            "/'options',\\s*json_encode\\(\\s*\\\$this->fontFormatOptions\\('Bold'/",
+            $moduleSource
+        ) === 1
+        && preg_match(
+            "/'options',\\s*json_encode\\(\\s*\\\$this->fontFormatOptions\\('Italic'/",
+            $moduleSource
+        ) === 1
+        && !str_contains($moduleSource, "UpdateFormField('FontBoldMode', 'enabled'")
+        && !str_contains($moduleSource, "UpdateFormField('FontItalicMode', 'enabled'"),
+    'Unavailable font cuts are not passed as JSON-encoded individual Select options.'
 );
 assertTest(is_array($customFontSize), 'The custom base font size is missing.');
 assertTest(($customFontSize['minimum'] ?? null) === 8, 'The custom font size minimum is incorrect.');
@@ -906,5 +995,37 @@ foreach ($colorFields as $field) {
     assertTest(($field['width'] ?? '') === '360px', 'Semantic color fields must remain fully readable in the color panel.');
     assertTest(is_int($field['value'] ?? null), 'SelectColor values must use the Symcon integer format.');
 }
+
+$styleProfilePanel = $actionsByName['StyleProfilePanel'] ?? null;
+$styleProfileName = $actionsByName['StyleProfileName'] ?? null;
+$styleProfileDescription = $actionsByName['StyleProfileDescription'] ?? null;
+$styleProfileTargetCategory = $actionsByName['StyleProfileTargetCategoryID'] ?? null;
+$styleProfileImportFile = $actionsByName['StyleProfileImportFile'] ?? null;
+$styleProfileImportMedia = $actionsByName['StyleProfileImportMediaID'] ?? null;
+$styleProfileStatus = $actionsByName['StyleProfileStatus'] ?? null;
+assertTest(is_array($styleProfilePanel), 'The Style Profile panel is missing from the module form.');
+assertTest(($styleProfilePanel['type'] ?? '') === 'ExpansionPanel', 'Style Profile exchange must use a compact expansion panel.');
+assertTest(is_array($styleProfileName), 'The Style Profile name field is missing.');
+assertTest(is_array($styleProfileDescription), 'The Style Profile description field is missing.');
+assertTest(is_array($styleProfileTargetCategory), 'The Style Profile media target category is missing.');
+assertTest(is_array($styleProfileImportFile), 'The Style Profile JSON file selector is missing.');
+assertTest(($styleProfileImportFile['extensions'] ?? '') === '.json', 'The Style Profile file selector must be limited to JSON.');
+assertTest(
+    str_contains((string) ($styleProfileImportFile['onChange'] ?? ''), 'IPSVIEWA_ImportStyleProfileFile('),
+    'The Style Profile file selector does not trigger an import.'
+);
+assertTest(is_array($styleProfileImportMedia), 'The Style Profile media selector is missing.');
+assertTest(is_array($styleProfileStatus), 'The Style Profile status line is missing.');
+assertTest(
+    str_contains($formJson = json_encode($form, JSON_THROW_ON_ERROR), 'IPSVIEWA_ExportStyleProfileJson(')
+        && str_contains($formJson, 'IPSVIEWA_SaveStyleProfileMedia(')
+        && str_contains($formJson, 'IPSVIEWA_ImportStyleProfileMedia('),
+    'The Style Profile form actions are incomplete.'
+);
+assertTest(
+    str_contains($styleProfileSource, 'IPSViewStyleProfileHelper::normalizeStyle(')
+        && str_contains($styleProfileSource, 'matchesImportedEditor('),
+    'The exchange layer does not provide canonical validation and lossless no-edit round-trips.'
+);
 
 echo "IPSView Assistant module tests passed.\n";
