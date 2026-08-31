@@ -223,10 +223,9 @@ final class IPSViewTheme
     public static function extract(stdClass $document): array
     {
         $fallbacks = self::preset(self::THEME_DARK);
-        $hasLegacyViewColor = property_exists($document, 'ColorView');
         $representatives = [
-            self::ROLE_VIEW_BACKGROUND => $hasLegacyViewColor ? 'ColorView' : 'ColorPage',
-            self::ROLE_PAGE_BACKGROUND => $hasLegacyViewColor ? 'ColorPage' : 'ColorPopupBack',
+            self::ROLE_VIEW_BACKGROUND => 'ColorView',
+            self::ROLE_PAGE_BACKGROUND => 'ColorPage',
             self::ROLE_SURFACE         => 'ColorBack',
             self::ROLE_PRIMARY_TEXT    => 'ColorText',
             self::ROLE_SECONDARY_TEXT  => 'ColorTextOff',

@@ -21,58 +21,55 @@ assertTest(
 );
 assertTest(
     !property_exists($template, 'ColorView'),
-    'The current IPSView 6.5 template regression fixture must not contain legacy ColorView.'
+    'The empty-view fixture may omit ColorView when no explicit View color is stored.'
+);
+
+$missingView = unserialize(serialize($template));
+assertTest($missingView instanceof stdClass, 'The IPSView template copy could not be created.');
+$missingViewReport = IPSViewTheme::applyWithReport($missingView, IPSViewTheme::THEME_DARK);
+assertTest(
+    $missingViewReport['globalColorsApplied'] === 107,
+    'Documents that omit ColorView must keep all existing native color fields themeable.'
+);
+assertTest(
+    IPSViewTheme::colorObjectToHex($missingView->ColorPage) === '#1F2937',
+    'ColorPage must keep the semantic page background even when ColorView is absent.'
+);
+$missingViewPalette = IPSViewTheme::extract($missingView);
+assertTest(
+    $missingViewPalette[IPSViewTheme::ROLE_VIEW_BACKGROUND] === '#111827',
+    'Missing ColorView must fall back to the theme View color instead of reinterpreting ColorPage.'
+);
+assertTest(
+    $missingViewPalette[IPSViewTheme::ROLE_PAGE_BACKGROUND] === '#1F2937',
+    'Page background extraction must continue to use ColorPage.'
 );
 
 $current = unserialize(serialize($template));
 assertTest($current instanceof stdClass, 'The current IPSView template copy could not be created.');
+$current->ColorView = (object) IPSViewControlThemeHelper::createColor('#FF00FF');
+$current->ColorPage = (object) IPSViewControlThemeHelper::createColor('#00FFFF');
 $currentReport = IPSViewTheme::applyWithReport($current, IPSViewTheme::THEME_DARK);
 assertTest(
-    $currentReport['globalColorsApplied'] === 107,
-    'Current IPSView 6.5 documents must keep all 107 existing native color fields themeable.'
+    $currentReport['globalColorsApplied'] === 108,
+    'Current IPSView documents with separate View and page colors must theme both native fields.'
 );
 assertTest(
-    IPSViewTheme::colorObjectToHex($current->ColorPage) === '#111827',
-    'Current IPSView 6.5 ColorPage must remain the View background.'
+    IPSViewTheme::colorObjectToHex($current->ColorView) === '#111827',
+    'ColorView must receive the semantic View background.'
 );
 assertTest(
-    IPSViewTheme::colorObjectToHex($current->ColorPopupBack) === '#1F2937',
-    'Current IPSView 6.5 ColorPopupBack must remain the page/popup background.'
+    IPSViewTheme::colorObjectToHex($current->ColorPage) === '#1F2937',
+    'ColorPage must independently receive the semantic page background.'
 );
 $currentPalette = IPSViewTheme::extract($current);
 assertTest(
     $currentPalette[IPSViewTheme::ROLE_VIEW_BACKGROUND] === '#111827',
-    'Current IPSView 6.5 View background extraction must use ColorPage.'
+    'View background extraction must use ColorView.'
 );
 assertTest(
     $currentPalette[IPSViewTheme::ROLE_PAGE_BACKGROUND] === '#1F2937',
-    'Current IPSView 6.5 page background extraction must use ColorPopupBack.'
-);
-
-$legacy = unserialize(serialize($template));
-assertTest($legacy instanceof stdClass, 'The legacy IPSView template copy could not be created.');
-$legacy->ColorView = (object) IPSViewControlThemeHelper::createColor('#212121');
-$legacyReport = IPSViewTheme::applyWithReport($legacy, IPSViewTheme::THEME_DARK);
-assertTest(
-    $legacyReport['globalColorsApplied'] === 108,
-    'Legacy IPSView documents with ColorView must theme the additional native View color.'
-);
-assertTest(
-    IPSViewTheme::colorObjectToHex($legacy->ColorView) === '#111827',
-    'Legacy ColorView must receive the semantic View background.'
-);
-assertTest(
-    IPSViewTheme::colorObjectToHex($legacy->ColorPage) === '#1F2937',
-    'Legacy ColorPage must receive the semantic page background when ColorView exists.'
-);
-$legacyPalette = IPSViewTheme::extract($legacy);
-assertTest(
-    $legacyPalette[IPSViewTheme::ROLE_VIEW_BACKGROUND] === '#111827',
-    'Legacy View background extraction must use ColorView.'
-);
-assertTest(
-    $legacyPalette[IPSViewTheme::ROLE_PAGE_BACKGROUND] === '#1F2937',
-    'Legacy page background extraction must use ColorPage.'
+    'Page background extraction must use ColorPage.'
 );
 
 $themeSource = (string) file_get_contents(dirname(__DIR__) . '/libs/IPSViewTheme.php');
