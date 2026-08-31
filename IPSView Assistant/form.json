@@ -4,7 +4,7 @@
             "type": "RowLayout",
             "items": [
                 {
-                    "type": "Select",
+                    "type": "RadioButtonGroup",
                     "name": "AssistantMode",
                     "caption": "Assistant mode",
                     "value": 0,
@@ -40,17 +40,11 @@
             "popup": {
                 "caption": "Quick start for a new IPSView",
                 "closeCaption": "Close",
-                "items": [
+                "items": [],
+                "pages": [
                     {
-                        "type": "Label",
-                        "name": "QuickStartWizardProgress",
-                        "caption": "Step 1 of 4: Basic information"
-                    },
-                    {
-                        "type": "ExpansionPanel",
                         "name": "QuickStartStep1",
                         "caption": "1. Basic information",
-                        "expanded": true,
                         "items": [
                             {
                                 "type": "Select",
@@ -107,20 +101,12 @@
                                         "onChange": "IPSVIEWA_ResetQuickStartOverwrite($id);"
                                     }
                                 ]
-                            },
-                            {
-                                "type": "Button",
-                                "caption": "Next: Format",
-                                "onClick": "IPSVIEWA_UpdateQuickStartStep($id, 2);"
                             }
                         ]
                     },
                     {
-                        "type": "ExpansionPanel",
                         "name": "QuickStartStep2",
                         "caption": "2. Format and layout",
-                        "expanded": true,
-                        "visible": false,
                         "items": [
                             {
                                 "type": "ValidationTextBox",
@@ -171,7 +157,7 @@
                                         ]
                                     },
                                     {
-                                        "type": "Select",
+                                        "type": "RadioButtonGroup",
                                         "name": "QuickStartOrientation",
                                         "caption": "Orientation",
                                         "value": 0,
@@ -198,7 +184,7 @@
                                 ]
                             },
                             {
-                                "type": "Select",
+                                "type": "RadioButtonGroup",
                                 "name": "QuickStartGrid",
                                 "caption": "Start grid",
                                 "value": 0,
@@ -218,30 +204,14 @@
                                         "value": 3
                                     }
                                 ]
-                            },
-                            {
-                                "type": "RowLayout",
-                                "items": [
-                                    {
-                                        "type": "Button",
-                                        "caption": "Back",
-                                        "onClick": "IPSVIEWA_UpdateQuickStartStep($id, 1);"
-                                    },
-                                    {
-                                        "type": "Button",
-                                        "caption": "Next: Design",
-                                        "onClick": "IPSVIEWA_UpdateQuickStartPreview($id, $QuickStartTheme, $QuickStartGrid); IPSVIEWA_UpdateQuickStartStep($id, 3);"
-                                    }
-                                ]
                             }
                         ]
                     },
                     {
-                        "type": "ExpansionPanel",
                         "name": "QuickStartStep3",
                         "caption": "3. Design and background",
-                        "expanded": true,
-                        "visible": false,
+                        "onConfirm": "IPSVIEWA_UpdateQuickStartCheck($id, $QuickStartViewName, $QuickStartTargetCategoryID, $QuickStartMainPageName, $QuickStartAspectRatio, $QuickStartOrientation, $QuickStartGrid, $QuickStartOverwriteExistingView);",
+                        "onUndo": "IPSVIEWA_ResetQuickStartOverwrite($id);",
                         "items": [
                             {
                                 "type": "Select",
@@ -311,7 +281,7 @@
                                         ]
                                     },
                                     {
-                                        "type": "Select",
+                                        "type": "RadioButtonGroup",
                                         "name": "QuickStartBackgroundScope",
                                         "caption": "Apply to",
                                         "value": 0,
@@ -341,7 +311,7 @@
                                 "onChange": "IPSVIEWA_UpdateQuickStartBackground($id, $QuickStartBackgroundFile, 2, $QuickStartBackgroundLayout, $QuickStartBackgroundScope, $QuickStartTheme, $QuickStartGrid, true);"
                             },
                             {
-                                "type": "Select",
+                                "type": "RadioButtonGroup",
                                 "name": "QuickStartBackgroundLayout",
                                 "caption": "Image layout",
                                 "value": "Stretch",
@@ -374,30 +344,14 @@
                                 "image": "",
                                 "center": true,
                                 "width": "700px"
-                            },
-                            {
-                                "type": "RowLayout",
-                                "items": [
-                                    {
-                                        "type": "Button",
-                                        "caption": "Back",
-                                        "onClick": "IPSVIEWA_UpdateQuickStartStep($id, 2);"
-                                    },
-                                    {
-                                        "type": "Button",
-                                        "caption": "Next: Check",
-                                        "onClick": "IPSVIEWA_UpdateQuickStartCheck($id, $QuickStartViewName, $QuickStartTargetCategoryID, $QuickStartMainPageName, $QuickStartAspectRatio, $QuickStartOrientation, $QuickStartGrid, $QuickStartOverwriteExistingView); IPSVIEWA_UpdateQuickStartStep($id, 4);"
-                                    }
-                                ]
                             }
                         ]
                     },
                     {
-                        "type": "ExpansionPanel",
                         "name": "QuickStartStep4",
                         "caption": "4. Check and create",
-                        "expanded": true,
-                        "visible": false,
+                        "validate": "return IPSVIEWA_ValidateQuickStartCreation($id, $QuickStartViewName, $QuickStartTargetCategoryID, $QuickStartMainPageName, $QuickStartAspectRatio, $QuickStartOrientation, $QuickStartGrid, $QuickStartOverwriteExistingView);",
+                        "onConfirm": "echo IPSVIEWA_CreateQuickStartView($id, $QuickStartViewName, $QuickStartTargetCategoryID, $QuickStartAspectRatio, $QuickStartOrientation, $QuickStartMainPageName, $QuickStartTheme, $QuickStartFullScreen, $QuickStartGrid, $QuickStartOverwriteExistingView);",
                         "items": [
                             {
                                 "type": "Label",
@@ -417,27 +371,6 @@
                                 "name": "QuickStartOverwriteExistingViewInfo",
                                 "caption": "The existing View keeps its object ID, but all pages, controls and settings are replaced.",
                                 "visible": false
-                            },
-                            {
-                                "type": "RowLayout",
-                                "items": [
-                                    {
-                                        "type": "Button",
-                                        "caption": "Back",
-                                        "onClick": "IPSVIEWA_UpdateQuickStartStep($id, 3);"
-                                    },
-                                    {
-                                        "type": "Button",
-                                        "caption": "Check again",
-                                        "onClick": "IPSVIEWA_UpdateQuickStartCheck($id, $QuickStartViewName, $QuickStartTargetCategoryID, $QuickStartMainPageName, $QuickStartAspectRatio, $QuickStartOrientation, $QuickStartGrid, $QuickStartOverwriteExistingView);"
-                                    },
-                                    {
-                                        "type": "Button",
-                                        "name": "QuickStartCreateViewButton",
-                                        "caption": "Create View",
-                                        "onClick": "echo IPSVIEWA_CreateQuickStartView($id, $QuickStartViewName, $QuickStartTargetCategoryID, $QuickStartAspectRatio, $QuickStartOrientation, $QuickStartMainPageName, $QuickStartTheme, $QuickStartFullScreen, $QuickStartGrid, $QuickStartOverwriteExistingView);"
-                                    }
-                                ]
                             }
                         ]
                     }
@@ -557,7 +490,7 @@
                             ]
                         },
                         {
-                            "type": "Select",
+                            "type": "RadioButtonGroup",
                             "name": "Orientation",
                             "caption": "Orientation",
                             "value": 0,
@@ -586,7 +519,7 @@
                     "type": "RowLayout",
                     "items": [
                         {
-                            "type": "Select",
+                            "type": "RadioButtonGroup",
                             "name": "StartGrid",
                             "caption": "Start grid",
                             "value": 0,
@@ -1021,7 +954,7 @@
                                                 "type": "RowLayout",
                                                 "items": [
                                                     {
-                                                        "type": "Select",
+                                                        "type": "RadioButtonGroup",
                                                         "name": "GradientDirection",
                                                         "caption": "Gradient direction",
                                                         "value": 0,
@@ -1096,44 +1029,7 @@
                                                         "value": 0,
                                                         "width": "360px",
                                                         "onChange": "IPSVIEWA_UpdateAppearancePreview($id, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"fontBoldMode\" => $FontBoldMode, \"fontItalicMode\" => $FontItalicMode, \"fontUnderlineMode\" => $FontUnderlineMode, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));",
-                                                        "options": [
-                                                            {
-                                                                "caption": "Preserve existing",
-                                                                "value": 0
-                                                            },
-                                                            {
-                                                                "caption": "Roboto",
-                                                                "value": 1
-                                                            },
-                                                            {
-                                                                "caption": "RobotoMono",
-                                                                "value": 2
-                                                            },
-                                                            {
-                                                                "caption": "DancingScript",
-                                                                "value": 3
-                                                            },
-                                                            {
-                                                                "caption": "IndieFlower",
-                                                                "value": 4
-                                                            },
-                                                            {
-                                                                "caption": "OpenSans",
-                                                                "value": 5
-                                                            },
-                                                            {
-                                                                "caption": "PTSans",
-                                                                "value": 6
-                                                            },
-                                                            {
-                                                                "caption": "BebasNeue",
-                                                                "value": 7
-                                                            },
-                                                            {
-                                                                "caption": "Segment7",
-                                                                "value": 8
-                                                            }
-                                                        ]
+                                                        "options": []
                                                     }
                                                 ]
                                             },
@@ -1158,7 +1054,8 @@
                                                             },
                                                             {
                                                                 "caption": "Bold",
-                                                                "value": 2
+                                                                "value": 2,
+                                                                "enabled": true
                                                             }
                                                         ]
                                                     },
@@ -1180,7 +1077,8 @@
                                                             },
                                                             {
                                                                 "caption": "Italic",
-                                                                "value": 2
+                                                                "value": 2,
+                                                                "enabled": true
                                                             }
                                                         ]
                                                     },
@@ -1210,7 +1108,7 @@
                                             },
                                             {
                                                 "type": "Label",
-                                                "caption": "Bold and italic are available only when IPSView provides the matching font cut. Underlining is available for every font. Font formatting is applied to existing controls according to the selected design scope."
+                                                "caption": "Unavailable bold or italic options remain visible but disabled. Underlining is available for every font. Font formatting is applied to existing controls according to the selected design scope."
                                             },
                                             {
                                                 "type": "Label",
@@ -1398,7 +1296,7 @@
                                         ]
                                     },
                                     {
-                                        "type": "Select",
+                                        "type": "RadioButtonGroup",
                                         "name": "BackgroundImageScope",
                                         "caption": "Apply to",
                                         "value": 0,
@@ -1426,7 +1324,7 @@
                                         "onChange": "IPSVIEWA_UpdateBackgroundPreview($id, $BackgroundImageFile, 2, $BackgroundImageLayout, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"fontBoldMode\" => $FontBoldMode, \"fontItalicMode\" => $FontItalicMode, \"fontUnderlineMode\" => $FontUnderlineMode, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES), true);"
                                     },
                                     {
-                                        "type": "Select",
+                                        "type": "RadioButtonGroup",
                                         "name": "BackgroundImageLayout",
                                         "caption": "Image layout",
                                         "value": "Stretch",
@@ -1455,6 +1353,97 @@
                                     }
                                 ]
                             }
+                        }
+                    ]
+                },
+                {
+                    "type": "ExpansionPanel",
+                    "name": "StyleProfilePanel",
+                    "caption": "Style profiles",
+                    "expanded": false,
+                    "items": [
+                        {
+                            "type": "Label",
+                            "name": "StyleProfileInfo",
+                            "caption": "Style Profile V1 exchanges the portable design values between IPSView Assistant and consuming modules. Background images, View format, page scope, control mappings and media IDs are intentionally not part of a profile."
+                        },
+                        {
+                            "type": "RowLayout",
+                            "items": [
+                                {
+                                    "type": "ValidationTextBox",
+                                    "name": "StyleProfileName",
+                                    "caption": "Profile name",
+                                    "value": "IPSView Style",
+                                    "width": "360px"
+                                },
+                                {
+                                    "type": "ValidationTextBox",
+                                    "name": "StyleProfileDescription",
+                                    "caption": "Description (optional)",
+                                    "value": "",
+                                    "width": "520px"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "RowLayout",
+                            "items": [
+                                {
+                                    "type": "Button",
+                                    "name": "ExportStyleProfileJsonButton",
+                                    "caption": "Export JSON",
+                                    "onClick": "echo IPSVIEWA_ExportStyleProfileJson($id, $StyleProfileName, $StyleProfileDescription, $Theme, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"fontBoldMode\" => $FontBoldMode, \"fontItalicMode\" => $FontItalicMode, \"fontUnderlineMode\" => $FontUnderlineMode, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));"
+                                },
+                                {
+                                    "type": "SelectCategory",
+                                    "name": "StyleProfileTargetCategoryID",
+                                    "caption": "Media target category",
+                                    "value": 0,
+                                    "width": "420px"
+                                },
+                                {
+                                    "type": "Button",
+                                    "name": "SaveStyleProfileMediaButton",
+                                    "caption": "Save as Symcon media",
+                                    "onClick": "echo IPSVIEWA_SaveStyleProfileMedia($id, $StyleProfileName, $StyleProfileDescription, $StyleProfileTargetCategoryID, $Theme, json_encode([\"viewBackground\" => $ViewBackgroundColor, \"pageBackground\" => $PageBackgroundColor, \"surface\" => $SurfaceColor, \"primaryText\" => $PrimaryTextColor, \"secondaryText\" => $SecondaryTextColor, \"border\" => $BorderColor, \"accent\" => $AccentColor, \"active\" => $ActiveColor, \"inactive\" => $InactiveColor, \"success\" => $SuccessColor, \"warning\" => $WarningColor, \"error\" => $ErrorColor], JSON_UNESCAPED_SLASHES), json_encode([\"shadowStyle\" => $ShadowStyle, \"transparencyMode\" => $TransparencyMode, \"transparencyPercent\" => $TransparencyPercent, \"gradientStyle\" => $GradientStyle, \"gradientDirection\" => $GradientDirection], JSON_UNESCAPED_SLASHES), json_encode([\"typographyStyle\" => $TypographyStyle, \"fontFamilyMode\" => $FontFamilyMode, \"customFontFamily\" => $CustomFontFamily, \"customFontSize\" => $CustomFontSize, \"fontBoldMode\" => $FontBoldMode, \"fontItalicMode\" => $FontItalicMode, \"fontUnderlineMode\" => $FontUnderlineMode, \"cornerStyle\" => $CornerStyle, \"customCornerRadius\" => $CustomCornerRadius, \"borderStyle\" => $BorderStyle, \"customBorderWidth\" => $CustomBorderWidth], JSON_UNESCAPED_SLASHES));"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Label",
+                            "caption": "Export JSON returns the complete validated profile as text. Saving as a Symcon media object creates or safely updates a document with the same profile name in the selected category."
+                        },
+                        {
+                            "type": "RowLayout",
+                            "items": [
+                                {
+                                    "type": "SelectFile",
+                                    "name": "StyleProfileImportFile",
+                                    "caption": "Import JSON file",
+                                    "width": "520px",
+                                    "extensions": ".json",
+                                    "onChange": "if ($StyleProfileImportFile !== \"\") { echo IPSVIEWA_ImportStyleProfileFile($id, $StyleProfileImportFile); }"
+                                },
+                                {
+                                    "type": "SelectMedia",
+                                    "name": "StyleProfileImportMediaID",
+                                    "caption": "Style profile media",
+                                    "value": 0,
+                                    "width": "420px"
+                                },
+                                {
+                                    "type": "Button",
+                                    "name": "ImportStyleProfileMediaButton",
+                                    "caption": "Import media",
+                                    "onClick": "echo IPSVIEWA_ImportStyleProfileMedia($id, $StyleProfileImportMediaID);"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Label",
+                            "name": "StyleProfileStatus",
+                            "caption": "No Style Profile V1 has been imported in this Assistant instance."
                         }
                     ]
                 }

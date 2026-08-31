@@ -4,7 +4,9 @@
 
 ### Changed
 
-- Replaced the reduced direct quick-start form with a four-step PopupButton wizard for basic data, format, design/background and the final start check while retaining the direct workflow in Advanced mode.
+- Presented compact, equal-ranking choices such as assistant mode, orientation, start grid, gradient direction and background layout as native Symcon 9.1 RadioButtonGroup fields.
+- Kept unavailable bold and italic font styles visible but disabled only their individual Select options instead of locking the complete font-format field.
+- Converted quick start to the native four-page PopupButton wizard introduced with Symcon 9.1, including automatic back/next navigation, final validation and creation through the wizard confirmation.
 - Moved existing-View handling, detailed design settings and background-image options into focused Symcon PopupButton dialogs while keeping the live preview and primary creation workflow visible.
 - Replaced all generated WOFF2 preview subsets with the complete original IPSView TrueType font cuts.
 - Simplified the offline font loader so every preview style uses the matching unmodified IPSView font file.
@@ -15,6 +17,9 @@
 
 ### Added
 
+- Portable Style Profile V1 export and import in Advanced mode, including deterministic JSON, reusable Symcon document media, shared profile validation and editor population.
+- Lossless no-edit profile round-trips that preserve canonical fields not exposed independently by the Assistant; edited profiles are rebuilt from the visible Assistant semantics.
+- Shared `IPSViewStyleProfileHelper` integration and helper synchronization against the authoritative `dev-popup` branch.
 - Added an explicit, start-check-controlled overwrite option for one unambiguous same-name IPSView while retaining its object ID and rolling back failed content writes.
 - Added local PNG/JPEG background images for the main page or all pages, including preserve, remove, tile, center and stretch modes.
 - Embedded selected images directly in IPSView documents with content reuse and live SVG preview support.

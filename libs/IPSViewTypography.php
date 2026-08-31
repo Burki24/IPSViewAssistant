@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Burki24\IPSViewAssistant;
 
+use Burki24\SymconModuleHelper\IPSViewFontCatalogHelper;
 use InvalidArgumentException;
 use stdClass;
+
+require_once __DIR__ . '/helper/IPSViewFontCatalogHelper.php';
 
 final class IPSViewTypography
 {
@@ -29,42 +32,16 @@ final class IPSViewTypography
     public const FORMAT_OFF = 1;
     public const FORMAT_ON = 2;
 
-    /**
-     * @var array<string, array{bold: bool, italic: bool}>
-     */
-    private const FONT_CAPABILITIES = [
-        'Roboto'        => [
-            'bold'   => true,
-            'italic' => true,
-        ],
-        'RobotoMono'    => [
-            'bold'   => true,
-            'italic' => true,
-        ],
-        'DancingScript' => [
-            'bold'   => true,
-            'italic' => false,
-        ],
-        'IndieFlower'   => [
-            'bold'   => false,
-            'italic' => false,
-        ],
-        'OpenSans'      => [
-            'bold'   => true,
-            'italic' => true,
-        ],
-        'PTSans'        => [
-            'bold'   => true,
-            'italic' => true,
-        ],
-        'BebasNeue'     => [
-            'bold'   => false,
-            'italic' => false,
-        ],
-        'Segment7'      => [
-            'bold'   => false,
-            'italic' => false,
-        ],
+    /** @var array<int, string> */
+    private const FONT_FAMILIES = [
+        self::FONT_ROBOTO         => IPSViewFontCatalogHelper::FONT_ROBOTO,
+        self::FONT_ROBOTO_MONO    => IPSViewFontCatalogHelper::FONT_ROBOTO_MONO,
+        self::FONT_DANCING_SCRIPT => IPSViewFontCatalogHelper::FONT_DANCING_SCRIPT,
+        self::FONT_INDIE_FLOWER   => IPSViewFontCatalogHelper::FONT_INDIE_FLOWER,
+        self::FONT_OPEN_SANS      => IPSViewFontCatalogHelper::FONT_OPEN_SANS,
+        self::FONT_PT_SANS        => IPSViewFontCatalogHelper::FONT_PT_SANS,
+        self::FONT_BEBAS_NEUE     => IPSViewFontCatalogHelper::FONT_BEBAS_NEUE,
+        self::FONT_SEGMENT_7      => IPSViewFontCatalogHelper::FONT_SEGMENT_7,
     ];
 
     /**
@@ -133,21 +110,10 @@ final class IPSViewTypography
             throw new InvalidArgumentException('The selected typography style is not supported.');
         }
 
-        if (!in_array(
-            $resolved['fontFamilyMode'],
-            [
-                self::FONT_PRESERVE,
-                self::FONT_ROBOTO,
-                self::FONT_ROBOTO_MONO,
-                self::FONT_DANCING_SCRIPT,
-                self::FONT_INDIE_FLOWER,
-                self::FONT_OPEN_SANS,
-                self::FONT_PT_SANS,
-                self::FONT_BEBAS_NEUE,
-                self::FONT_SEGMENT_7,
-            ],
-            true
-        )) {
+        if (
+            $resolved['fontFamilyMode'] !== self::FONT_PRESERVE
+            && !array_key_exists($resolved['fontFamilyMode'], self::FONT_FAMILIES)
+        ) {
             throw new InvalidArgumentException('The selected font family mode is not supported.');
         }
 
@@ -308,6 +274,28 @@ final class IPSViewTypography
     }
 
     /**
+     * Returns the Assistant font-family options backed by the shared IPSView catalogue.
+     *
+     * @return list<array{caption: string, value: int}>
+     */
+    public static function fontFamilyOptions(string $preserveCaption = 'Preserve existing'): array
+    {
+        $options = [[
+            'caption' => $preserveCaption,
+            'value'   => self::FONT_PRESERVE,
+        ]];
+
+        foreach (self::FONT_FAMILIES as $mode => $fontFamily) {
+            $options[] = [
+                'caption' => IPSViewFontCatalogHelper::label($fontFamily) ?? $fontFamily,
+                'value'   => $mode,
+            ];
+        }
+
+        return $options;
+    }
+
+    /**
      * Returns the formatting options supported by the selected fixed IPSView font.
      * Unknown or preserved fonts remain unrestricted because their installed cuts are not known.
      *
@@ -361,17 +349,7 @@ final class IPSViewTypography
      */
     private static function resolveFontFamily(array $settings): ?string
     {
-        return match ($settings['fontFamilyMode']) {
-            self::FONT_ROBOTO         => 'Roboto',
-            self::FONT_ROBOTO_MONO    => 'RobotoMono',
-            self::FONT_DANCING_SCRIPT => 'DancingScript',
-            self::FONT_INDIE_FLOWER   => 'IndieFlower',
-            self::FONT_OPEN_SANS      => 'OpenSans',
-            self::FONT_PT_SANS        => 'PTSans',
-            self::FONT_BEBAS_NEUE     => 'BebasNeue',
-            self::FONT_SEGMENT_7      => 'Segment7',
-            default                   => null,
-        };
+        return self::FONT_FAMILIES[$settings['fontFamilyMode']] ?? null;
     }
 
     /**
@@ -381,9 +359,17 @@ final class IPSViewTypography
      */
     private static function capabilitiesForFamily(string $fontFamily): array
     {
-        return self::FONT_CAPABILITIES[$fontFamily] ?? [
-            'bold'   => true,
-            'italic' => true,
+        $capabilities = IPSViewFontCatalogHelper::capabilities($fontFamily);
+        if ($capabilities === null) {
+            return [
+                'bold'   => true,
+                'italic' => true,
+            ];
+        }
+
+        return [
+            'bold'   => $capabilities['bold'],
+            'italic' => $capabilities['italic'],
         ];
     }
 

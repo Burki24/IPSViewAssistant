@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Burki24\IPSViewAssistant;
 
+use Burki24\SymconModuleHelper\IPSViewStylePresetHelper;
 use InvalidArgumentException;
 use stdClass;
+
+require_once __DIR__ . '/helper/IPSViewStylePresetHelper.php';
 
 final class IPSViewTheme
 {
@@ -23,18 +26,18 @@ final class IPSViewTheme
     public const SCOPE_MATCHING_CONTROLS = 1;
     public const SCOPE_ALL_CONTROL_DEFAULTS = 2;
 
-    public const ROLE_VIEW_BACKGROUND = 'viewBackground';
-    public const ROLE_PAGE_BACKGROUND = 'pageBackground';
-    public const ROLE_SURFACE = 'surface';
-    public const ROLE_PRIMARY_TEXT = 'primaryText';
-    public const ROLE_SECONDARY_TEXT = 'secondaryText';
-    public const ROLE_BORDER = 'border';
-    public const ROLE_ACCENT = 'accent';
-    public const ROLE_ACTIVE = 'active';
-    public const ROLE_INACTIVE = 'inactive';
-    public const ROLE_SUCCESS = 'success';
-    public const ROLE_WARNING = 'warning';
-    public const ROLE_ERROR = 'error';
+    public const ROLE_VIEW_BACKGROUND = IPSViewStylePresetHelper::ROLE_VIEW_BACKGROUND;
+    public const ROLE_PAGE_BACKGROUND = IPSViewStylePresetHelper::ROLE_PAGE_BACKGROUND;
+    public const ROLE_SURFACE = IPSViewStylePresetHelper::ROLE_SURFACE;
+    public const ROLE_PRIMARY_TEXT = IPSViewStylePresetHelper::ROLE_PRIMARY_TEXT;
+    public const ROLE_SECONDARY_TEXT = IPSViewStylePresetHelper::ROLE_SECONDARY_TEXT;
+    public const ROLE_BORDER = IPSViewStylePresetHelper::ROLE_BORDER;
+    public const ROLE_ACCENT = IPSViewStylePresetHelper::ROLE_ACCENT;
+    public const ROLE_ACTIVE = IPSViewStylePresetHelper::ROLE_ACTIVE;
+    public const ROLE_INACTIVE = IPSViewStylePresetHelper::ROLE_INACTIVE;
+    public const ROLE_SUCCESS = IPSViewStylePresetHelper::ROLE_SUCCESS;
+    public const ROLE_WARNING = IPSViewStylePresetHelper::ROLE_WARNING;
+    public const ROLE_ERROR = IPSViewStylePresetHelper::ROLE_ERROR;
 
     /**
      * Returns the semantic palette for one predefined theme.
@@ -43,121 +46,19 @@ final class IPSViewTheme
      */
     public static function preset(int $theme): array
     {
-        return match ($theme) {
-            self::THEME_STANDARD => [
-                self::ROLE_VIEW_BACKGROUND => '#404040',
-                self::ROLE_PAGE_BACKGROUND => '#404040',
-                self::ROLE_SURFACE         => '#606060',
-                self::ROLE_PRIMARY_TEXT    => '#FFFFFF',
-                self::ROLE_SECONDARY_TEXT  => '#A4A4A4',
-                self::ROLE_BORDER          => '#7F7F7F',
-                self::ROLE_ACCENT          => '#007AFF',
-                self::ROLE_ACTIVE          => '#0ABE0A',
-                self::ROLE_INACTIVE        => '#BE0A0A',
-                self::ROLE_SUCCESS         => '#0ABE0A',
-                self::ROLE_WARNING         => '#FF0000',
-                self::ROLE_ERROR           => '#BE0A0A',
-            ],
-            self::THEME_LIGHT => [
-                self::ROLE_VIEW_BACKGROUND => '#E9EEF5',
-                self::ROLE_PAGE_BACKGROUND => '#F6F8FB',
-                self::ROLE_SURFACE         => '#FFFFFF',
-                self::ROLE_PRIMARY_TEXT    => '#1F2937',
-                self::ROLE_SECONDARY_TEXT  => '#667085',
-                self::ROLE_BORDER          => '#D0D5DD',
-                self::ROLE_ACCENT          => '#2563EB',
-                self::ROLE_ACTIVE          => '#16A34A',
-                self::ROLE_INACTIVE        => '#98A2B3',
-                self::ROLE_SUCCESS         => '#15803D',
-                self::ROLE_WARNING         => '#D97706',
-                self::ROLE_ERROR           => '#DC2626',
-            ],
-            self::THEME_DARK => [
-                self::ROLE_VIEW_BACKGROUND => '#111827',
-                self::ROLE_PAGE_BACKGROUND => '#1F2937',
-                self::ROLE_SURFACE         => '#273449',
-                self::ROLE_PRIMARY_TEXT    => '#F9FAFB',
-                self::ROLE_SECONDARY_TEXT  => '#AEB8C7',
-                self::ROLE_BORDER          => '#475569',
-                self::ROLE_ACCENT          => '#3B82F6',
-                self::ROLE_ACTIVE          => '#22C55E',
-                self::ROLE_INACTIVE        => '#64748B',
-                self::ROLE_SUCCESS         => '#22C55E',
-                self::ROLE_WARNING         => '#F59E0B',
-                self::ROLE_ERROR           => '#EF4444',
-            ],
-            self::THEME_WARM => [
-                self::ROLE_VIEW_BACKGROUND => '#3B2420',
-                self::ROLE_PAGE_BACKGROUND => '#4A2E27',
-                self::ROLE_SURFACE         => '#5C3A31',
-                self::ROLE_PRIMARY_TEXT    => '#FFF7ED',
-                self::ROLE_SECONDARY_TEXT  => '#D6B8A8',
-                self::ROLE_BORDER          => '#8A5A44',
-                self::ROLE_ACCENT          => '#F59E0B',
-                self::ROLE_ACTIVE          => '#E76F51',
-                self::ROLE_INACTIVE        => '#8D6E63',
-                self::ROLE_SUCCESS         => '#7BA05B',
-                self::ROLE_WARNING         => '#F4A261',
-                self::ROLE_ERROR           => '#D64545',
-            ],
-            self::THEME_COOL => [
-                self::ROLE_VIEW_BACKGROUND => '#0F1B2D',
-                self::ROLE_PAGE_BACKGROUND => '#17263A',
-                self::ROLE_SURFACE         => '#21354D',
-                self::ROLE_PRIMARY_TEXT    => '#F1F7FF',
-                self::ROLE_SECONDARY_TEXT  => '#A9BCD0',
-                self::ROLE_BORDER          => '#49647E',
-                self::ROLE_ACCENT          => '#38BDF8',
-                self::ROLE_ACTIVE          => '#2DD4BF',
-                self::ROLE_INACTIVE        => '#64748B',
-                self::ROLE_SUCCESS         => '#22C55E',
-                self::ROLE_WARNING         => '#FBBF24',
-                self::ROLE_ERROR           => '#F87171',
-            ],
-            self::THEME_EARTHY => [
-                self::ROLE_VIEW_BACKGROUND => '#2D2A20',
-                self::ROLE_PAGE_BACKGROUND => '#3A3528',
-                self::ROLE_SURFACE         => '#4A4433',
-                self::ROLE_PRIMARY_TEXT    => '#F4EBD0',
-                self::ROLE_SECONDARY_TEXT  => '#C8B894',
-                self::ROLE_BORDER          => '#766A4E',
-                self::ROLE_ACCENT          => '#B08968',
-                self::ROLE_ACTIVE          => '#7A9E5A',
-                self::ROLE_INACTIVE        => '#8B7D6B',
-                self::ROLE_SUCCESS         => '#6B8E4E',
-                self::ROLE_WARNING         => '#D4A373',
-                self::ROLE_ERROR           => '#B75D5D',
-            ],
-            self::THEME_WATER => [
-                self::ROLE_VIEW_BACKGROUND => '#06283D',
-                self::ROLE_PAGE_BACKGROUND => '#0B3A53',
-                self::ROLE_SURFACE         => '#10546D',
-                self::ROLE_PRIMARY_TEXT    => '#E6F7FF',
-                self::ROLE_SECONDARY_TEXT  => '#9CC9D8',
-                self::ROLE_BORDER          => '#347D91',
-                self::ROLE_ACCENT          => '#00B4D8',
-                self::ROLE_ACTIVE          => '#48CAE4',
-                self::ROLE_INACTIVE        => '#5B7F8C',
-                self::ROLE_SUCCESS         => '#2EC4B6',
-                self::ROLE_WARNING         => '#FFD166',
-                self::ROLE_ERROR           => '#EF476F',
-            ],
-            self::THEME_SUNNY => [
-                self::ROLE_VIEW_BACKGROUND => '#FFF3B0',
-                self::ROLE_PAGE_BACKGROUND => '#FFF9DB',
-                self::ROLE_SURFACE         => '#FFFFFF',
-                self::ROLE_PRIMARY_TEXT    => '#5B3A00',
-                self::ROLE_SECONDARY_TEXT  => '#8A6A2B',
-                self::ROLE_BORDER          => '#E7C86E',
-                self::ROLE_ACCENT          => '#F59E0B',
-                self::ROLE_ACTIVE          => '#84CC16',
-                self::ROLE_INACTIVE        => '#C7B37A',
-                self::ROLE_SUCCESS         => '#22C55E',
-                self::ROLE_WARNING         => '#F97316',
-                self::ROLE_ERROR           => '#DC2626',
-            ],
-            default => throw new InvalidArgumentException('The selected theme is not supported.'),
+        $preset = match ($theme) {
+            self::THEME_STANDARD => IPSViewStylePresetHelper::PRESET_STANDARD,
+            self::THEME_LIGHT    => IPSViewStylePresetHelper::PRESET_LIGHT,
+            self::THEME_DARK     => IPSViewStylePresetHelper::PRESET_DARK,
+            self::THEME_WARM     => IPSViewStylePresetHelper::PRESET_WARM,
+            self::THEME_COOL     => IPSViewStylePresetHelper::PRESET_COOL,
+            self::THEME_EARTHY   => IPSViewStylePresetHelper::PRESET_EARTHY,
+            self::THEME_WATER    => IPSViewStylePresetHelper::PRESET_WATER,
+            self::THEME_SUNNY    => IPSViewStylePresetHelper::PRESET_SUNNY,
+            default              => throw new InvalidArgumentException('The selected theme is not supported.')
         };
+
+        return IPSViewStylePresetHelper::palette($preset);
     }
 
     /**
