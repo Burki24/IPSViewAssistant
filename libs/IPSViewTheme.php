@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Burki24\IPSViewAssistant;
 
+use Burki24\SymconModuleHelper\IPSViewControlThemeHelper;
 use Burki24\SymconModuleHelper\IPSViewStylePresetHelper;
 use InvalidArgumentException;
 use stdClass;
 
 require_once __DIR__ . '/helper/IPSViewStylePresetHelper.php';
+require_once __DIR__ . '/helper/IPSViewControlThemeHelper.php';
 
 final class IPSViewTheme
 {
@@ -141,7 +143,7 @@ final class IPSViewTheme
 
         $sourceRoleSignatures = self::sourceRoleSignatures($document);
 
-        foreach (self::propertyMapping() as $role => $properties) {
+        foreach (self::propertyMapping($document) as $role => $properties) {
             foreach ($properties as $property) {
                 if (self::applyColor($document, $property, $palette[$role])) {
                     ++$report['globalColorsApplied'];
@@ -189,7 +191,7 @@ final class IPSViewTheme
         $controlAnalysis = self::analyzeControlColors($document);
         $globalColors = 0;
 
-        foreach (self::propertyMapping() as $properties) {
+        foreach (self::propertyMapping($document) as $properties) {
             foreach ($properties as $property) {
                 if (self::isColorObject($document->{$property} ?? null)) {
                     ++$globalColors;
@@ -221,9 +223,10 @@ final class IPSViewTheme
     public static function extract(stdClass $document): array
     {
         $fallbacks = self::preset(self::THEME_DARK);
+        $hasLegacyViewColor = property_exists($document, 'ColorView');
         $representatives = [
-            self::ROLE_VIEW_BACKGROUND => 'ColorPage',
-            self::ROLE_PAGE_BACKGROUND => 'ColorPopupBack',
+            self::ROLE_VIEW_BACKGROUND => $hasLegacyViewColor ? 'ColorView' : 'ColorPage',
+            self::ROLE_PAGE_BACKGROUND => $hasLegacyViewColor ? 'ColorPage' : 'ColorPopupBack',
             self::ROLE_SURFACE         => 'ColorBack',
             self::ROLE_PRIMARY_TEXT    => 'ColorText',
             self::ROLE_SECONDARY_TEXT  => 'ColorTextOff',
@@ -327,142 +330,13 @@ final class IPSViewTheme
     }
 
     /**
-     * Returns the semantic-role mapping for all supported global color properties.
+     * Returns the central, document-aware semantic-role mapping for native IPSView colors.
      *
      * @return array<string, list<string>>
      */
-    private static function propertyMapping(): array
+    private static function propertyMapping(stdClass $document): array
     {
-        return [
-            self::ROLE_VIEW_BACKGROUND => [
-                'ColorPage',
-            ],
-            self::ROLE_PAGE_BACKGROUND => [
-                'ColorPopupBack',
-                'DialogBackColor',
-                'CalendarDayBackColor',
-                'CalendarOffBackColor',
-            ],
-            self::ROLE_SURFACE => [
-                'ColorBack',
-                'ColorBackLabel',
-                'ShadowBackColor',
-                'DialogButtonBackColor',
-            ],
-            self::ROLE_PRIMARY_TEXT => [
-                'ColorText',
-                'ColorTextOn',
-                'ColorTextLabel',
-                'ColorIcon',
-                'ColorAssocTextOn',
-                'ColorTabTextOn',
-                'FlowTextColorPositive',
-                'FlowTextColorNegative',
-                'GaugeTickColor',
-                'GaugeLabelColor',
-                'GaugeKnobColor',
-                'ChartDotFillColor',
-                'ScheduleDayOfWeekColor',
-                'ScheduleLegendColor',
-                'ScheduleItemsColor',
-                'EventHeaderColor',
-                'EventTextColor',
-                'EventTextColorOn',
-                'EventIconColor',
-                'CalendarHeaderFontColor',
-                'CalendarTodayFontColor',
-                'CalendarDayFontColor',
-                'DialogHeaderTextColor',
-                'DialogTextColor',
-                'DialogButtonTextColorEnabled',
-            ],
-            self::ROLE_SECONDARY_TEXT => [
-                'ColorTextOff',
-                'ColorAssocTextOff',
-                'ColorTabTextOff',
-                'FlowTextColorNeutral',
-                'FlowAnimationColorNeutral',
-                'ChartScaleFontColor',
-                'ScheduleTimeColor',
-                'EventTextColorOff',
-                'CalendarWeekNumberFontColor',
-                'CalendarOffFontColor',
-                'CalendarTimeFontColor',
-                'DialogButtonTextColorDisabled',
-            ],
-            self::ROLE_BORDER => [
-                'ColorBorder',
-                'ColorLine',
-                'ColorBorderLabel',
-                'ColorPopupBorder',
-                'ColorAssocBorder',
-                'FlowBorderColorPositive',
-                'FlowBorderColorNegative',
-                'FlowBorderColorNeutral',
-                'GaugeTrackColor',
-                'ChartGridColor',
-                'ChartScaleLineColor',
-                'ChartDotBorderColor',
-                'CalendarGridColor',
-                'ShadowBorderColor',
-                'GridLineColor',
-                'SliderThumbColorOuter',
-                'ProgressbarThumbColorOuter',
-                'CircleThumbColorOuter',
-            ],
-            self::ROLE_ACCENT => [
-                'SwitchTrackColorActive',
-                'SwitchThumbColorActive',
-                'SliderTrackColorActive',
-                'SliderTickColorInactive',
-                'SliderThumbColorInner',
-                'ProgressbarTrackColorActive',
-                'ProgressbarTickColorInactive',
-                'ProgressbarThumbColorInner',
-                'CircleTrackColorActive',
-                'CircleTickColorInactive',
-                'CircleThumbColorInner',
-                'GaugeNeedleColor',
-                'ChartGraphFillColor',
-                'ChartGraphLineColor',
-                'ChartGraphLineColorMin',
-                'CalendarTodayHighlightColor',
-                'DialogDateTimePrimaryColor',
-            ],
-            self::ROLE_ACTIVE => [
-                'ColorBackOn',
-                'ColorAssocBackOn',
-                'ColorTabBackOn',
-                'GaugeTrackPointerColor',
-            ],
-            self::ROLE_INACTIVE => [
-                'ColorBackOff',
-                'ColorAssocBackOff',
-                'SwitchTrackColorInactive',
-                'SwitchThumbColorInactive',
-                'SliderTrackColorInactive',
-                'SliderTickColorActive',
-                'ProgressbarTrackColorInactive',
-                'ProgressbarTickColorActive',
-                'CircleTrackColorInactive',
-                'CircleTickColorActive',
-                'DialogDateTimeSecondaryColor',
-                'FlowLineColorNeutral',
-            ],
-            self::ROLE_SUCCESS => [
-                'FlowLineColorPositive',
-                'FlowAnimationColorPositive',
-            ],
-            self::ROLE_WARNING => [
-                'ScheduleNowFontColor',
-                'ScheduleNowIndicatorColor',
-            ],
-            self::ROLE_ERROR => [
-                'FlowLineColorNegative',
-                'FlowAnimationColorNegative',
-                'ChartGraphLineColorMax',
-            ],
-        ];
+        return IPSViewControlThemeHelper::presetRoleMappingForDocument($document);
     }
 
     /**
@@ -622,7 +496,7 @@ final class IPSViewTheme
     {
         $signatures = [];
 
-        foreach (self::propertyMapping() as $role => $properties) {
+        foreach (self::propertyMapping($document) as $role => $properties) {
             $signatures[$role] = [];
 
             foreach ($properties as $property) {
@@ -678,11 +552,11 @@ final class IPSViewTheme
      */
     private static function preferredControlRole(string $property): ?string
     {
-        if (preg_match('/^BorderColor\d+$/', $property) === 1) {
+        if (preg_match('/^BorderColor\\d+$/', $property) === 1) {
             return self::ROLE_BORDER;
         }
 
-        if (preg_match('/^ForeColor\d+$/', $property) === 1) {
+        if (preg_match('/^ForeColor\\d+$/', $property) === 1) {
             return self::ROLE_PRIMARY_TEXT;
         }
 
@@ -690,7 +564,7 @@ final class IPSViewTheme
             return self::ROLE_SURFACE;
         }
 
-        if (preg_match('/^BackColor[2-9]\d*$/', $property) === 1) {
+        if (preg_match('/^BackColor[2-9]\\d*$/', $property) === 1) {
             return self::ROLE_ACTIVE;
         }
 
@@ -702,7 +576,7 @@ final class IPSViewTheme
      */
     private static function isSupportedControlColorProperty(string $property): bool
     {
-        return preg_match('/^(BackColor|ForeColor|BackColor\d+|ForeColor\d+|BorderColor\d+)$/', $property) === 1;
+        return preg_match('/^(BackColor|ForeColor|BackColor\\d+|ForeColor\\d+|BorderColor\\d+)$/', $property) === 1;
     }
 
     /**
