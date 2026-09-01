@@ -175,9 +175,7 @@ final class IPSViewThemePreview
         ],
     ];
 
-    /**
-     * @var array<string, string>
-     */
+    /** @var array<string, string> */
     private static array $previewFontData = [];
 
     /**
@@ -187,15 +185,26 @@ final class IPSViewThemePreview
      * @param array<string, mixed>  $effects
      * @param array<string, mixed>  $appearance
      * @param array<string, mixed>  $background
+     * @param array<string, string> $nativeColors
      */
     public static function createDataUri(
         array $palette,
         array $effects = [],
         array $appearance = [],
         array $background = [],
-        int $startGrid = 0
+        int $startGrid = 0,
+        bool $transparentBackground = false,
+        array $nativeColors = []
     ): string {
-        $svg = self::createSvg($palette, $effects, $appearance, $background, $startGrid);
+        $svg = self::createSvg(
+            $palette,
+            $effects,
+            $appearance,
+            $background,
+            $startGrid,
+            $transparentBackground,
+            $nativeColors
+        );
 
         return 'data:image/svg+xml;base64,' . base64_encode($svg);
     }
@@ -207,26 +216,58 @@ final class IPSViewThemePreview
      * @param array<string, mixed>  $effects
      * @param array<string, mixed>  $appearance
      * @param array<string, mixed>  $background
+     * @param array<string, string> $nativeColors
      */
     public static function createSvg(
         array $palette,
         array $effects = [],
         array $appearance = [],
         array $background = [],
-        int $startGrid = 0
+        int $startGrid = 0,
+        bool $transparentBackground = false,
+        array $nativeColors = []
     ): string {
-        $view = self::color($palette, IPSViewTheme::ROLE_VIEW_BACKGROUND);
-        $page = self::color($palette, IPSViewTheme::ROLE_PAGE_BACKGROUND);
-        $surface = self::color($palette, IPSViewTheme::ROLE_SURFACE);
-        $primary = self::color($palette, IPSViewTheme::ROLE_PRIMARY_TEXT);
-        $secondary = self::color($palette, IPSViewTheme::ROLE_SECONDARY_TEXT);
-        $border = self::color($palette, IPSViewTheme::ROLE_BORDER);
+        $view = self::nativeColor(
+            $nativeColors,
+            'ColorView',
+            self::color($palette, IPSViewTheme::ROLE_VIEW_BACKGROUND)
+        );
+        $page = self::nativeColor(
+            $nativeColors,
+            'ColorPage',
+            self::color($palette, IPSViewTheme::ROLE_PAGE_BACKGROUND)
+        );
+        $surface = self::nativeColor(
+            $nativeColors,
+            'ColorBack',
+            self::color($palette, IPSViewTheme::ROLE_SURFACE)
+        );
+        $primary = self::nativeColor(
+            $nativeColors,
+            'ColorText',
+            self::color($palette, IPSViewTheme::ROLE_PRIMARY_TEXT)
+        );
+        $secondary = self::nativeColor(
+            $nativeColors,
+            'ColorTextOff',
+            self::color($palette, IPSViewTheme::ROLE_SECONDARY_TEXT)
+        );
+        $border = self::nativeColor(
+            $nativeColors,
+            'ColorBorder',
+            self::color($palette, IPSViewTheme::ROLE_BORDER)
+        );
         $accent = self::color($palette, IPSViewTheme::ROLE_ACCENT);
-        $active = self::color($palette, IPSViewTheme::ROLE_ACTIVE);
         $inactive = self::color($palette, IPSViewTheme::ROLE_INACTIVE);
         $success = self::color($palette, IPSViewTheme::ROLE_SUCCESS);
         $warning = self::color($palette, IPSViewTheme::ROLE_WARNING);
         $error = self::color($palette, IPSViewTheme::ROLE_ERROR);
+        $switchTrackActive = self::nativeColor($nativeColors, 'SwitchTrackColorActive', $accent);
+        $switchThumbActive = self::nativeColor($nativeColors, 'SwitchThumbColorActive', $accent);
+        $sliderTrackActive = self::nativeColor($nativeColors, 'SliderTrackColorActive', $accent);
+        $sliderTrackInactive = self::nativeColor($nativeColors, 'SliderTrackColorInactive', $inactive);
+        $sliderThumbInner = self::nativeColor($nativeColors, 'SliderThumbColorInner', $accent);
+        $sliderThumbOuter = self::nativeColor($nativeColors, 'SliderThumbColorOuter', $border);
         $effects = IPSViewEffects::resolve($effects);
         $typography = IPSViewTypography::preview($appearance);
         $shape = IPSViewShape::preview($appearance);
@@ -255,6 +296,7 @@ final class IPSViewThemePreview
         $smallRadius = $cornerRadius === 0 ? 0 : max(2, min(12, $cornerRadius));
         $borderWidth = number_format(max(0.0, min(8.0, $shape['borderWidth'])), 1, '.', '');
         $opacity = number_format(IPSViewEffects::previewOpacity($effects), 2, '.', '');
+        $viewOpacity = $opacity;
         $shadow = IPSViewTheme::mix($view, '#000000', 0.82);
         $shadowSettings = IPSViewEffects::previewShadow($effects);
         $shadowOffset = $shadowSettings['offset'];
@@ -269,22 +311,28 @@ final class IPSViewThemePreview
             self::gradientDefinition('pageFill', $page, $effects),
             self::gradientDefinition('surfaceFill', $surface, $effects),
             self::gradientDefinition('accentFill', $accent, $effects),
-            self::gradientDefinition('activeFill', $active, $effects),
-            self::gradientDefinition('inactiveFill', $inactive, $effects),
             self::gradientDefinition('successFill', $success, $effects),
             self::gradientDefinition('warningFill', $warning, $effects),
             self::gradientDefinition('errorFill', $error, $effects),
+            self::gradientDefinition('switchTrackActiveFill', $switchTrackActive, $effects),
+            self::gradientDefinition('switchThumbActiveFill', $switchThumbActive, $effects),
+            self::gradientDefinition('sliderTrackActiveFill', $sliderTrackActive, $effects),
+            self::gradientDefinition('sliderTrackInactiveFill', $sliderTrackInactive, $effects),
+            self::gradientDefinition('sliderThumbInnerFill', $sliderThumbInner, $effects),
         ];
         $gradientDefinitions = implode("\n", array_filter($definitions));
         $viewFill = self::fill('viewFill', $view, $effects);
         $pageFill = self::fill('pageFill', $page, $effects);
         $surfaceFill = self::fill('surfaceFill', $surface, $effects);
         $accentFill = self::fill('accentFill', $accent, $effects);
-        $activeFill = self::fill('activeFill', $active, $effects);
-        $inactiveFill = self::fill('inactiveFill', $inactive, $effects);
         $successFill = self::fill('successFill', $success, $effects);
         $warningFill = self::fill('warningFill', $warning, $effects);
         $errorFill = self::fill('errorFill', $error, $effects);
+        $switchTrackActiveFill = self::fill('switchTrackActiveFill', $switchTrackActive, $effects);
+        $switchThumbActiveFill = self::fill('switchThumbActiveFill', $switchThumbActive, $effects);
+        $sliderTrackActiveFill = self::fill('sliderTrackActiveFill', $sliderTrackActive, $effects);
+        $sliderTrackInactiveFill = self::fill('sliderTrackInactiveFill', $sliderTrackInactive, $effects);
+        $sliderThumbInnerFill = self::fill('sliderThumbInnerFill', $sliderThumbInner, $effects);
         $titleSize = self::fontSize(20, $fontScale);
         $subtitleSize = self::fontSize(13, $fontScale);
         $valueSize = self::fontSize(22, $fontScale);
@@ -369,12 +417,12 @@ final class IPSViewThemePreview
     </filter>
   </defs>
   <rect width="920" height="420" rx="{$cornerRadius}" fill="url(#checker)"/>
-  <rect width="920" height="420" rx="{$cornerRadius}" fill="{$viewFill}" fill-opacity="{$opacity}"/>
-  <rect x="22" y="22" width="876" height="376" rx="{$cornerRadius}" fill="{$pageFill}" fill-opacity="{$opacity}" stroke="{$border}" stroke-width="{$borderWidth}"/>
+  <rect width="920" height="420" rx="{$cornerRadius}" fill="{$viewFill}" fill-opacity="{$viewOpacity}" data-native-field="ColorView"/>
+  <rect x="22" y="22" width="876" height="376" rx="{$cornerRadius}" fill="{$pageFill}" fill-opacity="{$opacity}" stroke="{$border}" stroke-width="{$borderWidth}" data-native-field="ColorPage"/>
   {$backgroundElement}
   {$gridGuides}
-  <rect x="22" y="22" width="876" height="68" rx="{$cornerRadius}" fill="{$surfaceFill}" fill-opacity="{$opacity}"/>
-  <rect x="22" y="72" width="876" height="18" fill="{$surfaceFill}" fill-opacity="{$opacity}"/>
+  <rect x="22" y="22" width="876" height="68" rx="{$cornerRadius}" fill="{$surfaceFill}" fill-opacity="{$opacity}" data-native-field="ColorBack"/>
+  <rect x="22" y="72" width="876" height="18" fill="{$surfaceFill}" fill-opacity="{$opacity}" data-native-field="ColorBack"/>
   <circle cx="60" cy="56" r="17" fill="{$accentFill}" fill-opacity="{$opacity}"/>
   <path d="M52 56h16M60 48v16" stroke="{$primary}" stroke-width="3" stroke-linecap="round"/>
   <text x="90" y="52" fill="{$primary}" {$fontAttributes} font-size="{$titleSize}">Design preview</text>
@@ -386,8 +434,8 @@ final class IPSViewThemePreview
     <rect x="{$lightsX}" y="{$lightsY}" width="{$lightsWidth}" height="{$lightsHeight}" rx="{$cornerRadius}" fill="{$surfaceFill}" fill-opacity="{$opacity}" stroke="{$border}" stroke-width="{$borderWidth}"/>
     <text x="{$lightsTextX}" y="{$lightsLabelY}" fill="{$secondary}" {$fontAttributes} font-size="{$subtitleSize}">LIGHTS</text>
     <text x="{$lightsTextX}" y="{$lightsValueY}" fill="{$primary}" {$fontAttributes} font-size="{$valueSize}">Living room</text>
-    <rect x="{$lightsSwitchX}" y="{$lightsSwitchY}" width="54" height="30" rx="{$smallRadius}" fill="{$activeFill}" fill-opacity="{$opacity}"/>
-    <circle cx="{$lightsSwitchCircleX}" cy="{$lightsSwitchCircleY}" r="11" fill="{$primary}"/>
+    <rect x="{$lightsSwitchX}" y="{$lightsSwitchY}" width="54" height="30" rx="{$smallRadius}" fill="{$switchTrackActiveFill}" fill-opacity="{$opacity}" data-native-field="SwitchTrackColorActive"/>
+    <circle cx="{$lightsSwitchCircleX}" cy="{$lightsSwitchCircleY}" r="11" fill="{$switchThumbActiveFill}" data-native-field="SwitchThumbColorActive"/>
     <text x="{$lightsTextX}" y="{$lightsStatusY}" fill="{$success}" {$fontAttributes} font-size="{$subtitleSize}">Active</text>
   </g>
 
@@ -395,9 +443,9 @@ final class IPSViewThemePreview
     <rect x="{$shuttersX}" y="{$shuttersY}" width="{$shuttersWidth}" height="{$shuttersHeight}" rx="{$cornerRadius}" fill="{$surfaceFill}" fill-opacity="{$opacity}" stroke="{$border}" stroke-width="{$borderWidth}"/>
     <text x="{$shuttersTextX}" y="{$shuttersLabelY}" fill="{$secondary}" {$fontAttributes} font-size="{$subtitleSize}">SHUTTERS</text>
     <text x="{$shuttersTextX}" y="{$shuttersValueY}" fill="{$primary}" {$fontAttributes} font-size="{$valueSize}">65 %</text>
-    <rect x="{$shuttersTextX}" y="{$shuttersProgressY}" width="{$shuttersProgressWidth}" height="8" rx="{$smallRadius}" fill="{$inactiveFill}" fill-opacity="{$opacity}"/>
-    <rect x="{$shuttersTextX}" y="{$shuttersProgressY}" width="{$shuttersActiveWidth}" height="8" rx="{$smallRadius}" fill="{$accentFill}" fill-opacity="{$opacity}"/>
-    <circle cx="{$shuttersHandleX}" cy="{$shuttersHandleY}" r="11" fill="{$accentFill}" fill-opacity="{$opacity}" stroke="{$surface}" stroke-width="4"/>
+    <rect x="{$shuttersTextX}" y="{$shuttersProgressY}" width="{$shuttersProgressWidth}" height="8" rx="{$smallRadius}" fill="{$sliderTrackInactiveFill}" fill-opacity="{$opacity}" data-native-field="SliderTrackColorInactive"/>
+    <rect x="{$shuttersTextX}" y="{$shuttersProgressY}" width="{$shuttersActiveWidth}" height="8" rx="{$smallRadius}" fill="{$sliderTrackActiveFill}" fill-opacity="{$opacity}" data-native-field="SliderTrackColorActive"/>
+    <circle cx="{$shuttersHandleX}" cy="{$shuttersHandleY}" r="11" fill="{$sliderThumbInnerFill}" fill-opacity="{$opacity}" stroke="{$sliderThumbOuter}" stroke-width="4" data-native-field="SliderThumbColorInner"/>
   </g>
 
   <g filter="url(#shadow)">
@@ -416,7 +464,7 @@ final class IPSViewThemePreview
   <circle cx="{$typographyCircle1X}" cy="{$typographyCircleY}" r="{$typographyCircleRadius}" fill="{$successFill}" fill-opacity="{$opacity}"/>
   <circle cx="{$typographyCircle2X}" cy="{$typographyCircleY}" r="{$typographyCircleRadius}" fill="{$warningFill}" fill-opacity="{$opacity}"/>
   <circle cx="{$typographyCircle3X}" cy="{$typographyCircleY}" r="{$typographyCircleRadius}" fill="{$errorFill}" fill-opacity="{$opacity}"/>
-  <circle cx="{$typographyCircle4X}" cy="{$typographyCircleY}" r="{$typographyCircleRadius}" fill="{$inactiveFill}" fill-opacity="{$opacity}"/>
+  <circle cx="{$typographyCircle4X}" cy="{$typographyCircleY}" r="{$typographyCircleRadius}" fill="{$sliderTrackInactiveFill}" fill-opacity="{$opacity}"/>
 </svg>
 SVG;
     }
@@ -454,9 +502,7 @@ SVG;
         };
     }
 
-    /**
-     * Draws optional column guides matching the selected start-grid layout.
-     */
+    /** Draws optional column guides matching the selected start-grid layout. */
     private static function gridGuides(int $startGrid, string $accent): string
     {
         if ($startGrid === 0) {
@@ -545,9 +591,7 @@ SVG;
         );
     }
 
-    /**
-     * Embeds the closest bundled font face required by the current preview.
-     */
+    /** Embeds the closest bundled font face required by the current preview. */
     private static function fontDefinition(
         string $fontFamily,
         bool $isBold,
@@ -581,17 +625,9 @@ SVG;
     /**
      * Selects the closest available bundled font face for the requested style.
      *
-     * @param array<string, array{
-     *     filename: string,
-     *     mime: string,
-     *     format: string
-     * }> $faces
+     * @param array<string, array{filename: string, mime: string, format: string}> $faces
      *
-     * @return array{
-     *     source: array{data: string, mime: string, format: string},
-     *     weight: int,
-     *     style: string
-     * }|null
+     * @return array{source: array{data: string, mime: string, format: string}, weight: int, style: string}|null
      */
     private static function resolveFontFace(
         array $faces,
@@ -630,11 +666,7 @@ SVG;
     /**
      * Resolves one bundled font file to an embeddable data source.
      *
-     * @param array{
-     *     filename: string,
-     *     mime: string,
-     *     format: string
-     * } $face
+     * @param array{filename: string, mime: string, format: string} $face
      *
      * @return array{data: string, mime: string, format: string}|null
      */
@@ -652,9 +684,7 @@ SVG;
         ];
     }
 
-    /**
-     * Returns the CSS font stack for a bundled or user-provided family.
-     */
+    /** Returns the CSS font stack for a bundled or user-provided family. */
     private static function fontStack(string $fontFamily): string
     {
         $font = self::PREVIEW_FONTS[$fontFamily] ?? null;
@@ -667,9 +697,7 @@ SVG;
             : $font['alias'] . ', ' . $font['fallback'];
     }
 
-    /**
-     * Loads and caches one bundled preview font as Base64 data.
-     */
+    /** Loads and caches one bundled preview font as Base64 data. */
     private static function fontData(string $filename): string
     {
         if (isset(self::$previewFontData[$filename])) {
@@ -721,9 +749,7 @@ SVG;
             : $color;
     }
 
-    /**
-     * Scales and clamps one font size for the fixed preview canvas.
-     */
+    /** Scales and clamps one font size for the fixed preview canvas. */
     private static function fontSize(int $baseSize, float $scale): int
     {
         return max(9, min(30, (int) round($baseSize * $scale)));
@@ -737,5 +763,19 @@ SVG;
     private static function color(array $palette, string $role): string
     {
         return IPSViewTheme::normalizeColor((string) ($palette[$role] ?? '#000000'));
+    }
+
+    /**
+     * Resolves one concrete native IPSView color with a semantic fallback.
+     *
+     * @param array<string, string> $nativeColors
+     */
+    private static function nativeColor(array $nativeColors, string $field, string $fallback): string
+    {
+        if (!isset($nativeColors[$field])) {
+            return $fallback;
+        }
+
+        return IPSViewTheme::normalizeColor($nativeColors[$field]);
     }
 }

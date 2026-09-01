@@ -175,17 +175,20 @@ trait IPSViewSharedStyleIntegration
     /** Refreshes preview and hidden legacy fields from the active shared style. */
     public function RefreshSharedStylePreview(): void
     {
-        $style = $this->IPSViewResolvedStyle();
+        $snapshot = $this->IPSViewAssistantSharedStyleSnapshot();
+        $style = $snapshot['style'];
         $palette = IPSViewSharedStyleAdapter::previewPalette($style);
-        $effects = IPSViewSharedStyleAdapter::previewEffects($style, $this->IPSViewAssistantActiveGradientStrength());
+        $effects = IPSViewSharedStyleAdapter::previewEffects($style, $snapshot['gradientStrength']);
         $appearance = IPSViewSharedStyleAdapter::appearance($style);
+        $nativeColors = $this->IPSViewAssistantNativePreviewColors($snapshot['nativeTheme']);
         $preview = IPSViewThemePreview::createDataUri(
             $palette,
             $effects,
             $appearance,
             $this->backgroundSettings(),
             $this->previewStartGrid(),
-            $this->ReadPropertyBoolean('IPSViewStyleTransparentBackground')
+            $snapshot['transparentBackground'],
+            $nativeColors
         );
 
         $this->IPSViewAssistantSynchronizeLegacyStyleFields($palette, $effects, $appearance);
@@ -925,20 +928,43 @@ trait IPSViewSharedStyleIntegration
     /** @param array<string,mixed> $form */
     private function IPSViewAssistantApplySharedPreviewToForm(array &$form): void
     {
-        $style = $this->IPSViewResolvedStyle();
+        $snapshot = $this->IPSViewAssistantSharedStyleSnapshot();
+        $style = $snapshot['style'];
         $this->setConfigurationFormField(
             $form,
             'ThemePreview',
             'image',
             IPSViewThemePreview::createDataUri(
                 IPSViewSharedStyleAdapter::previewPalette($style),
-                IPSViewSharedStyleAdapter::previewEffects($style, $this->IPSViewAssistantActiveGradientStrength()),
+                IPSViewSharedStyleAdapter::previewEffects($style, $snapshot['gradientStrength']),
                 IPSViewSharedStyleAdapter::appearance($style),
                 $this->backgroundSettings(),
                 $this->previewStartGrid(),
-                $this->ReadPropertyBoolean('IPSViewStyleTransparentBackground')
+                $snapshot['transparentBackground'],
+                $this->IPSViewAssistantNativePreviewColors($snapshot['nativeTheme'])
             )
         );
+    }
+
+    /**
+     * Converts the resolved native IPSView theme to the hexadecimal colors consumed by the preview.
+     *
+     * @param array<string,mixed> $nativeTheme
+     *
+     * @return array<string,string>
+     */
+    private function IPSViewAssistantNativePreviewColors(array $nativeTheme): array
+    {
+        $nativeColors = [];
+        foreach ($nativeTheme['colors'] ?? [] as $field => $color) {
+            if (!is_string($field)) {
+                continue;
+            }
+
+            $nativeColors[$field] = IPSViewControlThemeHelper::colorToHex($color);
+        }
+
+        return $nativeColors;
     }
 
     /** @param array<string,string> $palette @param array<string,int> $effects @param array<string,mixed> $appearance */
