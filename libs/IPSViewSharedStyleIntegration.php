@@ -41,89 +41,6 @@ trait IPSViewSharedStyleIntegration
         'IPSViewStyleShadowOffsetY'
     ];
 
-    /**
-     * Replaces the visible legacy design editor with the shared style form.
-     *
-     * @param array<string,mixed> $form
-     */
-    private function ApplyIPSViewSharedStyleForm(array &$form): void
-    {
-        $sharedItems = $this->IPSViewStyleFormItems('240px');
-        $fieldNames = $this->IPSViewAssistantSharedStyleFieldNames($sharedItems);
-        $captureScript = $this->IPSViewAssistantSharedStyleCaptureScript($fieldNames);
-        $this->IPSViewAssistantAttachSharedStyleOnChange($sharedItems, $fieldNames, $captureScript);
-        $this->IPSViewAssistantAppendReloadToSharedButtons($sharedItems);
-
-        $inserted = false;
-        if (isset($form['actions']) && is_array($form['actions'])) {
-            $inserted = $this->IPSViewAssistantReplaceDesignPopup($form['actions'], $sharedItems, $captureScript);
-        }
-        if (!$inserted && isset($form['elements']) && is_array($form['elements'])) {
-            $inserted = $this->IPSViewAssistantReplaceDesignPopup($form['elements'], $sharedItems, $captureScript);
-        }
-        if (!$inserted) {
-            throw new RuntimeException('The IPSView Assistant design-details popup could not be found.');
-        }
-
-        $this->setConfigurationFormField($form, 'Theme', 'visible', false);
-        $this->setConfigurationFormField($form, 'Theme', 'value', IPSViewTheme::THEME_CUSTOM);
-        $this->setConfigurationFormField(
-            $form,
-            'ThemeDescription',
-            'caption',
-            $this->Translate('Advanced mode shows all design details and the functions for existing IPSViews.')
-        );
-        $this->setConfigurationFormField(
-            $form,
-            'CreateViewButton',
-            'onClick',
-            $captureScript
-                . ' echo IPSVIEWA_CreateOrOverwriteSharedStyleView($id, $ViewName, $TargetCategoryID, $AspectRatio, $Orientation, $Template, $MainPageName, $FullScreen, $StartGrid, $OverwriteExistingView);'
-        );
-        $this->setConfigurationFormField(
-            $form,
-            'SaveStyledCopyButton',
-            'onClick',
-            $captureScript
-                . ' echo IPSVIEWA_CreateSharedStyledCopy($id, $SourceViewID, $CopyViewName, $CopyTargetCategoryID, $DesignScope);'
-        );
-        $this->setConfigurationFormField(
-            $form,
-            'SourceViewID',
-            'onChange',
-            'IPSVIEWA_LoadSharedExistingView($id, $SourceViewID);'
-        );
-        $this->setConfigurationFormField(
-            $form,
-            'ExportStyleProfileJsonButton',
-            'onClick',
-            $captureScript
-                . ' echo IPSVIEWA_ExportSharedStyleProfileJson($id, $StyleProfileName, $StyleProfileDescription);'
-        );
-        $this->setConfigurationFormField(
-            $form,
-            'SaveStyleProfileMediaButton',
-            'onClick',
-            $captureScript
-                . ' echo IPSVIEWA_SaveSharedStyleProfileMedia($id, $StyleProfileName, $StyleProfileDescription, $StyleProfileTargetCategoryID);'
-        );
-        $this->setConfigurationFormField(
-            $form,
-            'StyleProfileImportFile',
-            'onChange',
-            'if ($StyleProfileImportFile !== "") { echo IPSVIEWA_ImportSharedStyleProfileFile($id, $StyleProfileImportFile); }'
-        );
-        $this->setConfigurationFormField(
-            $form,
-            'ImportStyleProfileMediaButton',
-            'onClick',
-            'echo IPSVIEWA_ImportSharedStyleProfileMedia($id, $StyleProfileImportMediaID);'
-        );
-
-        $this->IPSViewAssistantSynchronizeLegacyStyleForm($form);
-        $this->IPSViewAssistantApplySharedPreviewToForm($form);
-    }
-
     /** Persists the displayed shared style controls and refreshes/reloads the form as needed. */
     public function ApplySharedStyleConfiguration(string $Configuration): void
     {
@@ -460,6 +377,89 @@ trait IPSViewSharedStyleIntegration
         }
 
         return $result;
+    }
+
+    /**
+     * Replaces the visible legacy design editor with the shared style form.
+     *
+     * @param array<string,mixed> $form
+     */
+    private function ApplyIPSViewSharedStyleForm(array &$form): void
+    {
+        $sharedItems = $this->IPSViewStyleFormItems('240px');
+        $fieldNames = $this->IPSViewAssistantSharedStyleFieldNames($sharedItems);
+        $captureScript = $this->IPSViewAssistantSharedStyleCaptureScript($fieldNames);
+        $this->IPSViewAssistantAttachSharedStyleOnChange($sharedItems, $fieldNames, $captureScript);
+        $this->IPSViewAssistantAppendReloadToSharedButtons($sharedItems);
+
+        $inserted = false;
+        if (isset($form['actions']) && is_array($form['actions'])) {
+            $inserted = $this->IPSViewAssistantReplaceDesignPopup($form['actions'], $sharedItems, $captureScript);
+        }
+        if (!$inserted && isset($form['elements']) && is_array($form['elements'])) {
+            $inserted = $this->IPSViewAssistantReplaceDesignPopup($form['elements'], $sharedItems, $captureScript);
+        }
+        if (!$inserted) {
+            throw new RuntimeException('The IPSView Assistant design-details popup could not be found.');
+        }
+
+        $this->setConfigurationFormField($form, 'Theme', 'visible', false);
+        $this->setConfigurationFormField($form, 'Theme', 'value', IPSViewTheme::THEME_CUSTOM);
+        $this->setConfigurationFormField(
+            $form,
+            'ThemeDescription',
+            'caption',
+            $this->Translate('Advanced mode shows all design details and the functions for existing IPSViews.')
+        );
+        $this->setConfigurationFormField(
+            $form,
+            'CreateViewButton',
+            'onClick',
+            $captureScript
+                . ' echo IPSVIEWA_CreateOrOverwriteSharedStyleView($id, $ViewName, $TargetCategoryID, $AspectRatio, $Orientation, $Template, $MainPageName, $FullScreen, $StartGrid, $OverwriteExistingView);'
+        );
+        $this->setConfigurationFormField(
+            $form,
+            'SaveStyledCopyButton',
+            'onClick',
+            $captureScript
+                . ' echo IPSVIEWA_CreateSharedStyledCopy($id, $SourceViewID, $CopyViewName, $CopyTargetCategoryID, $DesignScope);'
+        );
+        $this->setConfigurationFormField(
+            $form,
+            'SourceViewID',
+            'onChange',
+            'IPSVIEWA_LoadSharedExistingView($id, $SourceViewID);'
+        );
+        $this->setConfigurationFormField(
+            $form,
+            'ExportStyleProfileJsonButton',
+            'onClick',
+            $captureScript
+                . ' echo IPSVIEWA_ExportSharedStyleProfileJson($id, $StyleProfileName, $StyleProfileDescription);'
+        );
+        $this->setConfigurationFormField(
+            $form,
+            'SaveStyleProfileMediaButton',
+            'onClick',
+            $captureScript
+                . ' echo IPSVIEWA_SaveSharedStyleProfileMedia($id, $StyleProfileName, $StyleProfileDescription, $StyleProfileTargetCategoryID);'
+        );
+        $this->setConfigurationFormField(
+            $form,
+            'StyleProfileImportFile',
+            'onChange',
+            'if ($StyleProfileImportFile !== "") { echo IPSVIEWA_ImportSharedStyleProfileFile($id, $StyleProfileImportFile); }'
+        );
+        $this->setConfigurationFormField(
+            $form,
+            'ImportStyleProfileMediaButton',
+            'onClick',
+            'echo IPSVIEWA_ImportSharedStyleProfileMedia($id, $StyleProfileImportMediaID);'
+        );
+
+        $this->IPSViewAssistantSynchronizeLegacyStyleForm($form);
+        $this->IPSViewAssistantApplySharedPreviewToForm($form);
     }
 
     /** @param array<int,array<string,mixed>> $items */

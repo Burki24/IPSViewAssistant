@@ -189,10 +189,10 @@ final class IPSViewSharedStyleAdapter
         unset($offsetX, $spread);
         $shadowOpacity = max(0.0, min(1.0, (float) ($style['ShadowOpacity'] ?? 0.0)));
         $shadowStyle = match (true) {
-            $shadowOpacity <= 0.01 || $blur <= 0.01 => IPSViewEffects::SHADOW_NONE,
+            $shadowOpacity <= 0.01 || $blur <= 0.01                        => IPSViewEffects::SHADOW_NONE,
             $shadowOpacity <= 0.28 && $blur <= 6.0 && abs($offsetY) <= 3.0 => IPSViewEffects::SHADOW_SUBTLE,
-            $shadowOpacity <= 0.50 && $blur <= 14.0 => IPSViewEffects::SHADOW_MEDIUM,
-            default => IPSViewEffects::SHADOW_STRONG
+            $shadowOpacity <= 0.50 && $blur <= 14.0                        => IPSViewEffects::SHADOW_MEDIUM,
+            default                                                        => IPSViewEffects::SHADOW_STRONG
         };
 
         return [
@@ -526,7 +526,6 @@ final class IPSViewSharedStyleAdapter
             }
         }
     }
-
 
     private static function applyTransparentViewBackground(stdClass $document): void
     {
