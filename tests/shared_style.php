@@ -84,11 +84,11 @@ assertTest(
 );
 assertTest(
     str_contains($integrationSource, 'IPSViewAssistantRefreshNativeList($PropertyName)')
-        && str_contains($integrationSource, "json_encode($values, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR)"),
+        && str_contains($integrationSource, 'json_encode($values, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR)'),
     'The native color list is not refreshed after automatic override activation.'
 );
 assertTest(
-    !str_contains($integrationSource, "UpdateFormField($propertyName, 'values', $values)"),
+    !str_contains($integrationSource, "UpdateFormField(\$propertyName, 'values', \$values)"),
     'Native list values are still passed to UpdateFormField as an unsupported PHP array.'
 );
 
