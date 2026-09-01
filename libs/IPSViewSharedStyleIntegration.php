@@ -763,7 +763,11 @@ trait IPSViewSharedStyleIntegration
             $propertyName
         );
         if ($values !== null) {
-            $this->UpdateFormField($propertyName, 'values', $values);
+            $this->UpdateFormField(
+                $propertyName,
+                'values',
+                json_encode($values, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR)
+            );
         }
     }
 
