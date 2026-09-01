@@ -91,6 +91,75 @@ trait IPSViewSharedStyleIntegration
         $this->RefreshSharedStylePreview();
     }
 
+    /** Persists one edited native IPSView color row from the action-popup list editor. */
+    public function ApplySharedNativeColorOverride(string $PropertyName, string $Row): void
+    {
+        if ($this->IPSViewStyleSource() !== self::IPSVIEW_STYLE_SOURCE_CUSTOM) {
+            throw new RuntimeException('Native IPSView color overrides can only be edited in the custom style.');
+        }
+
+        $propertyMap = $this->IPSViewStyleNativeOverrideProperties();
+        $family = array_search($PropertyName, $propertyMap, true);
+        if (!is_string($family)) {
+            throw new RuntimeException('The native IPSView color group is not supported.');
+        }
+
+        try {
+            $editedRow = json_decode($Row, true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException $exception) {
+            throw new RuntimeException('The edited native IPSView color row is invalid.', 0, $exception);
+        }
+        if (!is_array($editedRow)) {
+            throw new RuntimeException('The edited native IPSView color row must be an object.');
+        }
+
+        $field = isset($editedRow['Field']) && is_string($editedRow['Field'])
+            ? trim($editedRow['Field'])
+            : '';
+        $definition = $field === '' ? null : IPSViewControlThemeHelper::definition($field);
+        if ($definition === null || ($definition['family'] ?? null) !== $family) {
+            throw new RuntimeException('The edited IPSView field does not belong to the selected color group.');
+        }
+
+        $stored = $this->IPSViewAssistantNativeOverrideRows($PropertyName, $family);
+        $wasOverridden = isset($stored[$field]);
+        $inheritedColor = $this->IPSViewAssistantNativeInheritedColor($field);
+        $editedColor = array_key_exists('Color', $editedRow)
+            ? max(0, min(0xFFFFFF, (int) $editedRow['Color']))
+            : $inheritedColor;
+        $override = $this->IPSViewAssistantNativeOverrideEnabled($editedRow['Override'] ?? false);
+        if (!$wasOverridden && !$override && $editedColor !== $inheritedColor) {
+            $override = true;
+        }
+
+        if ($override) {
+            $stored[$field] = [
+                'Override' => true,
+                'Field'    => $field,
+                'Color'    => $editedColor
+            ];
+        } else {
+            unset($stored[$field]);
+        }
+
+        $ordered = [];
+        foreach (IPSViewControlThemeHelper::families()[$family] ?? [] as $familyField) {
+            if (isset($stored[$familyField])) {
+                $ordered[] = $stored[$familyField];
+            }
+        }
+
+        IPS_SetProperty(
+            $this->InstanceID,
+            $PropertyName,
+            json_encode($ordered, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR)
+        );
+        $this->clearStyleProfileImportState();
+        IPS_ApplyChanges($this->InstanceID);
+        $this->IPSViewAssistantRefreshNativeList($PropertyName);
+        $this->RefreshSharedStylePreview();
+    }
+
     /** Clears a lossless imported-profile baseline after the shared editor changes it. */
     public function ClearSharedStyleProfileBaseline(): void
     {
@@ -395,6 +464,7 @@ trait IPSViewSharedStyleIntegration
         $this->IPSViewAssistantPopulateSharedStyleValues($sharedItems, $fieldNames);
         $captureScript = $this->IPSViewAssistantSharedStyleCaptureScript($fieldNames);
         $this->IPSViewAssistantAttachSharedStyleOnChange($sharedItems, $fieldNames, $captureScript);
+        $this->IPSViewAssistantAttachNativeListOnEdit($sharedItems);
         $this->IPSViewAssistantAppendReloadToSharedButtons($sharedItems);
 
         $inserted = false;
@@ -552,6 +622,33 @@ trait IPSViewSharedStyleIntegration
     }
 
     /** @param array<int,array<string,mixed>> $items */
+    private function IPSViewAssistantAttachNativeListOnEdit(array &$items): void
+    {
+        $nativeProperties = array_flip($this->IPSViewStyleNativeOverrideProperties());
+        foreach ($items as &$item) {
+            if (!is_array($item)) {
+                continue;
+            }
+
+            $name = is_string($item['name'] ?? null) ? $item['name'] : '';
+            if (($item['type'] ?? null) === 'List' && isset($nativeProperties[$name])) {
+                $item['onEdit'] = sprintf(
+                    'IPSVIEWA_ApplySharedNativeColorOverride($id, %s, json_encode($%s, JSON_UNESCAPED_SLASHES));',
+                    var_export($name, true),
+                    $name
+                );
+            }
+
+            foreach (['items', 'elements', 'actions'] as $key) {
+                if (isset($item[$key]) && is_array($item[$key])) {
+                    $this->IPSViewAssistantAttachNativeListOnEdit($item[$key]);
+                }
+            }
+        }
+        unset($item);
+    }
+
+    /** @param array<int,array<string,mixed>> $items */
     private function IPSViewAssistantAppendReloadToSharedButtons(array &$items): void
     {
         foreach ($items as &$item) {
@@ -586,16 +683,10 @@ trait IPSViewSharedStyleIntegration
             $name = is_string($item['name'] ?? null) ? trim($item['name']) : '';
             $type = is_string($item['type'] ?? null) ? $item['type'] : '';
             $inputTypes = ['Select', 'SelectColor', 'SelectMedia', 'CheckBox', 'NumberSpinner'];
-            $isEditableList = $type === 'List'
-                && array_reduce(
-                    is_array($item['columns'] ?? null) ? $item['columns'] : [],
-                    static fn (bool $editable, array $column): bool => $editable || isset($column['edit']),
-                    false
-                );
             if (
                 $name !== ''
                 && str_starts_with($name, 'IPSViewStyle')
-                && (in_array($type, $inputTypes, true) || $isEditableList)
+                && in_array($type, $inputTypes, true)
             ) {
                 $names[$name] = true;
             }
@@ -651,6 +742,113 @@ trait IPSViewSharedStyleIntegration
         return 'IPSVIEWA_ApplySharedStyleConfiguration($id, json_encode(['
             . implode(', ', $values)
             . '], JSON_UNESCAPED_SLASHES));';
+    }
+
+    private function IPSViewAssistantNativeInheritedColor(string $field): int
+    {
+        $theme = $this->IPSViewStyleNativeTheme();
+        if (!isset($theme['colors'][$field])) {
+            throw new RuntimeException('The inherited IPSView color could not be resolved.');
+        }
+
+        $hex = IPSViewControlThemeHelper::colorToHex($theme['colors'][$field]);
+
+        return (int) hexdec(substr($hex, 1));
+    }
+
+    private function IPSViewAssistantRefreshNativeList(string $propertyName): void
+    {
+        $values = $this->IPSViewAssistantFindNativeListValues(
+            $this->IPSViewStyleFormItems('240px'),
+            $propertyName
+        );
+        if ($values !== null) {
+            $this->UpdateFormField($propertyName, 'values', $values);
+        }
+    }
+
+    /** @param array<int,array<string,mixed>> $items @return array<int,array<string,mixed>>|null */
+    private function IPSViewAssistantFindNativeListValues(array $items, string $propertyName): ?array
+    {
+        foreach ($items as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+            if (
+                ($item['type'] ?? null) === 'List'
+                && ($item['name'] ?? null) === $propertyName
+                && is_array($item['values'] ?? null)
+            ) {
+                return $item['values'];
+            }
+
+            foreach (['items', 'elements', 'actions'] as $key) {
+                if (!isset($item[$key]) || !is_array($item[$key])) {
+                    continue;
+                }
+                $values = $this->IPSViewAssistantFindNativeListValues($item[$key], $propertyName);
+                if ($values !== null) {
+                    return $values;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /** @return array<string,array{Override:bool,Field:string,Color:int}> */
+    private function IPSViewAssistantNativeOverrideRows(string $propertyName, string $family): array
+    {
+        $json = trim($this->ReadPropertyString($propertyName));
+        if ($json === '') {
+            return [];
+        }
+
+        try {
+            $rows = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException) {
+            return [];
+        }
+        if (!is_array($rows)) {
+            return [];
+        }
+
+        $stored = [];
+        foreach ($rows as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+            $field = isset($row['Field']) && is_string($row['Field']) ? trim($row['Field']) : '';
+            $definition = $field === '' ? null : IPSViewControlThemeHelper::definition($field);
+            if ($definition === null
+                || ($definition['family'] ?? null) !== $family
+                || !$this->IPSViewAssistantNativeOverrideEnabled($row['Override'] ?? false)) {
+                continue;
+            }
+
+            $stored[$field] = [
+                'Override' => true,
+                'Field'    => $field,
+                'Color'    => max(0, min(0xFFFFFF, (int) ($row['Color'] ?? 0)))
+            ];
+        }
+
+        return $stored;
+    }
+
+    private function IPSViewAssistantNativeOverrideEnabled(mixed $value): bool
+    {
+        if (is_bool($value)) {
+            return $value;
+        }
+        if (is_int($value) || is_float($value)) {
+            return (int) $value !== 0;
+        }
+        if (is_string($value)) {
+            return in_array(strtolower(trim($value)), ['1', 'true', 'yes', 'on'], true);
+        }
+
+        return false;
     }
 
     private function IPSViewAssistantNormalizeSharedProperty(string $propertyName, mixed $value): mixed

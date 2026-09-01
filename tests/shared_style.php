@@ -53,6 +53,41 @@ assertTest(
     'Shared style source changes are not tracked before ApplyChanges reloads the popup.'
 );
 
+assertTest(
+    str_contains($integrationSource, 'IPSViewAssistantAttachNativeListOnEdit($sharedItems)')
+        && str_contains($integrationSource, 'IPSVIEWA_ApplySharedNativeColorOverride($id')
+        && str_contains($integrationSource, "\$item['onEdit'] = sprintf("),
+    'Native IPSView list edits are not persisted immediately from the action popup.'
+);
+assertTest(
+    str_contains($integrationSource, 'public function ApplySharedNativeColorOverride(')
+        && str_contains($integrationSource, '$this->IPSViewStyleNativeOverrideProperties()')
+        && str_contains($integrationSource, "'Field'    => \$field")
+        && str_contains($integrationSource, 'IPS_ApplyChanges($this->InstanceID);'),
+    'Edited native IPSView rows are not validated and persisted as complete override rows.'
+);
+assertTest(
+    !str_contains($integrationSource, "\$isEditableList = \$type === 'List'"),
+    'Native lists are still part of the generic preview capture and can overwrite persisted overrides.'
+);
+
+assertTest(
+    str_contains($integrationSource, '$wasOverridden = isset($stored[$field]);')
+        && str_contains($integrationSource, '$editedColor !== $inheritedColor')
+        && str_contains($integrationSource, '$override = true;'),
+    'Changing an inherited native IPSView color does not automatically enable its override.'
+);
+assertTest(
+    str_contains($integrationSource, 'IPSViewAssistantNativeInheritedColor($field)')
+        && str_contains($integrationSource, 'IPSViewControlThemeHelper::colorToHex($theme[\'colors\'][$field])'),
+    'Native override auto-detection does not compare against the inherited semantic color.'
+);
+assertTest(
+    str_contains($integrationSource, 'IPSViewAssistantRefreshNativeList($PropertyName)')
+        && str_contains($integrationSource, 'UpdateFormField($propertyName, \'values\', $values)'),
+    'The native color list is not refreshed after automatic override activation.'
+);
+
 $style = [
     'ViewBackground'            => '#102030',
     'PageBackground'            => '#203040',
