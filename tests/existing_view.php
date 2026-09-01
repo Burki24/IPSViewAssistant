@@ -201,8 +201,12 @@ assertTest(
 );
 assertTest(count($copy->Pages[0]->Controls ?? []) === 3, 'Existing controls were removed from the copied View.');
 assertTest(
-    IPSViewTheme::colorObjectToHex($copy->ColorPage) === '#102030',
+    IPSViewTheme::colorObjectToHex($copy->ColorView) === '#102030',
     'The custom View background was not applied to the copied View.'
+);
+assertTest(
+    IPSViewTheme::colorObjectToHex($copy->ColorPage) === '#1F2937',
+    'The copied View page background was not kept separate from the View background.'
 );
 assertTest(
     IPSViewTheme::colorObjectToHex($copy->SwitchTrackColorActive) === '#ABCDEF',
@@ -226,6 +230,10 @@ assertTest(
 assertTest(
     $updatedCopy->ID === 12002,
     'An in-place design update changed the existing copy media ID.'
+);
+assertTest(
+    IPSViewTheme::colorObjectToHex($updatedCopy->ColorView) === '#304050',
+    'An in-place design update did not update the explicit View background.'
 );
 
 $copyFactorySource = (string) file_get_contents(dirname(__DIR__) . '/libs/IPSViewCopyFactory.php');

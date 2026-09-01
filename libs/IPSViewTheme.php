@@ -223,6 +223,7 @@ final class IPSViewTheme
     public static function extract(stdClass $document): array
     {
         $fallbacks = self::preset(self::THEME_DARK);
+        $fallbacks[self::ROLE_VIEW_BACKGROUND] = self::preset(self::THEME_STANDARD)[self::ROLE_VIEW_BACKGROUND];
         $representatives = [
             self::ROLE_VIEW_BACKGROUND => 'ColorView',
             self::ROLE_PAGE_BACKGROUND => 'ColorPage',
@@ -616,11 +617,30 @@ final class IPSViewTheme
     }
 
     /**
-     * Applies a color to one existing global property and reports whether it was found.
+     * Applies a color to one global property and reports whether it was applied.
+     *
+     * IPSView omits ColorView while the View uses its default color and writes the property only
+     * after an explicit View color is selected. Mirror that serialization behavior when a theme
+     * assigns a View background instead of reinterpreting ColorPage.
      */
     private static function applyColor(stdClass $document, string $property, string $hexColor): bool
     {
-        if (!property_exists($document, $property) || !self::isColorObject($document->{$property})) {
+        if (!property_exists($document, $property)) {
+            if ($property !== 'ColorView') {
+                return false;
+            }
+
+            $document->ColorView = (object) [
+                'A'       => 255,
+                'R'       => 0,
+                'G'       => 0,
+                'B'       => 0,
+                'Type'    => 0,
+                'Pattern' => '12',
+            ];
+        }
+
+        if (!self::isColorObject($document->{$property})) {
             return false;
         }
 

@@ -26,19 +26,28 @@ assertTest(
 
 $missingView = unserialize(serialize($template));
 assertTest($missingView instanceof stdClass, 'The IPSView template copy could not be created.');
+$missingViewPaletteBeforeTheme = IPSViewTheme::extract($missingView);
+assertTest(
+    $missingViewPaletteBeforeTheme[IPSViewTheme::ROLE_VIEW_BACKGROUND] === '#404040',
+    'Omitted ColorView must resolve to the IPSView Standard View color without reinterpreting ColorPage.'
+);
 $missingViewReport = IPSViewTheme::applyWithReport($missingView, IPSViewTheme::THEME_DARK);
 assertTest(
-    $missingViewReport['globalColorsApplied'] === 107,
-    'Documents that omit ColorView must keep all existing native color fields themeable.'
+    $missingViewReport['globalColorsApplied'] === 108,
+    'Applying a theme must create the explicitly selected ColorView while retaining all existing native fields.'
+);
+assertTest(
+    IPSViewTheme::colorObjectToHex($missingView->ColorView) === '#111827',
+    'Applying a theme must create ColorView for the semantic View background.'
 );
 assertTest(
     IPSViewTheme::colorObjectToHex($missingView->ColorPage) === '#1F2937',
-    'ColorPage must keep the semantic page background even when ColorView is absent.'
+    'ColorPage must keep the semantic page background independently from ColorView.'
 );
 $missingViewPalette = IPSViewTheme::extract($missingView);
 assertTest(
     $missingViewPalette[IPSViewTheme::ROLE_VIEW_BACKGROUND] === '#111827',
-    'Missing ColorView must fall back to the theme View color instead of reinterpreting ColorPage.'
+    'View background extraction must use the ColorView created by the theme application.'
 );
 assertTest(
     $missingViewPalette[IPSViewTheme::ROLE_PAGE_BACKGROUND] === '#1F2937',

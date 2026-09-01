@@ -42,13 +42,18 @@ assertTest(
     $standardPalette[IPSViewTheme::ROLE_ACCENT] === '#007AFF',
     'The IPSView Standard accent color is incorrect.'
 );
+assertTest(
+    !property_exists($afterStandard, 'ColorView'),
+    'The IPSView Standard theme must preserve the omitted default ColorView property.'
+);
 
 $lightDocument = IPSViewDocument::fromTemplate($templatePath);
 $lightDocument->configure('Light', 10002, IPSViewDocument::ASPECT_RATIO_16_9, 0, 'Main');
 $lightDocument->applyTheme(IPSViewTheme::THEME_LIGHT);
 $light = $lightDocument->copy();
 
-assertTest(ipsViewColorToHex($light->ColorPage) === '#E9EEF5', 'The light View background is incorrect.');
+assertTest(ipsViewColorToHex($light->ColorView) === '#E9EEF5', 'The light View background is incorrect.');
+assertTest(ipsViewColorToHex($light->ColorPage) === '#F6F8FB', 'The light page background is incorrect.');
 assertTest(ipsViewColorToHex($light->ColorBack) === '#FFFFFF', 'The light surface color is incorrect.');
 assertTest(ipsViewColorToHex($light->ColorText) === '#1F2937', 'The light primary text color is incorrect.');
 assertTest(ipsViewColorToHex($light->SwitchTrackColorActive) === '#2563EB', 'The light accent color is incorrect.');
@@ -60,8 +65,9 @@ $darkDocument->configure('Dark', 10003, IPSViewDocument::ASPECT_RATIO_16_9, 0, '
 $darkPalette = $darkDocument->applyTheme(IPSViewTheme::THEME_DARK);
 $dark = $darkDocument->copy();
 
-assertTest(ipsViewColorToHex($dark->ColorPage) === '#111827', 'The dark View background is incorrect.');
-assertTest(ipsViewColorToHex($dark->ColorPopupBack) === '#1F2937', 'The dark page background is incorrect.');
+assertTest(ipsViewColorToHex($dark->ColorView) === '#111827', 'The dark View background is incorrect.');
+assertTest(ipsViewColorToHex($dark->ColorPage) === '#1F2937', 'The dark page background is incorrect.');
+assertTest(ipsViewColorToHex($dark->ColorPopupBack) === '#1F2937', 'The dark popup background is incorrect.');
 assertTest(ipsViewColorToHex($dark->ColorBack) === '#273449', 'The dark surface color is incorrect.');
 assertTest(ipsViewColorToHex($dark->ColorText) === '#F9FAFB', 'The dark primary text color is incorrect.');
 assertTest(ipsViewColorToHex($dark->ColorBorder) === '#475569', 'The dark border color is incorrect.');
@@ -115,16 +121,20 @@ foreach ($additionalPresets as $theme => $expectedColors) {
     $afterPreset = $presetDocument->copy();
 
     assertTest(
-        $presetReport['globalColorsApplied'] === 107,
-        'An additional preset does not cover all 107 global IPSView color objects.'
+        $presetReport['globalColorsApplied'] === 108,
+        'An additional preset does not cover all 108 effective global IPSView color objects.'
     );
     assertTest(
-        $presetDocument->analyzeThemeColors()['globalColors'] === 107,
-        'An additional preset changed the number of global IPSView color objects.'
+        $presetDocument->analyzeThemeColors()['globalColors'] === 108,
+        'An additional preset changed the number of effective global IPSView color objects.'
     );
     assertTest(
-        ipsViewColorToHex($afterPreset->ColorPage) === $expectedColors[IPSViewTheme::ROLE_VIEW_BACKGROUND],
+        ipsViewColorToHex($afterPreset->ColorView) === $expectedColors[IPSViewTheme::ROLE_VIEW_BACKGROUND],
         'An additional preset did not apply its View background.'
+    );
+    assertTest(
+        ipsViewColorToHex($afterPreset->ColorPage) === $palette[IPSViewTheme::ROLE_PAGE_BACKGROUND],
+        'An additional preset did not apply its separate page background.'
     );
     assertTest(
         $afterPreset->ColorBackOn->Type === $beforePreset->ColorBackOn->Type,
