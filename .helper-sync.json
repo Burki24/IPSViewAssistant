@@ -13,6 +13,9 @@
         "IPSViewFontCatalogHelper": {
             "target": "libs/helper/IPSViewFontCatalogHelper.php"
         },
+        "IPSViewStyleConfigurationHelper": {
+            "target": "libs/helper/IPSViewStyleConfigurationHelper.php"
+        },
         "IPSViewStylePresetHelper": {
             "target": "libs/helper/IPSViewStylePresetHelper.php"
         },
