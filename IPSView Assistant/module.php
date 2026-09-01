@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../libs/helper/ConfigurationFormHelper.php';
+require_once __DIR__ . '/../libs/helper/IPSViewStyleConfigurationHelper.php';
 require_once __DIR__ . '/../libs/IPSViewBackground.php';
 require_once __DIR__ . '/../libs/IPSViewDesignerHandover.php';
 require_once __DIR__ . '/../libs/IPSViewEffects.php';
@@ -12,6 +13,7 @@ require_once __DIR__ . '/../libs/IPSViewDocument.php';
 require_once __DIR__ . '/../libs/IPSViewCopyFactory.php';
 require_once __DIR__ . '/../libs/IPSViewStartCheck.php';
 require_once __DIR__ . '/../libs/IPSViewStyleProfileExchange.php';
+require_once __DIR__ . '/../libs/IPSViewSharedStyleIntegration.php';
 require_once __DIR__ . '/../libs/IPSViewFactory.php';
 require_once __DIR__ . '/../libs/IPSViewShape.php';
 require_once __DIR__ . '/../libs/IPSViewTypography.php';
@@ -24,6 +26,7 @@ use Burki24\IPSViewAssistant\IPSViewDocument;
 use Burki24\IPSViewAssistant\IPSViewEffects;
 use Burki24\IPSViewAssistant\IPSViewFactory;
 use Burki24\IPSViewAssistant\IPSViewShape;
+use Burki24\IPSViewAssistant\IPSViewSharedStyleIntegration;
 use Burki24\IPSViewAssistant\IPSViewStartCheck;
 use Burki24\IPSViewAssistant\IPSViewStyleProfileExchange;
 use Burki24\IPSViewAssistant\IPSViewTheme;
@@ -31,10 +34,13 @@ use Burki24\IPSViewAssistant\IPSViewThemePreview;
 use Burki24\IPSViewAssistant\IPSViewTypography;
 use Burki24\IPSViewAssistant\IPSViewUsageProfile;
 use Burki24\SymconModuleHelper\ConfigurationFormHelper;
+use Burki24\SymconModuleHelper\IPSViewStyleConfigurationHelper;
 
 class IPSViewAssistant extends IPSModuleStrict
 {
     use ConfigurationFormHelper;
+    use IPSViewStyleConfigurationHelper;
+    use IPSViewSharedStyleIntegration;
 
     private const ASSISTANT_MODE_QUICK_START = 0;
     private const ASSISTANT_MODE_ADVANCED = 1;
@@ -74,6 +80,7 @@ class IPSViewAssistant extends IPSModuleStrict
     public function Create(): void
     {
         parent::Create();
+        $this->RegisterIPSViewStyleProperties();
 
         $this->RegisterAttributeInteger(self::ATTRIBUTE_ASSISTANT_MODE, self::ASSISTANT_MODE_QUICK_START);
         $this->RegisterAttributeString(self::ATTRIBUTE_MANAGED_COPIES, '[]');
@@ -93,7 +100,22 @@ class IPSViewAssistant extends IPSModuleStrict
     public function ApplyChanges(): void
     {
         parent::ApplyChanges();
+        $this->RegisterIPSViewStyleMediaMessages();
         $this->SetStatus(IS_ACTIVE);
+    }
+
+    /**
+     * Refreshes the configuration form when the active IPSView style media changes.
+     *
+     * @param array<int,mixed> $Data
+     */
+    public function MessageSink(int $TimeStamp, int $SenderID, int $Message, array $Data): void
+    {
+        unset($TimeStamp, $Data);
+
+        if ($this->IsIPSViewStyleMediaUpdate($SenderID, $Message)) {
+            $this->ReloadForm();
+        }
     }
 
     /**
@@ -209,6 +231,7 @@ class IPSViewAssistant extends IPSModuleStrict
         );
         $this->applyStartCheckToForm($form, $startCheck);
         $this->applyQuickStartCheckToForm($form, $startCheck);
+        $this->ApplyIPSViewSharedStyleForm($form);
 
         return $this->EncodeConfigurationForm($form);
     }
@@ -1761,7 +1784,7 @@ class IPSViewAssistant extends IPSModuleStrict
     private function themeDescription(int $mode): string
     {
         if ($mode === self::ASSISTANT_MODE_ADVANCED) {
-            return $this->Translate('Choose a preset or adjust the semantic colors below. A manual color change automatically switches the theme to Custom.');
+            return $this->Translate('Advanced mode shows all design details and the functions for existing IPSViews.');
         }
 
         return $this->Translate('Choose a ready-made design preset. Detailed colors, effects and typography are available in Advanced mode.');
