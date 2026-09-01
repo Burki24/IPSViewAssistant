@@ -157,6 +157,73 @@ final class IPSViewSharedStyleAdapter
     }
 
     /**
+     * Returns a preview palette with role-specific surface opacity composited into the visible colors.
+     *
+     * The legacy SVG preview supports only one global transparency value. Compositing the individual
+     * shared opacities here prevents one transparent role from making the complete preview transparent.
+     *
+     * @param array<string,string|float> $style
+     *
+     * @return array<string,string>
+     */
+    public static function previewPalette(array $style): array
+    {
+        $palette = self::palette($style);
+        $view = self::blendPreviewColor(
+            '#FFFFFF',
+            $palette[IPSViewTheme::ROLE_VIEW_BACKGROUND],
+            (float) ($style['ViewBackgroundOpacity'] ?? 1.0)
+        );
+        $page = self::blendPreviewColor(
+            $view,
+            $palette[IPSViewTheme::ROLE_PAGE_BACKGROUND],
+            (float) ($style['PageBackgroundOpacity'] ?? 1.0)
+        );
+        $surface = self::blendPreviewColor(
+            $page,
+            $palette[IPSViewTheme::ROLE_SURFACE],
+            (float) ($style['ControlBackgroundOpacity'] ?? 1.0)
+        );
+
+        $palette[IPSViewTheme::ROLE_VIEW_BACKGROUND] = $view;
+        $palette[IPSViewTheme::ROLE_PAGE_BACKGROUND] = $page;
+        $palette[IPSViewTheme::ROLE_SURFACE] = $surface;
+        $palette[IPSViewTheme::ROLE_ACTIVE] = self::blendPreviewColor(
+            $surface,
+            $palette[IPSViewTheme::ROLE_ACTIVE],
+            (float) ($style['ControlActiveOpacity'] ?? 1.0)
+        );
+        $palette[IPSViewTheme::ROLE_INACTIVE] = self::blendPreviewColor(
+            $surface,
+            $palette[IPSViewTheme::ROLE_INACTIVE],
+            (float) ($style['ControlInactiveOpacity'] ?? 1.0)
+        );
+        $palette[IPSViewTheme::ROLE_BORDER] = self::blendPreviewColor(
+            $page,
+            $palette[IPSViewTheme::ROLE_BORDER],
+            (float) ($style['BorderOpacity'] ?? 1.0)
+        );
+
+        return $palette;
+    }
+
+    /**
+     * Converts shared effects to preview effects without collapsing role-specific opacity globally.
+     *
+     * @param array<string,string|float> $style
+     *
+     * @return array<string,int>
+     */
+    public static function previewEffects(array $style, int $gradientStrength = 0): array
+    {
+        $effects = self::effects($style, $gradientStrength);
+        $effects['transparencyMode'] = IPSViewEffects::TRANSPARENCY_OPAQUE;
+        $effects['transparencyPercent'] = 0;
+
+        return $effects;
+    }
+
+    /**
      * Converts shared effects to the legacy preview model. Exact values are applied separately.
      *
      * @param array<string,string|float> $style
@@ -631,6 +698,15 @@ final class IPSViewSharedStyleAdapter
     }
 
     /** @param array<string,string|float> $style */
+    private static function blendPreviewColor(string $background, string $foreground, float $opacity): string
+    {
+        return IPSViewTheme::mix(
+            $background,
+            $foreground,
+            max(0.0, min(1.0, $opacity))
+        );
+    }
+
     private static function color(array $style, string $field): string
     {
         $value = $style[$field] ?? null;

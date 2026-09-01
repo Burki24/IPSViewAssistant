@@ -53,11 +53,9 @@ trait IPSViewSharedStyleIntegration
             throw new RuntimeException('The shared IPSView style configuration must be an object.');
         }
 
-        $previousSource = $this->ReadPropertyInteger('IPSViewStyleSource');
-        $previousMediaID = $this->ReadPropertyInteger('IPSViewStyleMediaID');
-        $previousProfileMediaID = $this->ReadPropertyInteger('IPSViewStyleProfileMediaID');
         $allowed = array_flip($this->IPSViewAssistantSharedStyleFieldNames($this->IPSViewStyleFormItems('240px')));
         $changed = false;
+        $sourceChanged = false;
 
         foreach ($configuration as $propertyName => $value) {
             if (!is_string($propertyName) || !isset($allowed[$propertyName])) {
@@ -65,8 +63,16 @@ trait IPSViewSharedStyleIntegration
             }
 
             $normalized = $this->IPSViewAssistantNormalizeSharedProperty($propertyName, $value);
-            if ($this->IPSViewAssistantReadSharedProperty($propertyName) !== $normalized) {
+            $previous = $this->IPSViewAssistantReadSharedProperty($propertyName);
+            if ($previous !== $normalized) {
                 $changed = true;
+                if (in_array(
+                    $propertyName,
+                    ['IPSViewStyleSource', 'IPSViewStyleMediaID', 'IPSViewStyleProfileMediaID'],
+                    true
+                )) {
+                    $sourceChanged = true;
+                }
             }
             IPS_SetProperty($this->InstanceID, $propertyName, $normalized);
         }
@@ -76,9 +82,6 @@ trait IPSViewSharedStyleIntegration
         }
         IPS_ApplyChanges($this->InstanceID);
 
-        $sourceChanged = $previousSource !== $this->ReadPropertyInteger('IPSViewStyleSource')
-            || $previousMediaID !== $this->ReadPropertyInteger('IPSViewStyleMediaID')
-            || $previousProfileMediaID !== $this->ReadPropertyInteger('IPSViewStyleProfileMediaID');
         if ($sourceChanged) {
             $this->ReloadForm();
 
@@ -104,15 +107,16 @@ trait IPSViewSharedStyleIntegration
     public function RefreshSharedStylePreview(): void
     {
         $style = $this->IPSViewResolvedStyle();
-        $palette = IPSViewSharedStyleAdapter::palette($style);
-        $effects = IPSViewSharedStyleAdapter::effects($style, $this->IPSViewAssistantActiveGradientStrength());
+        $palette = IPSViewSharedStyleAdapter::previewPalette($style);
+        $effects = IPSViewSharedStyleAdapter::previewEffects($style, $this->IPSViewAssistantActiveGradientStrength());
         $appearance = IPSViewSharedStyleAdapter::appearance($style);
         $preview = IPSViewThemePreview::createDataUri(
             $palette,
             $effects,
             $appearance,
             $this->backgroundSettings(),
-            $this->previewStartGrid()
+            $this->previewStartGrid(),
+            $this->ReadPropertyBoolean('IPSViewStyleTransparentBackground')
         );
 
         $this->IPSViewAssistantSynchronizeLegacyStyleFields($palette, $effects, $appearance);
@@ -388,6 +392,7 @@ trait IPSViewSharedStyleIntegration
     {
         $sharedItems = $this->IPSViewStyleFormItems('240px');
         $fieldNames = $this->IPSViewAssistantSharedStyleFieldNames($sharedItems);
+        $this->IPSViewAssistantPopulateSharedStyleValues($sharedItems, $fieldNames);
         $captureScript = $this->IPSViewAssistantSharedStyleCaptureScript($fieldNames);
         $this->IPSViewAssistantAttachSharedStyleOnChange($sharedItems, $fieldNames, $captureScript);
         $this->IPSViewAssistantAppendReloadToSharedButtons($sharedItems);
@@ -606,6 +611,35 @@ trait IPSViewSharedStyleIntegration
         return array_keys($names);
     }
 
+    /** @param array<int,array<string,mixed>> $items @param list<string> $fieldNames */
+    private function IPSViewAssistantPopulateSharedStyleValues(array &$items, array $fieldNames): void
+    {
+        $fields = array_flip($fieldNames);
+        foreach ($items as &$item) {
+            if (!is_array($item)) {
+                continue;
+            }
+
+            $name = is_string($item['name'] ?? null) ? $item['name'] : '';
+            $type = is_string($item['type'] ?? null) ? $item['type'] : '';
+            if (
+                $name !== ''
+                && isset($fields[$name])
+                && $type !== 'List'
+                && ($item['enabled'] ?? true) !== false
+            ) {
+                $item['value'] = $this->IPSViewAssistantReadSharedProperty($name);
+            }
+
+            foreach (['items', 'elements', 'actions'] as $key) {
+                if (isset($item[$key]) && is_array($item[$key])) {
+                    $this->IPSViewAssistantPopulateSharedStyleValues($item[$key], $fieldNames);
+                }
+            }
+        }
+        unset($item);
+    }
+
     /** @param list<string> $fieldNames */
     private function IPSViewAssistantSharedStyleCaptureScript(array $fieldNames): string
     {
@@ -695,11 +729,12 @@ trait IPSViewSharedStyleIntegration
             'ThemePreview',
             'image',
             IPSViewThemePreview::createDataUri(
-                IPSViewSharedStyleAdapter::palette($style),
-                IPSViewSharedStyleAdapter::effects($style, $this->IPSViewAssistantActiveGradientStrength()),
+                IPSViewSharedStyleAdapter::previewPalette($style),
+                IPSViewSharedStyleAdapter::previewEffects($style, $this->IPSViewAssistantActiveGradientStrength()),
                 IPSViewSharedStyleAdapter::appearance($style),
                 $this->backgroundSettings(),
-                $this->previewStartGrid()
+                $this->previewStartGrid(),
+                $this->ReadPropertyBoolean('IPSViewStyleTransparentBackground')
             )
         );
     }

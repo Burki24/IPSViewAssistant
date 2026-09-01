@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/bootstrap.php';
 require_once __DIR__ . '/../libs/IPSViewSharedStyleAdapter.php';
 
+use Burki24\IPSViewAssistant\IPSViewEffects;
 use Burki24\IPSViewAssistant\IPSViewSharedStyleAdapter;
 use Burki24\IPSViewAssistant\IPSViewTheme;
 use Burki24\SymconModuleHelper\IPSViewControlThemeHelper;
@@ -41,6 +42,15 @@ assertTest(
 assertTest(
     str_contains($integrationSource, 'IPSViewAssistantWasStyleProfileImportSuccessful'),
     'Failed Style Profile imports are not guarded before shared properties are adopted.'
+);
+assertTest(
+    str_contains($integrationSource, 'IPSViewAssistantPopulateSharedStyleValues($sharedItems, $fieldNames)'),
+    'The action popup does not receive explicit values from the persisted shared style properties.'
+);
+assertTest(
+    str_contains($integrationSource, '$sourceChanged = false;')
+        && str_contains($integrationSource, "['IPSViewStyleSource', 'IPSViewStyleMediaID', 'IPSViewStyleProfileMediaID']"),
+    'Shared style source changes are not tracked before ApplyChanges reloads the popup.'
 );
 
 $style = [
@@ -93,6 +103,20 @@ assertTest(
         && $palette[IPSViewTheme::ROLE_SURFACE] === '#405060'
         && $palette[IPSViewTheme::ROLE_SECONDARY_TEXT] === '#A0A1A2',
     'The shared style is not mapped to the established Assistant palette correctly.'
+);
+
+$previewPalette = IPSViewSharedStyleAdapter::previewPalette($style);
+assertTest(
+    $previewPalette[IPSViewTheme::ROLE_VIEW_BACKGROUND] === '#102030'
+        && $previewPalette[IPSViewTheme::ROLE_PAGE_BACKGROUND] === '#203040'
+        && $previewPalette[IPSViewTheme::ROLE_SURFACE] === IPSViewTheme::mix('#203040', '#405060', 0.80),
+    'Role-specific shared opacity is not composited correctly for the Assistant preview.'
+);
+$previewEffects = IPSViewSharedStyleAdapter::previewEffects($style, 37);
+assertTest(
+    $previewEffects['transparencyMode'] === IPSViewEffects::TRANSPARENCY_OPAQUE
+        && $previewEffects['transparencyPercent'] === 0,
+    'The Assistant preview still collapses role-specific opacity into one global transparency value.'
 );
 
 $styleColors = [];
