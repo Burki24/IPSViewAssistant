@@ -1703,6 +1703,7 @@ class IPSViewAssistant extends IPSModuleStrict
     }
 
     /**
+     * Clears the imported Style Profile baseline after manual style changes.
      */
     private function clearStyleProfileImportState(): void
     {

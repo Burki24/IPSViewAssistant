@@ -166,6 +166,7 @@ trait IPSViewSharedStyleIntegration
     }
 
     /**
+     * Clears the imported Style Profile baseline so the next export uses the current Assistant values.
      */
     public function ClearSharedStyleProfileBaseline(): void
     {
@@ -173,6 +174,7 @@ trait IPSViewSharedStyleIntegration
     }
 
     /**
+     * Reloads the configuration form after shared style changes.
      */
     public function ReloadSharedStyleForm(): void
     {
@@ -180,6 +182,7 @@ trait IPSViewSharedStyleIntegration
     }
 
     /**
+     * Rebuilds the preview from the resolved shared style and native IPSView theme.
      */
     public function RefreshSharedStylePreview(): void
     {
