@@ -13,6 +13,8 @@ Ein nativer vierseitiger Schnellstart-Wizard führt mit Einsatzprofilen für Wan
 
 Im Expertenmodus können Designs außerdem als portables **Style Profile V1** exportiert und wieder importiert werden. Der Assistant unterstützt vollständiges JSON sowie wiederverwendbare Symcon-Dokumentmedien. Ein importiertes Profil befüllt den Designeditor und kann anschließend angepasst und erneut exportiert werden.
 
+Zusätzlich bildet der gemeinsame IPSView-Stileditor die **109 nativen IPSView-Farbfelder in 15 Gruppen** ab. Die nativen Farben erben standardmäßig aus den portablen semantischen Designrollen; einzelne Felder können im benutzerdefinierten Stil gezielt als **Abweichend** überschrieben werden. Eine manuelle Farbänderung aktiviert die betreffende Abweichung automatisch. Die Live-Vorschau verwendet die aufgelösten nativen Farben, wobei `ColorView` und `ColorPage` bewusst getrennte View- und Seitenhintergründe bleiben.
+
 Folgende Module enthält die Bibliothek:
 
 - **IPSView Assistant** ([Dokumentation](IPSView%20Assistant/README.md)) – Erstellt neue IPSView-Projekte oder gestaltet bestehende Views über eine sichere Kopie.

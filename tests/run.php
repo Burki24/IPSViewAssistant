@@ -28,6 +28,7 @@ $commands = [
     ['Test IPSView theme mapping', 'php tests/theme.php'],
     ['Test native IPSView color catalogue', 'php tests/native_color_catalog.php'],
     ['Test native IPSView preview colors', 'php tests/native_preview.php'],
+    ['Check PHPDoc and documentation contract', 'php tests/phpdocs.php'],
     ['Test general IPSView effects', 'php tests/effects.php'],
     ['Test IPSView typography and form language', 'php tests/appearance.php'],
     ['Test IPSView Style Profile exchange', 'php tests/style_profile.php'],

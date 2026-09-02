@@ -166,6 +166,16 @@ Die Farben sind nach ihrer Aufgabe innerhalb der View gegliedert:
 
 Bei bestehenden Views werden individuelle Sonderfarben, Assoziationsfarben und besondere Statusfarben möglichst erhalten. Wie weit Farben von Bedienelementen verändert werden, hängt vom gewählten Gestaltungsumfang ab.
 
+#### 6.2.1 Native IPSView-Farben
+
+Zusätzlich zu den portablen Designrollen bildet der gemeinsame Stileditor die **109 nativen IPSView-Farbfelder in 15 Gruppen** ab: Basis, Assoziationen, Tabs, Switch, Slider, Fortschrittsanzeige, Kreis, Flow, Gauge, Schatten/Raster, Dialog, Chart, Schedule, Event und Kalender.
+
+Jedes native Farbfeld erbt standardmäßig aus der zugeordneten semantischen Designrolle. Dadurch bleiben Vorlagen und Style Profile V1 portabel, während IPSView-spezifische Details trotzdem vollständig abgebildet werden können. `ColorView` bleibt dabei der Hintergrund der gesamten View und `ColorPage` der davon getrennte Seitenhintergrund.
+
+Im **benutzerdefinierten Stil** kann für einzelne native Felder **Abweichend** aktiviert und eine eigene Farbe festgelegt werden. Wird die Farbe eines bisher nicht abweichenden Feldes geändert, aktiviert der Assistant die Abweichung automatisch. Wird **Abweichend** wieder deaktiviert, wird der gespeicherte Override entfernt und das Feld übernimmt wieder den geerbten semantischen Wert.
+
+Die Live-Vorschau verwendet das vollständig aufgelöste native Farbschema. Neben View-, Seiten-, Text- und Rahmenfarben werden dabei auch native Zustände wie Switch- und Sliderfarben direkt sichtbar. Nicht abweichende Felder folgen weiterhin automatisch den übergeordneten Designfarben.
+
 #### 6.3 Allgemeine Effekte
 
 ##### Schatten
@@ -306,7 +316,7 @@ Die Bildanordnung kann auf **Kacheln**, **Zentriert** oder **Strecken** gesetzt 
 
 #### 6.9 Style Profile V1 exportieren und importieren
 
-Der aufklappbare Bereich **Stilprofile** im Expertenmodus stellt das universelle Austauschformat **Style Profile V1** bereit. Das Profil ist unabhängig von den internen Theme-Nummern des Assistants und enthält einen vollständigen, validierten Snapshot der portablen Designwerte. Dadurch kann ein im Assistant erstellter Stil beispielsweise von OpenCalendar oder einem anderen Consumer des gemeinsamen `IPSViewStyleHelper` verwendet werden.
+Der aufklappbare Bereich **Stilprofile** im Expertenmodus stellt das universelle Austauschformat **Style Profile V1** bereit. Das Profil ist unabhängig von den internen Theme-Nummern des Assistants und enthält einen vollständigen, validierten Snapshot der portablen Designwerte. Dadurch kann ein im Assistant erstellter Stil beispielsweise von OpenCalendar oder einem anderen Consumer des gemeinsamen `IPSViewStyleConfigurationHelper` verwendet werden.
 
 Für den Export stehen zwei Wege zur Verfügung:
 

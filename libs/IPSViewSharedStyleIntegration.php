@@ -41,7 +41,9 @@ trait IPSViewSharedStyleIntegration
         'IPSViewStyleShadowOffsetY'
     ];
 
-    /** Persists the displayed shared style controls and refreshes/reloads the form as needed. */
+    /**
+     * @param string $Configuration JSON object containing the visible shared style field values.
+     */
     public function ApplySharedStyleConfiguration(string $Configuration): void
     {
         try {
@@ -91,7 +93,10 @@ trait IPSViewSharedStyleIntegration
         $this->RefreshSharedStylePreview();
     }
 
-    /** Persists one edited native IPSView color row from the action-popup list editor. */
+    /**
+     * @param string $PropertyName Native override property that owns the edited color family.
+     * @param string $Row JSON-encoded edited native IPSView color row.
+     */
     public function ApplySharedNativeColorOverride(string $PropertyName, string $Row): void
     {
         if ($this->IPSViewStyleSource() !== self::IPSVIEW_STYLE_SOURCE_CUSTOM) {
@@ -160,19 +165,22 @@ trait IPSViewSharedStyleIntegration
         $this->RefreshSharedStylePreview();
     }
 
-    /** Clears a lossless imported-profile baseline after the shared editor changes it. */
+    /**
+     */
     public function ClearSharedStyleProfileBaseline(): void
     {
         $this->clearStyleProfileImportState();
     }
 
-    /** Reloads the shared style form after helper-provided actions such as Copy to custom. */
+    /**
+     */
     public function ReloadSharedStyleForm(): void
     {
         $this->ReloadForm();
     }
 
-    /** Refreshes preview and hidden legacy fields from the active shared style. */
+    /**
+     */
     public function RefreshSharedStylePreview(): void
     {
         $snapshot = $this->IPSViewAssistantSharedStyleSnapshot();
@@ -195,7 +203,18 @@ trait IPSViewSharedStyleIntegration
         $this->UpdateFormField('ThemePreview', 'image', $preview);
     }
 
-    /** Creates a new View using the active shared style configuration. */
+    /**
+     * @param string $ViewName Name of the target IPSView media object.
+     * @param int $TargetCategoryID Symcon category that receives the target object.
+     * @param int $AspectRatio IPSView aspect-ratio identifier.
+     * @param int $Orientation IPSView orientation identifier.
+     * @param int $Template IPSView template identifier.
+     * @param string $MainPageName Name of the initial main page.
+     * @param bool $FullScreen Whether the generated View should start in fullscreen mode.
+     * @param int $StartGrid Optional start-grid mode.
+     *
+     * @return string Human-readable result of the View creation.
+     */
     public function CreateSharedStyleView(
         string $ViewName,
         int $TargetCategoryID,
@@ -219,7 +238,19 @@ trait IPSViewSharedStyleIntegration
         );
     }
 
-    /** Creates or explicitly overwrites a View using the active shared style configuration. */
+    /**
+     * @param string $ViewName Name of the target IPSView media object.
+     * @param int $TargetCategoryID Symcon category that receives the target object.
+     * @param int $AspectRatio IPSView aspect-ratio identifier.
+     * @param int $Orientation IPSView orientation identifier.
+     * @param int $Template IPSView template identifier.
+     * @param string $MainPageName Name of the initial main page.
+     * @param bool $FullScreen Whether the generated View should start in fullscreen mode.
+     * @param int $StartGrid Optional start-grid mode.
+     * @param bool $OverwriteExistingView Whether one unambiguous same-name IPSView may be overwritten.
+     *
+     * @return string Human-readable result of the create/overwrite operation.
+     */
     public function CreateOrOverwriteSharedStyleView(
         string $ViewName,
         int $TargetCategoryID,
@@ -283,7 +314,14 @@ trait IPSViewSharedStyleIntegration
         return $result;
     }
 
-    /** Creates or updates a styled copy using the active shared style configuration. */
+    /**
+     * @param int $SourceViewID Media object ID of the source IPSView.
+     * @param string $CopyViewName Name of the styled copy.
+     * @param int $TargetCategoryID Symcon category that receives the target object.
+     * @param int $Scope Scope used when applying the shared design to existing controls.
+     *
+     * @return string Human-readable result of the shared-style copy operation.
+     */
     public function CreateSharedStyledCopy(
         int $SourceViewID,
         string $CopyViewName,
@@ -332,7 +370,9 @@ trait IPSViewSharedStyleIntegration
         return $result;
     }
 
-    /** Loads an existing View and exposes it as the shared IPSView-media style source. */
+    /**
+     * @param int $SourceViewID Media object ID of the source IPSView.
+     */
     public function LoadSharedExistingView(int $SourceViewID): void
     {
         if ($SourceViewID <= 0) {
@@ -361,7 +401,12 @@ trait IPSViewSharedStyleIntegration
         }
     }
 
-    /** Exports the active shared style as a full Style Profile V1 JSON document. */
+    /**
+     * @param string $Name Style-profile name.
+     * @param string $Description Optional style-profile description.
+     *
+     * @return string Encoded Style Profile V1 JSON document or an error message.
+     */
     public function ExportSharedStyleProfileJson(string $Name, string $Description): string
     {
         try {
@@ -393,7 +438,13 @@ trait IPSViewSharedStyleIntegration
         }
     }
 
-    /** Saves the active shared style as a full Style Profile V1 Symcon document media object. */
+    /**
+     * @param string $Name Style-profile name.
+     * @param string $Description Optional style-profile description.
+     * @param int $TargetCategoryID Symcon category that receives the target object.
+     *
+     * @return string Human-readable result of the media export.
+     */
     public function SaveSharedStyleProfileMedia(
         string $Name,
         string $Description,
@@ -433,7 +484,11 @@ trait IPSViewSharedStyleIntegration
         }
     }
 
-    /** Imports a Style Profile V1 file and adopts all fields into the shared custom style. */
+    /**
+     * @param string $File Style Profile V1 JSON, Base64 data or a supported data URI.
+     *
+     * @return string Human-readable result of the profile import.
+     */
     public function ImportSharedStyleProfileFile(string $File): string
     {
         $result = $this->ImportStyleProfileFile($File);
@@ -444,7 +499,11 @@ trait IPSViewSharedStyleIntegration
         return $result;
     }
 
-    /** Imports a Style Profile V1 media object and adopts all fields into the shared custom style. */
+    /**
+     * @param int $MediaID Symcon document media object containing a Style Profile V1 document.
+     *
+     * @return string Human-readable result of the profile import.
+     */
     public function ImportSharedStyleProfileMedia(int $MediaID): string
     {
         $result = $this->ImportStyleProfileMedia($MediaID);
@@ -458,7 +517,7 @@ trait IPSViewSharedStyleIntegration
     /**
      * Replaces the visible legacy design editor with the shared style form.
      *
-     * @param array<string,mixed> $form
+     * @param array<string,mixed> $form Configuration-form structure modified in place.
      */
     private function ApplyIPSViewSharedStyleForm(array &$form): void
     {
@@ -540,7 +599,13 @@ trait IPSViewSharedStyleIntegration
         $this->IPSViewAssistantApplySharedPreviewToForm($form);
     }
 
-    /** @param array<int,array<string,mixed>> $items */
+    /**
+     * @param array $items Configuration-form item list modified in place.
+     * @param array $sharedItems Shared-style form items inserted into the design popup.
+     * @param string $captureScript Form script that captures shared-style field changes.
+     *
+     * @return bool True when the design popup was found and replaced.
+     */
     private function IPSViewAssistantReplaceDesignPopup(array &$items, array $sharedItems, string $captureScript): bool
     {
         foreach ($items as &$item) {
@@ -588,7 +653,11 @@ trait IPSViewSharedStyleIntegration
         return false;
     }
 
-    /** @param array<int,array<string,mixed>> $items @param list<string> $fieldNames */
+    /**
+     * @param array $items Configuration-form item list modified in place.
+     * @param array $fieldNames Shared-style field names handled by the form.
+     * @param string $captureScript Form script that captures shared-style field changes.
+     */
     private function IPSViewAssistantAttachSharedStyleOnChange(
         array &$items,
         array $fieldNames,
@@ -624,7 +693,9 @@ trait IPSViewSharedStyleIntegration
         unset($item);
     }
 
-    /** @param array<int,array<string,mixed>> $items */
+    /**
+     * @param array $items Configuration-form item list modified in place.
+     */
     private function IPSViewAssistantAttachNativeListOnEdit(array &$items): void
     {
         $nativeProperties = array_flip($this->IPSViewStyleNativeOverrideProperties());
@@ -651,7 +722,9 @@ trait IPSViewSharedStyleIntegration
         unset($item);
     }
 
-    /** @param array<int,array<string,mixed>> $items */
+    /**
+     * @param array $items Configuration-form item list modified in place.
+     */
     private function IPSViewAssistantAppendReloadToSharedButtons(array &$items): void
     {
         foreach ($items as &$item) {
@@ -675,7 +748,11 @@ trait IPSViewSharedStyleIntegration
         unset($item);
     }
 
-    /** @param array<int,array<string,mixed>> $items @return list<string> */
+    /**
+     * @param array $items Configuration-form item list modified in place.
+     *
+     * @return array Shared-style field names found in the form.
+     */
     private function IPSViewAssistantSharedStyleFieldNames(array $items): array
     {
         $names = [];
@@ -705,7 +782,10 @@ trait IPSViewSharedStyleIntegration
         return array_keys($names);
     }
 
-    /** @param array<int,array<string,mixed>> $items @param list<string> $fieldNames */
+    /**
+     * @param array $items Configuration-form item list modified in place.
+     * @param array $fieldNames Shared-style field names handled by the form.
+     */
     private function IPSViewAssistantPopulateSharedStyleValues(array &$items, array $fieldNames): void
     {
         $fields = array_flip($fieldNames);
@@ -734,7 +814,11 @@ trait IPSViewSharedStyleIntegration
         unset($item);
     }
 
-    /** @param list<string> $fieldNames */
+    /**
+     * @param array $fieldNames Shared-style field names handled by the form.
+     *
+     * @return string JavaScript used to capture shared-style form values.
+     */
     private function IPSViewAssistantSharedStyleCaptureScript(array $fieldNames): string
     {
         $values = [];
@@ -747,6 +831,13 @@ trait IPSViewSharedStyleIntegration
             . '], JSON_UNESCAPED_SLASHES));';
     }
 
+    /**
+     * Resolves the inherited semantic color for one native IPSView field.
+     *
+     * @param string $field Native IPSView color-field name.
+     *
+     * @return int Inherited native color encoded as a Symcon integer color.
+     */
     private function IPSViewAssistantNativeInheritedColor(string $field): int
     {
         $theme = $this->IPSViewStyleNativeTheme();
@@ -759,6 +850,11 @@ trait IPSViewSharedStyleIntegration
         return (int) hexdec(substr($hex, 1));
     }
 
+    /**
+     * Refreshes one native IPSView color-family list in the open form.
+     *
+     * @param string $propertyName Shared-style or native override property name.
+     */
     private function IPSViewAssistantRefreshNativeList(string $propertyName): void
     {
         $values = $this->IPSViewAssistantFindNativeListValues(
@@ -774,7 +870,12 @@ trait IPSViewSharedStyleIntegration
         }
     }
 
-    /** @param array<int,array<string,mixed>> $items @return array<int,array<string,mixed>>|null */
+    /**
+     * @param array $items Configuration-form item list modified in place.
+     * @param string $propertyName Shared-style or native override property name.
+     *
+     * @return ?array Native color list rows or null when the list is unavailable.
+     */
     private function IPSViewAssistantFindNativeListValues(array $items, string $propertyName): ?array
     {
         foreach ($items as $item) {
@@ -803,7 +904,12 @@ trait IPSViewSharedStyleIntegration
         return null;
     }
 
-    /** @return array<string,array{Override:bool,Field:string,Color:int}> */
+    /**
+     * @param string $propertyName Shared-style or native override property name.
+     * @param string $family Native IPSView color-family identifier.
+     *
+     * @return array Editable native override rows for the requested family.
+     */
     private function IPSViewAssistantNativeOverrideRows(string $propertyName, string $family): array
     {
         $json = trim($this->ReadPropertyString($propertyName));
@@ -843,6 +949,13 @@ trait IPSViewSharedStyleIntegration
         return $stored;
     }
 
+    /**
+     * Normalizes the form value that controls a native color override.
+     *
+     * @param mixed $value New property value.
+     *
+     * @return bool Normalized native override state.
+     */
     private function IPSViewAssistantNativeOverrideEnabled(mixed $value): bool
     {
         if (is_bool($value)) {
@@ -858,6 +971,14 @@ trait IPSViewSharedStyleIntegration
         return false;
     }
 
+    /**
+     * Normalizes one shared-style property received from the form.
+     *
+     * @param string $propertyName Shared-style or native override property name.
+     * @param mixed $value New property value.
+     *
+     * @return mixed Normalized shared-style property value.
+     */
     private function IPSViewAssistantNormalizeSharedProperty(string $propertyName, mixed $value): mixed
     {
         if (str_starts_with($propertyName, 'IPSViewStyleNative')) {
@@ -890,6 +1011,13 @@ trait IPSViewSharedStyleIntegration
         return (int) $value;
     }
 
+    /**
+     * Reads one shared-style property using its registered Symcon type.
+     *
+     * @param string $propertyName Shared-style or native override property name.
+     *
+     * @return mixed Current shared-style property value.
+     */
     private function IPSViewAssistantReadSharedProperty(string $propertyName): mixed
     {
         if (str_starts_with($propertyName, 'IPSViewStyleNative')
@@ -906,7 +1034,9 @@ trait IPSViewSharedStyleIntegration
         return $this->ReadPropertyInteger($propertyName);
     }
 
-    /** @param array<string,mixed> $form */
+    /**
+     * @param array $form Configuration-form structure modified in place.
+     */
     private function IPSViewAssistantSynchronizeLegacyStyleForm(array &$form): void
     {
         $style = $this->IPSViewResolvedStyle();
@@ -925,7 +1055,9 @@ trait IPSViewSharedStyleIntegration
         }
     }
 
-    /** @param array<string,mixed> $form */
+    /**
+     * @param array $form Configuration-form structure modified in place.
+     */
     private function IPSViewAssistantApplySharedPreviewToForm(array &$form): void
     {
         $snapshot = $this->IPSViewAssistantSharedStyleSnapshot();
@@ -949,9 +1081,9 @@ trait IPSViewSharedStyleIntegration
     /**
      * Converts the resolved native IPSView theme to the hexadecimal colors consumed by the preview.
      *
-     * @param array<string,mixed> $nativeTheme
+     * @param array<string,mixed> $nativeTheme Resolved native IPSView theme document.
      *
-     * @return array<string,string>
+     * @return array<string,string> Resolved native preview colors keyed by native field name.
      */
     private function IPSViewAssistantNativePreviewColors(array $nativeTheme): array
     {
@@ -967,7 +1099,11 @@ trait IPSViewSharedStyleIntegration
         return $nativeColors;
     }
 
-    /** @param array<string,string> $palette @param array<string,int> $effects @param array<string,mixed> $appearance */
+    /**
+     * @param array $palette Resolved semantic preview palette.
+     * @param array $effects Resolved or JSON-encoded effect settings.
+     * @param array $appearance Resolved or JSON-encoded typography and shape settings.
+     */
     private function IPSViewAssistantSynchronizeLegacyStyleFields(
         array $palette,
         array $effects,
@@ -985,7 +1121,11 @@ trait IPSViewSharedStyleIntegration
         $this->UpdateFormField('Theme', 'value', IPSViewTheme::THEME_CUSTOM);
     }
 
-    /** @param array<string,int> $effects @return array<string,int> */
+    /**
+     * @param array $effects Resolved or JSON-encoded effect settings.
+     *
+     * @return array Legacy Assistant effect fields derived from the shared style.
+     */
     private function IPSViewAssistantLegacyEffectFields(array $effects): array
     {
         return [
@@ -997,7 +1137,11 @@ trait IPSViewSharedStyleIntegration
         ];
     }
 
-    /** @param array<string,mixed> $appearance @return array<string,mixed> */
+    /**
+     * @param array $appearance Resolved or JSON-encoded typography and shape settings.
+     *
+     * @return array Legacy Assistant appearance fields derived from the shared style.
+     */
     private function IPSViewAssistantLegacyAppearanceFields(array $appearance): array
     {
         return [
@@ -1015,7 +1159,9 @@ trait IPSViewSharedStyleIntegration
         ];
     }
 
-    /** Returns the effective gradient strength, including Style Profile sources. */
+    /**
+     * @return int Active shared gradient strength from 0 to 80.
+     */
     private function IPSViewAssistantActiveGradientStrength(): int
     {
         $strength = $this->ReadPropertyInteger('IPSViewStyleGradientStrength');
@@ -1038,13 +1184,14 @@ trait IPSViewSharedStyleIntegration
     }
 
     /**
-     * @return array{
      *     style: array<string,string|float>,
      *     nativeTheme: array<string,mixed>,
      *     gradientStrength: int,
      *     transparentBackground: bool,
      *     preserveNativeColorDetails: bool
      * }
+     *
+     * @return array{ Complete resolved shared-style snapshot.
      */
     private function IPSViewAssistantSharedStyleSnapshot(): array
     {
@@ -1083,6 +1230,11 @@ trait IPSViewSharedStyleIntegration
      *     transparentBackground: bool,
      *     preserveNativeColorDetails: bool
      * } $snapshot
+     *
+     * @param int $mediaID Symcon media object ID.
+     * @param int $scope Scope used when applying design or background changes.
+     * @param array $snapshot Resolved shared-style snapshot.
+     * @param bool $createMissing Whether absent native fields may be created.
      */
     private function IPSViewAssistantFinalizeSharedStyleMedia(
         int $mediaID,
@@ -1127,6 +1279,16 @@ trait IPSViewSharedStyleIntegration
         IPS_SendMediaEvent($mediaID);
     }
 
+    /**
+     * Checks whether a View creation result represents success.
+     *
+     * @param string $result Human-readable operation result.
+     * @param string $viewName Name of the target IPSView media object.
+     * @param int $mediaID Symcon media object ID.
+     * @param bool $wasOverwritten Whether the operation overwrote an existing View.
+     *
+     * @return bool True when the creation result represents success.
+     */
     private function IPSViewAssistantIsCreateSuccess(
         string $result,
         string $viewName,
@@ -1148,6 +1310,16 @@ trait IPSViewSharedStyleIntegration
         return $result === $expected;
     }
 
+    /**
+     * Checks whether a styled-copy result represents success.
+     *
+     * @param string $result Human-readable operation result.
+     * @param string $copyName Name of the managed styled copy.
+     * @param int $mediaID Symcon media object ID.
+     * @param bool $updated Whether an existing managed copy was updated.
+     *
+     * @return bool True when the copy result represents success.
+     */
     private function IPSViewAssistantIsCopySuccess(
         string $result,
         string $copyName,
@@ -1169,12 +1341,23 @@ trait IPSViewSharedStyleIntegration
         return str_starts_with($result, $expected);
     }
 
-    /** @param array<string,mixed> $value */
+    /**
+     * @param array $value New property value.
+     *
+     * @return string JSON-encoded action value.
+     */
     private function IPSViewAssistantEncodeActionValue(array $value): string
     {
         return json_encode($value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
     }
 
+    /**
+     * Checks whether a Style Profile V1 import result represents success.
+     *
+     * @param string $result Human-readable operation result.
+     *
+     * @return bool True when the import result represents success.
+     */
     private function IPSViewAssistantWasStyleProfileImportSuccessful(string $result): bool
     {
         $state = $this->readStyleProfileImportState();
@@ -1188,6 +1371,9 @@ trait IPSViewSharedStyleIntegration
         );
     }
 
+    /**
+     * Adopts an imported Style Profile V1 as the current shared style baseline.
+     */
     private function IPSViewAssistantAdoptImportedStyleProfile(): void
     {
         $state = $this->readStyleProfileImportState();

@@ -181,11 +181,15 @@ final class IPSViewThemePreview
     /**
      * Creates a self-contained SVG data URI for the configuration form.
      *
-     * @param array<string, string> $palette
-     * @param array<string, mixed>  $effects
-     * @param array<string, mixed>  $appearance
-     * @param array<string, mixed>  $background
-     * @param array<string, string> $nativeColors
+     * @param array<string, string> $palette Resolved semantic preview palette.
+     * @param array<string, mixed> $effects Resolved preview effects.
+     * @param array<string, mixed> $appearance Resolved typography and shape settings.
+     * @param array<string, mixed> $background Resolved preview background settings.
+     * @param int $startGrid Optional start-grid mode shown in the preview.
+     * @param bool $transparentBackground Whether the View background should be rendered transparently.
+     * @param array<string, string> $nativeColors Resolved native IPSView colors keyed by native field name.
+     *
+     * @return string Base64-encoded SVG data URI.
      */
     public static function createDataUri(
         array $palette,
@@ -212,11 +216,15 @@ final class IPSViewThemePreview
     /**
      * Creates the self-contained SVG used by the configuration-form preview.
      *
-     * @param array<string, string> $palette
-     * @param array<string, mixed>  $effects
-     * @param array<string, mixed>  $appearance
-     * @param array<string, mixed>  $background
-     * @param array<string, string> $nativeColors
+     * @param array<string, string> $palette Resolved semantic preview palette.
+     * @param array<string, mixed> $effects Resolved preview effects.
+     * @param array<string, mixed> $appearance Resolved typography and shape settings.
+     * @param array<string, mixed> $background Resolved preview background settings.
+     * @param int $startGrid Optional start-grid mode shown in the preview.
+     * @param bool $transparentBackground Whether the View background should be rendered transparently.
+     * @param array<string, string> $nativeColors Resolved native IPSView colors keyed by native field name.
+     *
+     * @return string Self-contained SVG markup for the live preview.
      */
     public static function createSvg(
         array $palette,
@@ -470,12 +478,15 @@ SVG;
     }
 
     /**
-     * @return array{
      *     lights: array{int, int, int, int},
      *     shutters: array{int, int, int, int},
      *     security: array{int, int, int, int},
      *     typography: array{int, int, int, int}
      * }
+     *
+     * @param int $startGrid Optional start-grid mode.
+     *
+     * @return array{ Preview layout coordinates for all example cards.
      */
     private static function previewLayout(int $startGrid): array
     {
@@ -502,7 +513,12 @@ SVG;
         };
     }
 
-    /** Draws optional column guides matching the selected start-grid layout. */
+    /**
+     * @param int $startGrid Optional start-grid mode.
+     * @param string $accent Resolved accent color used for preview guides.
+     *
+     * @return string SVG markup for optional start-grid guides.
+     */
     private static function gridGuides(int $startGrid, string $accent): string
     {
         if ($startGrid === 0) {
@@ -531,7 +547,9 @@ SVG;
     /**
      * Creates the SVG pattern definition required by a tiled background image.
      *
-     * @param array{dataUri: string, layout: string, width: int, height: int}|null $background
+     * @param array{dataUri: string, layout: string, width: int, height: int}|null $background Resolved preview background settings.
+     *
+     * @return string SVG definition markup for the preview background image.
      */
     private static function backgroundDefinition(?array $background): string
     {
@@ -556,7 +574,9 @@ SVG;
     /**
      * Creates the SVG element for the selected background-image layout.
      *
-     * @param array{dataUri: string, layout: string, width: int, height: int}|null $background
+     * @param array{dataUri: string, layout: string, width: int, height: int}|null $background Resolved preview background settings.
+     *
+     * @return string SVG markup for the preview background image.
      */
     private static function backgroundElement(?array $background): string
     {
@@ -591,7 +611,13 @@ SVG;
         );
     }
 
-    /** Embeds the closest bundled font face required by the current preview. */
+    /**
+     * @param string $fontFamily Canonical or custom font-family identifier.
+     * @param bool $isBold Whether a bold font face is requested.
+     * @param bool $isItalic Whether an italic font face is requested.
+     *
+     * @return string SVG @font-face definitions required by the preview.
+     */
     private static function fontDefinition(
         string $fontFamily,
         bool $isBold,
@@ -625,7 +651,9 @@ SVG;
     /**
      * Selects the closest available bundled font face for the requested style.
      *
-     * @param array<string, array{filename: string, mime: string, format: string}> $faces
+     * @param array<string, array{filename: string, mime: string, format: string}> $faces Available bundled faces keyed by weight and style.
+     * @param int $requestedWeight Requested CSS font weight.
+     * @param string $requestedStyle Requested CSS font style.
      *
      * @return array{source: array{data: string, mime: string, format: string}, weight: int, style: string}|null
      */
@@ -666,7 +694,7 @@ SVG;
     /**
      * Resolves one bundled font file to an embeddable data source.
      *
-     * @param array{filename: string, mime: string, format: string} $face
+     * @param array{filename: string, mime: string, format: string} $face Bundled preview-font face metadata.
      *
      * @return array{data: string, mime: string, format: string}|null
      */
@@ -684,7 +712,11 @@ SVG;
         ];
     }
 
-    /** Returns the CSS font stack for a bundled or user-provided family. */
+    /**
+     * @param string $fontFamily Canonical or custom font-family identifier.
+     *
+     * @return string CSS font-family stack used by the preview.
+     */
     private static function fontStack(string $fontFamily): string
     {
         $font = self::PREVIEW_FONTS[$fontFamily] ?? null;
@@ -697,7 +729,11 @@ SVG;
             : $font['alias'] . ', ' . $font['fallback'];
     }
 
-    /** Loads and caches one bundled preview font as Base64 data. */
+    /**
+     * @param string $filename Bundled preview-font filename.
+     *
+     * @return string Base64-encoded bundled font data.
+     */
     private static function fontData(string $filename): string
     {
         if (isset(self::$previewFontData[$filename])) {
@@ -716,7 +752,11 @@ SVG;
     /**
      * Creates one SVG linear-gradient definition when gradients are enabled.
      *
-     * @param array<string, mixed> $effects
+     * @param string $id SVG gradient identifier.
+     * @param string $color Primary preview color in #RRGGBB form.
+     * @param array<string, mixed> $effects Resolved or JSON-encoded effect settings.
+     *
+     * @return string SVG gradient definition or an empty string.
      */
     private static function gradientDefinition(
         string $id,
@@ -740,7 +780,11 @@ SVG;
     /**
      * Returns either a solid color or the matching generated gradient reference.
      *
-     * @param array<string, mixed> $effects
+     * @param string $id SVG gradient identifier.
+     * @param string $color Primary preview color in #RRGGBB form.
+     * @param array<string, mixed> $effects Resolved or JSON-encoded effect settings.
+     *
+     * @return string SVG fill value for the selected effect configuration.
      */
     private static function fill(string $id, string $color, array $effects): string
     {
@@ -749,7 +793,12 @@ SVG;
             : $color;
     }
 
-    /** Scales and clamps one font size for the fixed preview canvas. */
+    /**
+     * @param int $baseSize Base preview font size.
+     * @param float $scale Preview font-size scale factor.
+     *
+     * @return int Scaled preview font size.
+     */
     private static function fontSize(int $baseSize, float $scale): int
     {
         return max(9, min(30, (int) round($baseSize * $scale)));
@@ -758,7 +807,10 @@ SVG;
     /**
      * Resolves one semantic palette role to a normalized preview color.
      *
-     * @param array<string, string> $palette
+     * @param array<string, string> $palette Resolved semantic preview palette.
+     * @param string $role Semantic color role.
+     *
+     * @return string Resolved semantic preview color.
      */
     private static function color(array $palette, string $role): string
     {
@@ -768,7 +820,11 @@ SVG;
     /**
      * Resolves one concrete native IPSView color with a semantic fallback.
      *
-     * @param array<string, string> $nativeColors
+     * @param array<string, string> $nativeColors Resolved native IPSView colors keyed by native field name.
+     * @param string $field Native IPSView color-field name.
+     * @param string $fallback Fallback color used when no native override exists.
+     *
+     * @return string Resolved native color or its semantic fallback.
      */
     private static function nativeColor(array $nativeColors, string $field, string $fallback): string
     {

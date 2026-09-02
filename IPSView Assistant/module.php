@@ -107,7 +107,10 @@ class IPSViewAssistant extends IPSModuleStrict
     /**
      * Refreshes the configuration form when the active IPSView style media changes.
      *
-     * @param array<int,mixed> $Data
+     * @param int $TimeStamp Symcon message timestamp.
+     * @param int $SenderID Object ID that emitted the message.
+     * @param int $Message Symcon message identifier.
+     * @param array<int,mixed> $Data Additional message payload.
      */
     public function MessageSink(int $TimeStamp, int $SenderID, int $Message, array $Data): void
     {
@@ -120,6 +123,8 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Builds the dynamic assistant form from the shared configuration form helper.
+     *
+     * @return string JSON-encoded Symcon configuration form.
      */
     public function GetConfigurationForm(): string
     {
@@ -238,6 +243,8 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Switches between the reduced quick-start form and all advanced functions.
+     *
+     * @param int $Mode Requested assistant mode.
      */
     public function UpdateAssistantMode(int $Mode): void
     {
@@ -260,6 +267,8 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Applies one ready-made device profile to the basic View settings.
+     *
+     * @param int $Profile Requested usage-profile identifier.
      */
     public function UpdateUsageProfile(int $Profile): void
     {
@@ -289,6 +298,8 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Applies one ready-made device profile inside the quick-start wizard.
+     *
+     * @param int $Profile Requested usage-profile identifier.
      */
     public function UpdateQuickStartUsageProfile(int $Profile): void
     {
@@ -333,6 +344,8 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Updates the recommendation for the first object to place in IPSView Designer.
+     *
+     * @param int $ObjectID Symcon object selected for the Designer handover hint.
      */
     public function UpdateDesignerHandover(int $ObjectID): void
     {
@@ -344,6 +357,21 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Creates a ready-initialized IPSView media object from the assistant form.
+     *
+     * @param string $ViewName Name of the target IPSView media object.
+     * @param int $TargetCategoryID Symcon category that receives the target object.
+     * @param int $AspectRatio IPSView aspect-ratio identifier.
+     * @param int $Orientation IPSView orientation identifier.
+     * @param int $Template IPSView template identifier.
+     * @param string $MainPageName Name of the initial main page.
+     * @param int $Theme Assistant theme identifier.
+     * @param string $ThemePalette JSON-encoded semantic theme palette.
+     * @param string $Effects JSON-encoded effect settings.
+     * @param string $Appearance JSON-encoded typography and shape settings.
+     * @param bool $FullScreen Whether the generated View should start in fullscreen mode.
+     * @param int $StartGrid Optional start-grid mode.
+     *
+     * @return string Human-readable result of the View creation.
      */
     public function CreateView(
         string $ViewName,
@@ -378,6 +406,22 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Creates a new IPSView or explicitly overwrites one unambiguous same-name IPSView.
+     *
+     * @param string $ViewName Name of the target IPSView media object.
+     * @param int $TargetCategoryID Symcon category that receives the target object.
+     * @param int $AspectRatio IPSView aspect-ratio identifier.
+     * @param int $Orientation IPSView orientation identifier.
+     * @param int $Template IPSView template identifier.
+     * @param string $MainPageName Name of the initial main page.
+     * @param int $Theme Assistant theme identifier.
+     * @param string $ThemePalette JSON-encoded semantic theme palette.
+     * @param string $Effects JSON-encoded effect settings.
+     * @param string $Appearance JSON-encoded typography and shape settings.
+     * @param bool $FullScreen Whether the generated View should start in fullscreen mode.
+     * @param int $StartGrid Optional start-grid mode.
+     * @param bool $OverwriteExistingView Whether one unambiguous same-name IPSView may be overwritten.
+     *
+     * @return string Human-readable result of the create/overwrite operation.
      */
     public function CreateOrOverwriteView(
         string $ViewName,
@@ -454,6 +498,10 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Loads the design of an existing IPSView into the semantic color fields.
+     *
+     * @param int $SourceViewID Media object ID of the source IPSView.
+     * @param string $Effects JSON-encoded effect settings.
+     * @param string $Appearance JSON-encoded typography and shape settings.
      */
     public function LoadExistingView(int $SourceViewID, string $Effects = '', string $Appearance = ''): void
     {
@@ -577,6 +625,17 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Creates a styled copy of an existing IPSView without changing the source.
+     *
+     * @param int $SourceViewID Media object ID of the source IPSView.
+     * @param string $CopyViewName Name of the styled copy.
+     * @param int $CopyTargetCategoryID Symcon category that receives the styled copy.
+     * @param int $Theme Assistant theme identifier.
+     * @param string $ThemePalette JSON-encoded semantic theme palette.
+     * @param int $DesignScope Scope used when applying the design to existing controls.
+     * @param string $Effects JSON-encoded effect settings.
+     * @param string $Appearance JSON-encoded typography and shape settings.
+     *
+     * @return string Human-readable result of the copy operation.
      */
     public function CreateStyledCopy(
         int $SourceViewID,
@@ -676,6 +735,15 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Exports the current Assistant design as a portable Style Profile V1 JSON document.
+     *
+     * @param string $Name Style-profile name.
+     * @param string $Description Optional style-profile description.
+     * @param int $Theme Assistant theme identifier.
+     * @param string $ThemePalette JSON-encoded semantic theme palette.
+     * @param string $Effects JSON-encoded effect settings.
+     * @param string $Appearance JSON-encoded typography and shape settings.
+     *
+     * @return string Encoded Style Profile V1 JSON document or an error message.
      */
     public function ExportStyleProfileJson(
         string $Name,
@@ -715,6 +783,16 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Saves the current Assistant design as a reusable Style Profile V1 Symcon document media object.
+     *
+     * @param string $Name Style-profile name.
+     * @param string $Description Optional style-profile description.
+     * @param int $TargetCategoryID Symcon category that receives the target object.
+     * @param int $Theme Assistant theme identifier.
+     * @param string $ThemePalette JSON-encoded semantic theme palette.
+     * @param string $Effects JSON-encoded effect settings.
+     * @param string $Appearance JSON-encoded typography and shape settings.
+     *
+     * @return string Human-readable result of the media export.
      */
     public function SaveStyleProfileMedia(
         string $Name,
@@ -758,6 +836,10 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Imports a Style Profile V1 selected through a Symcon SelectFile field.
+     *
+     * @param string $FileData Style Profile V1 JSON, Base64 data or a supported data URI.
+     *
+     * @return string Human-readable result of the profile import.
      */
     public function ImportStyleProfileFile(string $FileData): string
     {
@@ -779,6 +861,10 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Imports a Style Profile V1 stored in a Symcon document media object.
+     *
+     * @param int $MediaID Symcon document media object containing a Style Profile V1 document.
+     *
+     * @return string Human-readable result of the profile import.
      */
     public function ImportStyleProfileMedia(int $MediaID): string
     {
@@ -812,6 +898,11 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Loads one preset into the semantic color fields and refreshes the preview.
+     *
+     * @param int $Theme Assistant theme identifier.
+     * @param string $ThemePalette JSON-encoded semantic theme palette.
+     * @param string $Effects JSON-encoded effect settings.
+     * @param string $Appearance JSON-encoded typography and shape settings.
      */
     public function ApplyThemePreset(
         int $Theme,
@@ -842,6 +933,10 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Switches to a custom theme and refreshes the live preview.
+     *
+     * @param string $ThemePalette JSON-encoded semantic theme palette.
+     * @param string $Effects JSON-encoded effect settings.
+     * @param string $Appearance JSON-encoded typography and shape settings.
      */
     public function UpdateThemePreview(
         string $ThemePalette,
@@ -874,6 +969,10 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Refreshes the preview after changing general visual effects.
+     *
+     * @param string $ThemePalette JSON-encoded semantic theme palette.
+     * @param string $Effects JSON-encoded effect settings.
+     * @param string $Appearance JSON-encoded typography and shape settings.
      */
     public function UpdateEffectsPreview(
         string $ThemePalette,
@@ -905,6 +1004,10 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Refreshes the preview after changing typography or form language.
+     *
+     * @param string $ThemePalette JSON-encoded semantic theme palette.
+     * @param string $Effects JSON-encoded effect settings.
+     * @param string $Appearance JSON-encoded typography and shape settings.
      */
     public function UpdateAppearancePreview(
         string $ThemePalette,
@@ -938,6 +1041,11 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Changes the sample-card arrangement to match the selected start grid.
+     *
+     * @param int $StartGrid Optional start-grid mode.
+     * @param string $ThemePalette JSON-encoded semantic theme palette.
+     * @param string $Effects JSON-encoded effect settings.
+     * @param string $Appearance JSON-encoded typography and shape settings.
      */
     public function UpdateStartGridPreview(
         int $StartGrid,
@@ -968,6 +1076,9 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Refreshes the design preview inside the quick-start wizard.
+     *
+     * @param int $Theme Assistant theme identifier.
+     * @param int $StartGrid Optional start-grid mode.
      */
     public function UpdateQuickStartPreview(int $Theme, int $StartGrid): void
     {
@@ -989,6 +1100,14 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Rechecks whether the current form values are ready for creating a View.
+     *
+     * @param string $ViewName Name of the target IPSView media object.
+     * @param int $TargetCategoryID Symcon category that receives the target object.
+     * @param string $MainPageName Name of the initial main page.
+     * @param int $AspectRatio IPSView aspect-ratio identifier.
+     * @param int $Orientation IPSView orientation identifier.
+     * @param int $Template IPSView template identifier.
+     * @param int $StartGrid Optional start-grid mode.
      */
     public function UpdateStartCheck(
         string $ViewName,
@@ -1013,6 +1132,15 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Rechecks the form and includes the user's explicit overwrite decision.
+     *
+     * @param string $ViewName Name of the target IPSView media object.
+     * @param int $TargetCategoryID Symcon category that receives the target object.
+     * @param string $MainPageName Name of the initial main page.
+     * @param int $AspectRatio IPSView aspect-ratio identifier.
+     * @param int $Orientation IPSView orientation identifier.
+     * @param int $Template IPSView template identifier.
+     * @param int $StartGrid Optional start-grid mode.
+     * @param bool $OverwriteExistingView Whether one unambiguous same-name IPSView may be overwritten.
      */
     public function UpdateStartCheckWithOverwrite(
         string $ViewName,
@@ -1053,6 +1181,14 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Rechecks the values collected by the quick-start wizard.
+     *
+     * @param string $ViewName Name of the target IPSView media object.
+     * @param int $TargetCategoryID Symcon category that receives the target object.
+     * @param string $MainPageName Name of the initial main page.
+     * @param int $AspectRatio IPSView aspect-ratio identifier.
+     * @param int $Orientation IPSView orientation identifier.
+     * @param int $StartGrid Optional start-grid mode.
+     * @param bool $OverwriteExistingView Whether one unambiguous same-name IPSView may be overwritten.
      */
     public function UpdateQuickStartCheck(
         string $ViewName,
@@ -1091,6 +1227,16 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Validates the final native wizard page before Symcon runs its confirmation action.
+     *
+     * @param string $ViewName Name of the target IPSView media object.
+     * @param int $TargetCategoryID Symcon category that receives the target object.
+     * @param string $MainPageName Name of the initial main page.
+     * @param int $AspectRatio IPSView aspect-ratio identifier.
+     * @param int $Orientation IPSView orientation identifier.
+     * @param int $StartGrid Optional start-grid mode.
+     * @param bool $OverwriteExistingView Whether one unambiguous same-name IPSView may be overwritten.
+     *
+     * @return string Empty string when creation is allowed, otherwise a translated validation message.
      */
     public function ValidateQuickStartCreation(
         string $ViewName,
@@ -1131,6 +1277,18 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Creates an empty IPSView from the compact wizard selections.
+     *
+     * @param string $ViewName Name of the target IPSView media object.
+     * @param int $TargetCategoryID Symcon category that receives the target object.
+     * @param int $AspectRatio IPSView aspect-ratio identifier.
+     * @param int $Orientation IPSView orientation identifier.
+     * @param string $MainPageName Name of the initial main page.
+     * @param int $Theme Assistant theme identifier.
+     * @param bool $FullScreen Whether the generated View should start in fullscreen mode.
+     * @param int $StartGrid Optional start-grid mode.
+     * @param bool $OverwriteExistingView Whether one unambiguous same-name IPSView may be overwritten.
+     *
+     * @return string Human-readable result of the quick-start View creation.
      */
     public function CreateQuickStartView(
         string $ViewName,
@@ -1174,6 +1332,14 @@ class IPSViewAssistant extends IPSModuleStrict
      * Stores the local background selection and refreshes the design preview.
      *
      * An empty image clears the persisted upload only when the file selection itself changed.
+     *
+     * @param string $ImageData Image upload payload received from the Symcon form.
+     * @param int $Mode Background-image mode.
+     * @param string $Layout Requested IPSView background layout.
+     * @param string $ThemePalette JSON-encoded semantic theme palette.
+     * @param string $Effects JSON-encoded effect settings.
+     * @param string $Appearance JSON-encoded typography and shape settings.
+     * @param bool $ImageSelectionChanged Whether the user selected a new image in the current form action.
      */
     public function UpdateBackgroundPreview(
         string $ImageData,
@@ -1229,6 +1395,14 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Stores a background selection from the wizard and refreshes its preview.
+     *
+     * @param string $ImageData Image upload payload received from the Symcon form.
+     * @param int $Mode Background-image mode.
+     * @param string $Layout Requested IPSView background layout.
+     * @param int $Scope Page scope for the background image.
+     * @param int $Theme Assistant theme identifier.
+     * @param int $StartGrid Optional start-grid mode.
+     * @param bool $ImageSelectionChanged Whether the user selected a new image in the current form action.
      */
     public function UpdateQuickStartBackground(
         string $ImageData,
@@ -1282,6 +1456,8 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Selects whether background changes affect only the main page or all pages.
+     *
+     * @param int $Scope Page scope for the background image.
      */
     public function UpdateBackgroundScope(int $Scope): void
     {
@@ -1296,6 +1472,15 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Creates one validated Style Profile V1 JSON document from the current form values.
+     *
+     * @param string $name Style-profile or target object name.
+     * @param string $description Optional Style Profile V1 description.
+     * @param int $theme Assistant theme identifier.
+     * @param string $themePalette JSON-encoded semantic theme palette.
+     * @param string $effects Resolved or JSON-encoded effect settings.
+     * @param string $appearance Resolved or JSON-encoded typography and shape settings.
+     *
+     * @return string Encoded Style Profile V1 JSON document.
      */
     private function createStyleProfileJson(
         string $name,
@@ -1322,9 +1507,10 @@ class IPSViewAssistant extends IPSModuleStrict
     /**
      * Preserves imported origin metadata for an untouched round-trip and creates fresh metadata after edits.
      *
-     * @param array<string,mixed>|null $importState
+     * @param string $description Optional Style Profile V1 description.
+     * @param array<string,mixed>|null $importState Optional preserved Style Profile V1 import state.
      *
-     * @return array<string,string>
+     * @return array<string,string> Normalized Style Profile V1 metadata.
      */
     private function styleProfileMetadata(string $description, ?array $importState): array
     {
@@ -1353,6 +1539,12 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Writes or safely updates one Style Profile V1 document media object.
+     *
+     * @param string $name Style-profile or target object name.
+     * @param int $targetCategoryID Symcon category that receives the target object.
+     * @param string $json Encoded Style Profile V1 JSON document.
+     *
+     * @return int Media object ID of the saved profile.
      */
     private function writeStyleProfileMedia(string $name, int $targetCategoryID, string $json): int
     {
@@ -1440,7 +1632,9 @@ class IPSViewAssistant extends IPSModuleStrict
         }
     }
 
-    /** Validates the category selected for a Style Profile media object. */
+    /**
+     * @param int $targetCategoryID Symcon category that receives the target object.
+     */
     private function validateStyleProfileTargetCategory(int $targetCategoryID): void
     {
         if ($targetCategoryID === 0) {
@@ -1462,6 +1656,10 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Imports one profile, stores its exact canonical baseline and populates all visible design controls.
+     *
+     * @param string $json Encoded Style Profile V1 JSON document.
+     *
+     * @return string Human-readable result of the Style Profile V1 import.
      */
     private function applyStyleProfileImport(string $json): string
     {
@@ -1504,7 +1702,8 @@ class IPSViewAssistant extends IPSModuleStrict
         }
     }
 
-    /** Clears a previously imported lossless baseline after an actual editor change. */
+    /**
+     */
     private function clearStyleProfileImportState(): void
     {
         if ($this->ReadAttributeString(self::ATTRIBUTE_IMPORTED_STYLE_PROFILE) !== '') {
@@ -1520,8 +1719,8 @@ class IPSViewAssistant extends IPSModuleStrict
     /**
      * Applies an imported profile state to the initial dynamic configuration form.
      *
-     * @param array<string,mixed> $form
-     * @param array{profile: array<string,mixed>, editor: array{palette: array<string,string>, effects: array<string,int>, appearance: array<string,mixed>}} $state
+     * @param array<string,mixed> $form Configuration-form structure modified in place.
+     * @param array{profile: array<string,mixed>, editor: array{palette: array<string,string>, effects: array<string,int>, appearance: array<string,mixed>}} $state Preserved Style Profile V1 import state.
      */
     private function applyStyleProfileStateToForm(array &$form, array $state): void
     {
@@ -1570,7 +1769,7 @@ class IPSViewAssistant extends IPSModuleStrict
     /**
      * Applies an imported profile state to an already open form.
      *
-     * @param array{profile: array<string,mixed>, editor: array{palette: array<string,string>, effects: array<string,int>, appearance: array<string,mixed>}} $state
+     * @param array{profile: array<string,mixed>, editor: array{palette: array<string,string>, effects: array<string,int>, appearance: array<string,mixed>}} $state Preserved Style Profile V1 import state.
      */
     private function applyStyleProfileStateToOpenForm(array $state): void
     {
@@ -1608,7 +1807,11 @@ class IPSViewAssistant extends IPSModuleStrict
         );
     }
 
-    /** @param array<string,int> $effects */
+    /**
+     * @param array $effects Resolved or JSON-encoded effect settings.
+     *
+     * @return array Effect values mapped to configuration-form fields.
+     */
     private function styleProfileEffectFormValues(array $effects): array
     {
         return [
@@ -1620,7 +1823,11 @@ class IPSViewAssistant extends IPSModuleStrict
         ];
     }
 
-    /** @param array<string,mixed> $appearance */
+    /**
+     * @param array $appearance Resolved or JSON-encoded typography and shape settings.
+     *
+     * @return array Appearance values mapped to configuration-form fields.
+     */
     private function styleProfileAppearanceFormValues(array $appearance): array
     {
         return [
@@ -1641,7 +1848,7 @@ class IPSViewAssistant extends IPSModuleStrict
     /**
      * Updates the font-format fields for the selected IPSView font family.
      *
-     * @param array<string, mixed> $appearance
+     * @param array<string, mixed> $appearance Resolved or JSON-encoded typography and shape settings.
      */
     private function updateFontStyleFields(array $appearance): void
     {
@@ -1672,6 +1879,9 @@ class IPSViewAssistant extends IPSModuleStrict
     /**
      * Builds one font-format Select while disabling only an unavailable active style.
      *
+     * @param string $activeCaption Caption of the currently active format option.
+     * @param bool $activeEnabled Whether the active format option is selectable.
+     *
      * @return list<array{caption: string, value: int, enabled?: bool}>
      */
     private function fontFormatOptions(string $activeCaption, bool $activeEnabled): array
@@ -1696,7 +1906,8 @@ class IPSViewAssistant extends IPSModuleStrict
     /**
      * Applies the selected assistant mode to the initially rendered form.
      *
-     * @param array<string, mixed> $form
+     * @param array<string, mixed> $form Configuration-form structure modified in place.
+     * @param int $mode Requested assistant, theme or background mode.
      */
     private function applyAssistantModeToForm(array &$form, int $mode): void
     {
@@ -1727,7 +1938,7 @@ class IPSViewAssistant extends IPSModuleStrict
     /**
      * Returns the stable field names that are visible only in advanced mode.
      *
-     * @return list<string>
+     * @return list<string> Configuration fields used only by the expert mode.
      */
     private function advancedModeFields(): array
     {
@@ -1747,7 +1958,7 @@ class IPSViewAssistant extends IPSModuleStrict
     /**
      * Returns the stable field names that are visible only in quick-start mode.
      *
-     * @return list<string>
+     * @return list<string> Configuration fields used only by the quick-start mode.
      */
     private function quickStartModeFields(): array
     {
@@ -1758,6 +1969,10 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Falls back to quick start when an unknown assistant mode is supplied.
+     *
+     * @param int $mode Requested assistant, theme or background mode.
+     *
+     * @return int Normalized assistant-mode identifier.
      */
     private function normalizeAssistantMode(int $mode): int
     {
@@ -1768,6 +1983,10 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Returns the localized explanation for the selected assistant mode.
+     *
+     * @param int $mode Requested assistant, theme or background mode.
+     *
+     * @return string Translated assistant-mode description.
      */
     private function assistantModeInfo(int $mode): string
     {
@@ -1780,6 +1999,10 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Returns the mode-specific explanation shown above the theme selection.
+     *
+     * @param int $mode Requested assistant, theme or background mode.
+     *
+     * @return string Translated theme description.
      */
     private function themeDescription(int $mode): string
     {
@@ -1792,6 +2015,10 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Falls back to the wall-tablet profile for unknown profile values.
+     *
+     * @param int $profile Requested usage-profile identifier.
+     *
+     * @return int Normalized usage-profile identifier.
      */
     private function normalizeUsageProfile(int $profile): int
     {
@@ -1802,6 +2029,10 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Falls back to the standard theme because custom colors belong to advanced mode.
+     *
+     * @param int $theme Assistant theme identifier.
+     *
+     * @return int Normalized quick-start theme identifier.
      */
     private function normalizeQuickStartTheme(int $theme): int
     {
@@ -1823,6 +2054,8 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Reads and validates the start-grid arrangement retained for the preview.
+     *
+     * @return int Normalized start-grid mode for the live preview.
      */
     private function previewStartGrid(): int
     {
@@ -1833,6 +2066,10 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Falls back to no grid for an unsupported start-grid value.
+     *
+     * @param int $startGrid Optional start-grid mode.
+     *
+     * @return int Normalized start-grid mode.
      */
     private function normalizeStartGrid(int $startGrid): int
     {
@@ -1849,6 +2086,10 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Returns the localized device and dimension summary for a usage profile.
+     *
+     * @param int $profile Requested usage-profile identifier.
+     *
+     * @return string Translated usage-profile description.
      */
     private function usageProfileInfo(int $profile): string
     {
@@ -1864,7 +2105,7 @@ class IPSViewAssistant extends IPSModuleStrict
     /**
      * Restores the handover for the most recently created View when the form is reopened.
      *
-     * @param array<string, mixed> $form
+     * @param array<string, mixed> $form Configuration-form structure modified in place.
      */
     private function applyDesignerHandoverToForm(array &$form): void
     {
@@ -1900,6 +2141,8 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Reveals and initializes the guided Designer handover after View creation.
+     *
+     * @param int $mediaID Symcon media object ID.
      */
     private function showDesignerHandover(int $mediaID): void
     {
@@ -1913,6 +2156,10 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Builds the localized object-tree location of the newly created View.
+     *
+     * @param int $mediaID Symcon media object ID.
+     *
+     * @return string Translated Designer handover title.
      */
     private function designerHandoverTitle(int $mediaID): string
     {
@@ -1928,6 +2175,10 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Builds a localized first-control recommendation for a Symcon object.
+     *
+     * @param int $objectID Selected Symcon object ID.
+     *
+     * @return string Translated hint for the selected Designer object.
      */
     private function designerObjectHint(int $objectID): string
     {
@@ -1953,7 +2204,10 @@ class IPSViewAssistant extends IPSModuleStrict
     /**
      * Updates one named field in the nested configuration form definition.
      *
-     * @param array<string, mixed> $form
+     * @param array<string, mixed> $form Configuration-form structure modified in place.
+     * @param string $name Style-profile or target object name.
+     * @param string $property Configuration-form property to update.
+     * @param mixed $value New property value.
      */
     private function setConfigurationFormField(
         array &$form,
@@ -1971,7 +2225,12 @@ class IPSViewAssistant extends IPSModuleStrict
     /**
      * Recursively updates one named field in a list of nested form items.
      *
-     * @param list<array<string, mixed>> $items
+     * @param list<array<string, mixed>> $items Configuration-form item list modified in place.
+     * @param string $name Style-profile or target object name.
+     * @param string $property Configuration-form property to update.
+     * @param mixed $value New property value.
+     *
+     * @return bool True when the requested form field was found and updated.
      */
     private function setConfigurationFormFieldInItems(
         array &$items,
@@ -2010,6 +2269,12 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Finds the managed design copy matching source, name and target category.
+     *
+     * @param int $sourceMediaID Media object ID of the source IPSView.
+     * @param string $copyName Name of the managed styled copy.
+     * @param int $targetCategoryID Symcon category that receives the target object.
+     *
+     * @return ?int Media object ID of the matching managed copy or null.
      */
     private function findManagedCopy(
         int $sourceMediaID,
@@ -2037,6 +2302,10 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Returns the most recently registered, still valid copy for a source View.
+     *
+     * @param int $sourceMediaID Media object ID of the source IPSView.
+     *
+     * @return ?int Media object ID of the preferred managed copy or null.
      */
     private function findPreferredManagedCopy(int $sourceMediaID): ?int
     {
@@ -2051,6 +2320,9 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Persists the relation between a source View and its managed design copy.
+     *
+     * @param int $sourceMediaID Media object ID of the source IPSView.
+     * @param int $targetMediaID Media object ID of the managed styled copy.
      */
     private function rememberManagedCopy(int $sourceMediaID, int $targetMediaID): void
     {
@@ -2138,6 +2410,10 @@ class IPSViewAssistant extends IPSModuleStrict
      *     globalShapeApplied: int,
      *     backgroundChanged: bool
      * }|null $report
+     *
+     * @param ?array $report Start-check or theme-application report.
+     *
+     * @return string Human-readable theme-application report.
      */
     private function formatThemeReport(?array $report): string
     {
@@ -2186,6 +2462,8 @@ class IPSViewAssistant extends IPSModuleStrict
     /**
      * Decodes the semantic color palette received from the configuration form.
      *
+     * @param string $paletteJson JSON-encoded semantic color palette.
+     *
      * @return array<string, mixed>
      */
     private function decodePalette(string $paletteJson): array
@@ -2206,6 +2484,8 @@ class IPSViewAssistant extends IPSModuleStrict
     /**
      * Decodes and validates the general visual effects received from the form.
      *
+     * @param string $effectsJson JSON-encoded effect settings.
+     *
      * @return array<string, mixed>
      */
     private function decodeEffects(string $effectsJson): array
@@ -2225,6 +2505,8 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Decodes and validates the typography and shape settings received from the form.
+     *
+     * @param string $appearanceJson JSON-encoded typography and shape settings.
      *
      * @return array<string, mixed>
      */
@@ -2264,6 +2546,12 @@ class IPSViewAssistant extends IPSModuleStrict
     /**
      * Validates and persists one background-image selection.
      *
+     * @param string $imageData Image upload payload received from the Symcon form.
+     * @param int $mode Requested assistant, theme or background mode.
+     * @param string $layout Requested IPSView background layout.
+     * @param int $scope Scope used when applying design or background changes.
+     * @param bool $imageSelectionChanged Whether a new image was selected in the current action.
+     *
      * @return array{mode: int, layout: string, scope: int, imageData: string}
      */
     private function storeBackgroundSettings(
@@ -2294,7 +2582,11 @@ class IPSViewAssistant extends IPSModuleStrict
     /**
      * Creates the wizard preview from preset-only design settings.
      *
-     * @param array{mode: int, layout: string, scope: int, imageData: string} $background
+     * @param int $theme Assistant theme identifier.
+     * @param int $startGrid Optional start-grid mode.
+     * @param array{mode: int, layout: string, scope: int, imageData: string} $background Resolved preview background settings.
+     *
+     * @return string Base64-encoded SVG preview data URI.
      */
     private function createQuickStartPreview(int $theme, int $startGrid, array $background): string
     {
@@ -2309,6 +2601,15 @@ class IPSViewAssistant extends IPSModuleStrict
 
     /**
      * Analyzes the current creation inputs together with the persisted background settings.
+     *
+     * @param string $viewName Name of the target IPSView media object.
+     * @param int $targetCategoryID Symcon category that receives the target object.
+     * @param string $mainPageName Name of the initial main page.
+     * @param int $aspectRatio IPSView aspect-ratio identifier.
+     * @param int $orientation IPSView orientation identifier.
+     * @param int $template IPSView template identifier.
+     * @param int $startGrid Optional start-grid mode.
+     * @param bool $overwriteExisting Whether one unambiguous same-name IPSView may be overwritten.
      *
      * @return array{status: int, ready: bool, overwriteAvailable: bool, checks: list<string>, warnings: list<string>, errors: list<string>}
      */
@@ -2338,7 +2639,8 @@ class IPSViewAssistant extends IPSModuleStrict
     /**
      * Writes a start-check report to the live form and enables creation when ready.
      *
-     * @param array{status: int, ready: bool, overwriteAvailable: bool, checks: list<string>, warnings: list<string>, errors: list<string>} $report
+     * @param array{status: int, ready: bool, overwriteAvailable: bool, checks: list<string>, warnings: list<string>, errors: list<string>} $report Start-check or theme-application report.
+     * @param bool $overwriteExisting Whether one unambiguous same-name IPSView may be overwritten.
      */
     private function showStartCheck(array $report, bool $overwriteExisting = false): void
     {
@@ -2352,7 +2654,8 @@ class IPSViewAssistant extends IPSModuleStrict
     /**
      * Writes a start-check report to the quick-start wizard.
      *
-     * @param array{status: int, ready: bool, overwriteAvailable: bool, checks: list<string>, warnings: list<string>, errors: list<string>} $report
+     * @param array{status: int, ready: bool, overwriteAvailable: bool, checks: list<string>, warnings: list<string>, errors: list<string>} $report Start-check or theme-application report.
+     * @param bool $overwriteExisting Whether one unambiguous same-name IPSView may be overwritten.
      */
     private function showQuickStartCheck(array $report, bool $overwriteExisting = false): void
     {
@@ -2365,8 +2668,8 @@ class IPSViewAssistant extends IPSModuleStrict
     /**
      * Applies the initial start-check report to the form definition before rendering.
      *
-     * @param array<string, mixed>                                                                              $form
-     * @param array{status: int, ready: bool, overwriteAvailable: bool, checks: list<string>, warnings: list<string>, errors: list<string>} $report
+     * @param array<string, mixed> $form Configuration-form structure modified in place.
+     * @param array{status: int, ready: bool, overwriteAvailable: bool, checks: list<string>, warnings: list<string>, errors: list<string>} $report Start-check or theme-application report.
      */
     private function applyStartCheckToForm(array &$form, array $report): void
     {
@@ -2380,8 +2683,8 @@ class IPSViewAssistant extends IPSModuleStrict
     /**
      * Applies the initial start-check report to the quick-start wizard.
      *
-     * @param array<string, mixed>                                                                              $form
-     * @param array{status: int, ready: bool, overwriteAvailable: bool, checks: list<string>, warnings: list<string>, errors: list<string>} $report
+     * @param array<string, mixed> $form Configuration-form structure modified in place.
+     * @param array{status: int, ready: bool, overwriteAvailable: bool, checks: list<string>, warnings: list<string>, errors: list<string>} $report Start-check or theme-application report.
      */
     private function applyQuickStartCheckToForm(array &$form, array $report): void
     {
@@ -2409,7 +2712,9 @@ class IPSViewAssistant extends IPSModuleStrict
     /**
      * Formats one start-check report as a localized multiline traffic-light summary.
      *
-     * @param array{status: int, ready: bool, overwriteAvailable: bool, checks: list<string>, warnings: list<string>, errors: list<string>} $report
+     * @param array{status: int, ready: bool, overwriteAvailable: bool, checks: list<string>, warnings: list<string>, errors: list<string>} $report Start-check or theme-application report.
+     *
+     * @return string Translated summary caption for the start-check report.
      */
     private function startCheckCaption(array $report): string
     {
@@ -2436,7 +2741,7 @@ class IPSViewAssistant extends IPSModuleStrict
     /**
      * Writes a resolved semantic palette back to all configuration color fields.
      *
-     * @param array<string, string> $palette
+     * @param array<string, string> $palette Resolved semantic preview palette.
      */
     private function updateColorFields(array $palette): void
     {
