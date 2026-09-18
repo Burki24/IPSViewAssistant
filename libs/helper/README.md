@@ -12,6 +12,6 @@ Die Dateien in diesem Verzeichnis stammen aus dem gemeinsamen Repository
 | `IPSViewStyleConfigurationHelper.php` | 1.1.0 | `e6f558a0dee301d251d2f5845ebdedb765dc07ca5352427d1e08792d940629b7` |
 | `HelperTranslationHelper.php` | 1.0.0 | `d3deee581eca9f8eb11e9adce060170227a2dc836ee898bd134f93d27604f639` |
 | `IPSViewStyleProfileHelper.php` | 1.0.1 | `eca6aa486d60b0db11cc7db0b486dc5b1723c49e26c23fe72465a33cf73f453d` |
-| `IPSViewStyleHelper.php` | 1.6.7 | `67ff6608658f2a5c61d56ba4c74673f92af988babf705fe598f0ab4e313288ad` |
+| `IPSViewStyleHelper.php` | 1.6.8 | `f84a860fa2b64b6ab3474e997af7097b4ef8e0c9e529adbc4e7fb1497a80cda5` |
 
 Die Kopien werden bewusst mit der Library ausgeliefert; zur Laufzeit besteht keine externe Abhängigkeit.
