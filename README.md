@@ -7,6 +7,8 @@
 [![Check Style](https://github.com/Burki24/IPSViewAssistant/actions/workflows/style.yml/badge.svg?branch=main)](https://github.com/Burki24/IPSViewAssistant/actions/workflows/style.yml?query=branch%3Amain)
 [![Run Tests](https://github.com/Burki24/IPSViewAssistant/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/Burki24/IPSViewAssistant/actions/workflows/tests.yml?query=branch%3Amain)
 
+![IPSViewAssistant – Deine View. Dein Design.](docs/images/ipsviewassistant-readme-hero.png)
+
 IPSView Assistant erleichtert das Erstellen und Gestalten von IPSView-Projekten direkt in Symcon.
 
 Ein nativer vierseitiger Schnellstart-Wizard führt mit Einsatzprofilen für Wandtablet, Tablet, Smartphone und Browser, einem optionalen zwei- oder dreispaltigen Start-Raster und einem wählbaren Design durch die grundlegenden Einstellungen. Ein Startcheck prüft die Konfiguration vor der Erstellung und erlaubt das bewusste Überschreiben einer eindeutig erkannten gleichnamigen IPSView; im Expertenmodus können bestehende Views als separate Designkopie neu gestaltet werden. Das Original bleibt unverändert.
