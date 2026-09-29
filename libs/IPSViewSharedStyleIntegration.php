@@ -12,6 +12,7 @@ use stdClass;
 use Throwable;
 
 require_once __DIR__ . '/helper/IPSViewStyleProfileHelper.php';
+require_once __DIR__ . '/IPSViewColorPaletteExchange.php';
 require_once __DIR__ . '/IPSViewSharedStyleAdapter.php';
 
 /**
@@ -523,6 +524,155 @@ trait IPSViewSharedStyleIntegration
     }
 
     /**
+     * Exports the complete active color palette without typography or visual effects.
+     *
+     * @param string $Name Palette name.
+     * @param string $Description Optional palette description.
+     *
+     * @return string Encoded Color Palette V1 JSON document or an error message.
+     */
+    public function ExportColorPaletteJson(string $Name, string $Description): string
+    {
+        try {
+            $data = $this->IPSViewAssistantColorPaletteData();
+            $json = IPSViewColorPaletteExchange::exportJson(
+                trim($Name),
+                $Description,
+                $data['semanticColors'],
+                $data['nativeColors']
+            );
+            $message = sprintf($this->Translate('Color palette "%s" was exported as JSON.'), trim($Name));
+            $this->WriteAttributeString(self::ATTRIBUTE_COLOR_PALETTE_STATUS, $message);
+            $this->UpdateFormField('ColorPaletteStatus', 'caption', $message);
+
+            return $json;
+        } catch (Throwable $exception) {
+            $this->SendDebug('ExportColorPaletteJson', $exception->getMessage(), 0);
+            $message = sprintf(
+                $this->Translate('The color palette could not be exported: %s'),
+                $exception->getMessage()
+            );
+            $this->WriteAttributeString(self::ATTRIBUTE_COLOR_PALETTE_STATUS, $message);
+            $this->UpdateFormField('ColorPaletteStatus', 'caption', $message);
+
+            return $message;
+        }
+    }
+
+    /**
+     * Saves the complete active color palette as a reusable Symcon document media object.
+     *
+     * @param string $Name Palette or target object name.
+     * @param string $Description Optional palette description.
+     * @param int $TargetCategoryID Symcon category that receives the document.
+     *
+     * @return string Human-readable result of the palette media export.
+     */
+    public function SaveColorPaletteMedia(string $Name, string $Description, int $TargetCategoryID): string
+    {
+        try {
+            $name = trim($Name);
+            $data = $this->IPSViewAssistantColorPaletteData();
+            $json = IPSViewColorPaletteExchange::exportJson(
+                $name,
+                $Description,
+                $data['semanticColors'],
+                $data['nativeColors']
+            );
+            $mediaID = $this->IPSViewAssistantWriteColorPaletteMedia($name, $TargetCategoryID, $json);
+            $message = sprintf(
+                $this->Translate('Color palette "%s" was saved as Symcon media object %d.'),
+                $name,
+                $mediaID
+            );
+            $this->WriteAttributeString(self::ATTRIBUTE_COLOR_PALETTE_STATUS, $message);
+            $this->UpdateFormField('ColorPaletteStatus', 'caption', $message);
+
+            return $message;
+        } catch (Throwable $exception) {
+            $this->SendDebug('SaveColorPaletteMedia', $exception->getMessage(), 0);
+            $message = sprintf(
+                $this->Translate('The color palette could not be saved as a Symcon media object: %s'),
+                $exception->getMessage()
+            );
+            $this->WriteAttributeString(self::ATTRIBUTE_COLOR_PALETTE_STATUS, $message);
+            $this->UpdateFormField('ColorPaletteStatus', 'caption', $message);
+
+            return $message;
+        }
+    }
+
+    /**
+     * Imports one Color Palette V1 file and applies only its color values.
+     *
+     * @param string $File Palette JSON, Base64 data or a supported data URI.
+     *
+     * @return string Human-readable result of the palette import.
+     */
+    public function ImportColorPaletteFile(string $File): string
+    {
+        try {
+            $palette = IPSViewColorPaletteExchange::importJson(
+                IPSViewColorPaletteExchange::decodeFileData($File)
+            );
+
+            return $this->IPSViewAssistantApplyColorPalette($palette);
+        } catch (Throwable $exception) {
+            $this->SendDebug('ImportColorPaletteFile', $exception->getMessage(), 0);
+            $message = sprintf(
+                $this->Translate('The color palette file could not be imported: %s'),
+                $exception->getMessage()
+            );
+            $this->WriteAttributeString(self::ATTRIBUTE_COLOR_PALETTE_STATUS, $message);
+            $this->UpdateFormField('ColorPaletteStatus', 'caption', $message);
+
+            return $message;
+        }
+    }
+
+    /**
+     * Imports one Color Palette V1 from a Symcon document media object.
+     *
+     * @param int $MediaID Symcon document media object containing a Color Palette V1 document.
+     *
+     * @return string Human-readable result of the palette import.
+     */
+    public function ImportColorPaletteMedia(int $MediaID): string
+    {
+        try {
+            if ($MediaID <= 0 || !IPS_MediaExists($MediaID)) {
+                throw new RuntimeException($this->Translate('The selected color palette media object does not exist.'));
+            }
+
+            $media = IPS_GetMedia($MediaID);
+            $documentType = defined('MEDIATYPE_DOCUMENT') ? MEDIATYPE_DOCUMENT : 5;
+            if ((int) ($media['MediaType'] ?? -1) !== $documentType) {
+                throw new RuntimeException($this->Translate('The selected color palette media object is not a document.'));
+            }
+
+            $content = IPS_GetMediaContent($MediaID);
+            $json = is_string($content) ? base64_decode($content, true) : false;
+            if (!is_string($json) || trim($json) === '') {
+                throw new RuntimeException(
+                    $this->Translate('The selected color palette media object does not contain readable content.')
+                );
+            }
+
+            return $this->IPSViewAssistantApplyColorPalette(IPSViewColorPaletteExchange::importJson($json));
+        } catch (Throwable $exception) {
+            $this->SendDebug('ImportColorPaletteMedia', $exception->getMessage(), 0);
+            $message = sprintf(
+                $this->Translate('The color palette media could not be imported: %s'),
+                $exception->getMessage()
+            );
+            $this->WriteAttributeString(self::ATTRIBUTE_COLOR_PALETTE_STATUS, $message);
+            $this->UpdateFormField('ColorPaletteStatus', 'caption', $message);
+
+            return $message;
+        }
+    }
+
+    /**
      * Replaces the visible legacy design editor with the shared style form.
      *
      * @param array<string,mixed> $form Configuration-form structure modified in place.
@@ -601,6 +751,32 @@ trait IPSViewSharedStyleIntegration
             'ImportStyleProfileMediaButton',
             'onClick',
             'echo IPSVIEWA_ImportSharedStyleProfileMedia($id, $StyleProfileImportMediaID);'
+        );
+        $this->setConfigurationFormField(
+            $form,
+            'ExportColorPaletteJsonButton',
+            'onClick',
+            $captureScript
+                . ' echo IPSVIEWA_ExportColorPaletteJson($id, $ColorPaletteName, $ColorPaletteDescription);'
+        );
+        $this->setConfigurationFormField(
+            $form,
+            'SaveColorPaletteMediaButton',
+            'onClick',
+            $captureScript
+                . ' echo IPSVIEWA_SaveColorPaletteMedia($id, $ColorPaletteName, $ColorPaletteDescription, $ColorPaletteTargetCategoryID);'
+        );
+        $this->setConfigurationFormField(
+            $form,
+            'ColorPaletteImportFile',
+            'onChange',
+            'if ($ColorPaletteImportFile !== "") { echo IPSVIEWA_ImportColorPaletteFile($id, $ColorPaletteImportFile); }'
+        );
+        $this->setConfigurationFormField(
+            $form,
+            'ImportColorPaletteMediaButton',
+            'onClick',
+            'echo IPSVIEWA_ImportColorPaletteMedia($id, $ColorPaletteImportMediaID);'
         );
 
         $this->IPSViewAssistantSynchronizeLegacyStyleForm($form);
@@ -1285,6 +1461,235 @@ trait IPSViewSharedStyleIntegration
             throw new RuntimeException('The shared IPSView style could not be written to the media object.');
         }
         IPS_SendMediaEvent($mediaID);
+    }
+
+    /**
+     * Resolves all semantic and native colors of the currently active shared style.
+     *
+     * @return array{semanticColors:array<string,string>,nativeColors:array<string,string>} Complete palette data.
+     */
+    private function IPSViewAssistantColorPaletteData(): array
+    {
+        $snapshot = $this->IPSViewAssistantSharedStyleSnapshot();
+        $nativeTheme = $this->IPSViewStyleNativeTheme();
+
+        foreach ($snapshot['nativeTheme']['colors'] ?? [] as $field => $color) {
+            if (is_string($field) && IPSViewControlThemeHelper::isKnownField($field)) {
+                $nativeTheme['colors'][$field] = IPSViewControlThemeHelper::normalizeColor($color);
+            }
+        }
+
+        $semanticColors = IPSViewSharedStyleAdapter::semanticColors($snapshot['style']);
+
+        $nativeColors = [];
+        foreach (IPSViewControlThemeHelper::fields() as $field) {
+            if (!isset($nativeTheme['colors'][$field])) {
+                throw new RuntimeException('The native IPSView color ' . $field . ' could not be resolved.');
+            }
+            $nativeColors[$field] = IPSViewControlThemeHelper::colorToHex($nativeTheme['colors'][$field]);
+        }
+
+        return [
+            'semanticColors' => $semanticColors,
+            'nativeColors'   => $nativeColors,
+        ];
+    }
+
+    /**
+     * Applies one validated Color Palette V1 while preserving all non-color shared-style settings.
+     *
+     * @param array<string,mixed> $palette Canonical Color Palette V1 document.
+     *
+     * @return string Human-readable import result.
+     */
+    private function IPSViewAssistantApplyColorPalette(array $palette): string
+    {
+        $palette = IPSViewColorPaletteExchange::normalize($palette);
+        $snapshot = $this->IPSViewAssistantSharedStyleSnapshot();
+        $nativeTheme = $this->IPSViewStyleNativeTheme();
+        foreach ($snapshot['nativeTheme']['colors'] ?? [] as $field => $color) {
+            if (is_string($field) && IPSViewControlThemeHelper::isKnownField($field)) {
+                $nativeTheme['colors'][$field] = IPSViewControlThemeHelper::normalizeColor($color);
+            }
+        }
+
+        $profileStyle = IPSViewSharedStyleAdapter::profileStyle(
+            $snapshot['style'],
+            $nativeTheme,
+            $snapshot['gradientStrength'],
+            $snapshot['transparentBackground']
+        );
+        foreach ($palette['semanticColors'] as $field => $color) {
+            $profileStyle[$field] = $color;
+        }
+
+        $source = $this->ReadPropertyInteger('IPSViewStyleSource');
+        if ($source === self::IPSVIEW_STYLE_SOURCE_CUSTOM) {
+            $properties = IPSViewSharedStyleAdapter::colorPropertyValuesFromProfileStyle($profileStyle);
+        } else {
+            $properties = IPSViewSharedStyleAdapter::propertyValuesFromProfileStyle($profileStyle);
+            $properties['IPSViewStyleTransparentBackground'] = $snapshot['transparentBackground'];
+        }
+        foreach ($properties as $propertyName => $value) {
+            IPS_SetProperty($this->InstanceID, $propertyName, $value);
+        }
+
+        $nativeOverrides = IPSViewColorPaletteExchange::nativeOverrides($palette);
+        foreach ($this->IPSViewStyleNativeOverrideProperties() as $family => $propertyName) {
+            $rows = [];
+            foreach (IPSViewControlThemeHelper::fieldsForFamily($family) as $field) {
+                if (!isset($nativeOverrides[$field])) {
+                    continue;
+                }
+
+                $rows[] = [
+                    'Override' => true,
+                    'Field'    => $field,
+                    'Color'    => (int) hexdec(substr($nativeOverrides[$field], 1)),
+                ];
+            }
+            IPS_SetProperty(
+                $this->InstanceID,
+                $propertyName,
+                json_encode(
+                    $rows,
+                    JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR
+                )
+            );
+        }
+
+        $this->clearStyleProfileImportState();
+        IPS_ApplyChanges($this->InstanceID);
+
+        $message = sprintf(
+            $this->Translate('Color palette "%s" was imported successfully.'),
+            $palette['name']
+        );
+        $this->WriteAttributeString(self::ATTRIBUTE_COLOR_PALETTE_STATUS, $message);
+        $this->ReloadForm();
+
+        return $message;
+    }
+
+    /**
+     * Writes or safely updates one Color Palette V1 Symcon document media object.
+     *
+     * @param string $name Palette or target object name.
+     * @param int $targetCategoryID Symcon category that receives the target object.
+     * @param string $json Encoded Color Palette V1 JSON document.
+     *
+     * @return int Media object ID of the saved palette.
+     */
+    private function IPSViewAssistantWriteColorPaletteMedia(
+        string $name,
+        int $targetCategoryID,
+        string $json
+    ): int {
+        $targetCategoryID = $targetCategoryID === 1 ? 0 : $targetCategoryID;
+        $this->IPSViewAssistantValidateColorPaletteTargetCategory($targetCategoryID);
+        IPSViewColorPaletteExchange::importJson($json);
+
+        $existingID = IPS_GetObjectIDByName($name, $targetCategoryID);
+        if (is_int($existingID) && $existingID > 0) {
+            if (!IPS_MediaExists($existingID)) {
+                throw new RuntimeException(
+                    sprintf(
+                        $this->Translate('An object named "%s" already exists in the target category and is not a media object.'),
+                        $name
+                    )
+                );
+            }
+
+            $media = IPS_GetMedia($existingID);
+            $documentType = defined('MEDIATYPE_DOCUMENT') ? MEDIATYPE_DOCUMENT : 5;
+            if ((int) ($media['MediaType'] ?? -1) !== $documentType) {
+                throw new RuntimeException(
+                    sprintf($this->Translate('The existing media object named "%s" is not a document.'), $name)
+                );
+            }
+
+            $previousContent = IPS_GetMediaContent($existingID);
+            $previousJson = is_string($previousContent) ? base64_decode($previousContent, true) : false;
+            try {
+                if (!is_string($previousJson) || trim($previousJson) === '') {
+                    throw new RuntimeException('empty');
+                }
+                IPSViewColorPaletteExchange::importJson($previousJson);
+            } catch (Throwable) {
+                throw new RuntimeException(
+                    sprintf(
+                        $this->Translate(
+                            'The existing document named "%s" is not a valid Color Palette V1 and will not be overwritten.'
+                        ),
+                        $name
+                    )
+                );
+            }
+
+            try {
+                if (!IPS_SetMediaContent($existingID, base64_encode($json))) {
+                    throw new RuntimeException($this->Translate('The Color Palette media content could not be written.'));
+                }
+                IPS_SendMediaEvent($existingID);
+
+                return $existingID;
+            } catch (Throwable $exception) {
+                try {
+                    IPS_SetMediaContent($existingID, $previousContent);
+                    IPS_SendMediaEvent($existingID);
+                } catch (Throwable) {
+                }
+
+                throw $exception;
+            }
+        }
+
+        $documentType = defined('MEDIATYPE_DOCUMENT') ? MEDIATYPE_DOCUMENT : 5;
+        $mediaID = IPS_CreateMedia($documentType);
+        try {
+            IPS_SetName($mediaID, $name);
+            IPS_SetParent($mediaID, $targetCategoryID);
+            $mediaFile = IPS_GetKernelDir()
+                . 'media'
+                . DIRECTORY_SEPARATOR
+                . $mediaID
+                . '.ipsview-palette.json';
+            if (!IPS_SetMediaFile($mediaID, $mediaFile, false)) {
+                throw new RuntimeException($this->Translate('The Color Palette media file could not be assigned.'));
+            }
+            if (!IPS_SetMediaContent($mediaID, base64_encode($json))) {
+                throw new RuntimeException($this->Translate('The Color Palette media content could not be written.'));
+            }
+            IPS_SendMediaEvent($mediaID);
+
+            return $mediaID;
+        } catch (Throwable $exception) {
+            if (IPS_MediaExists($mediaID)) {
+                IPS_DeleteMedia($mediaID, true);
+            }
+
+            throw $exception;
+        }
+    }
+
+    /**
+     * Validates one palette-media target category.
+     *
+     * @param int $targetCategoryID Symcon category ID or zero for the root.
+     */
+    private function IPSViewAssistantValidateColorPaletteTargetCategory(int $targetCategoryID): void
+    {
+        if ($targetCategoryID === 0) {
+            return;
+        }
+        if (!IPS_ObjectExists($targetCategoryID)) {
+            throw new RuntimeException($this->Translate('The selected Color Palette target category does not exist.'));
+        }
+
+        $object = IPS_GetObject($targetCategoryID);
+        if ((int) ($object['ObjectType'] ?? -1) !== 0) {
+            throw new RuntimeException($this->Translate('The selected Color Palette target object is not a category.'));
+        }
     }
 
     /**

@@ -17,6 +17,7 @@
 
 ### Added
 
+- Added Color Palette V1 import and export for the 21 universal shared-style colors and all 109 native IPSView colors in 15 groups, with JSON and reusable Symcon document media while preserving all non-color design settings.
 - Portable Style Profile V1 export and import in Advanced mode, including deterministic JSON, reusable Symcon document media, shared profile validation and editor population.
 - Lossless no-edit profile round-trips that preserve canonical fields not exposed independently by the Assistant; edited profiles are rebuilt from the visible Assistant semantics.
 - Shared `IPSViewStyleProfileHelper` integration and helper synchronization against the authoritative `dev-popup` branch.

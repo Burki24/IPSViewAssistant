@@ -318,6 +318,27 @@ final class IPSViewSharedStyleAdapter
     }
 
     /**
+     * Returns the complete universal color layer from one resolved shared style.
+     *
+     * The universal shadow color is taken from the shared Shadow value rather than a native
+     * IPSView override, so palette export keeps both layers independent.
+     *
+     * @param array<string,string|float> $style Fully resolved shared style.
+     *
+     * @return array<string,string> All 21 universal color fields as #RRGGBB values.
+     */
+    public static function semanticColors(array $style): array
+    {
+        $colors = [];
+        foreach (IPSViewControlThemeHelper::styleFields() as $field) {
+            $styleField = $field === 'ShadowColor' ? 'Shadow' : $field;
+            $colors[$field] = self::color($style, $styleField);
+        }
+
+        return $colors;
+    }
+
+    /**
      * Creates the exact portable Style Profile V1 style snapshot from a resolved shared style.
      *
      * @param array<string,string|float> $style
@@ -389,6 +410,25 @@ final class IPSViewSharedStyleAdapter
         $profile['GradientStrength'] = max(0, min(80, $gradientStrength));
 
         return IPSViewStyleProfileHelper::normalizeStyle($profile);
+    }
+
+    /**
+     * Maps only the universal color fields of a Style Profile V1 snapshot to shared custom properties.
+     *
+     * @param array<string,mixed> $profileStyle Normalized or importable Style Profile V1 style.
+     *
+     * @return array<string,int> Shared color property => Symcon integer RGB value.
+     */
+    public static function colorPropertyValuesFromProfileStyle(array $profileStyle): array
+    {
+        $style = IPSViewStyleProfileHelper::normalizeStyle($profileStyle);
+        $properties = [];
+
+        foreach (self::PROFILE_COLOR_PROPERTIES as $styleField => $propertyName) {
+            $properties[$propertyName] = hexdec(substr((string) $style[$styleField], 1));
+        }
+
+        return $properties;
     }
 
     /**

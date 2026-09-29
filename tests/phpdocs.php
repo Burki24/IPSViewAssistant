@@ -133,6 +133,7 @@ $root = dirname(__DIR__);
 foreach ([
     $root . '/IPSView Assistant/module.php',
     $root . '/libs/IPSViewSharedStyleIntegration.php',
+    $root . '/libs/IPSViewColorPaletteExchange.php',
     $root . '/libs/IPSViewThemePreview.php'
 ] as $sourceFile) {
     assertDocumentation(is_file($sourceFile), 'Documentation source file is missing: ' . $sourceFile);
@@ -145,16 +146,20 @@ assertDocumentation(
     str_contains($rootReadme, '109 nativen IPSView-Farbfelder in 15 Gruppen')
         && str_contains($rootReadme, 'Abweichend')
         && str_contains($rootReadme, '`ColorView`')
-        && str_contains($rootReadme, '`ColorPage`'),
-    'The root README must document the native IPSView color configuration contract.'
+        && str_contains($rootReadme, '`ColorPage`')
+        && str_contains($rootReadme, 'Color Palette V1')
+        && str_contains($rootReadme, '21 universellen Farben'),
+    'The root README must document the native IPSView color and palette exchange contract.'
 );
 assertDocumentation(
     str_contains($moduleReadme, '109 nativen IPSView-Farbfelder in 15 Gruppen')
         && str_contains($moduleReadme, '**Abweichend**')
         && str_contains($moduleReadme, '`ColorView`')
         && str_contains($moduleReadme, '`ColorPage`')
-        && str_contains($moduleReadme, '`IPSViewStyleConfigurationHelper`'),
-    'The module README must document native color inheritance, overrides and the shared configuration helper.'
+        && str_contains($moduleReadme, '`IPSViewStyleConfigurationHelper`')
+        && str_contains($moduleReadme, 'Color Palette V1')
+        && str_contains($moduleReadme, '21 universellen Farbfelder'),
+    'The module README must document native color inheritance, overrides and Color Palette V1.'
 );
 
 echo "IPSView Assistant documentation contract passed.\n";

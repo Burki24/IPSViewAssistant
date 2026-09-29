@@ -1446,6 +1446,97 @@
                             "caption": "No Style Profile V1 has been imported in this Assistant instance."
                         }
                     ]
+                },
+                {
+                    "type": "ExpansionPanel",
+                    "name": "ColorPalettePanel",
+                    "caption": "Color palettes",
+                    "expanded": false,
+                    "items": [
+                        {
+                            "type": "Label",
+                            "name": "ColorPaletteInfo",
+                            "caption": "Color Palette V1 exchanges only colors: all 21 universal shared-style colors and all 109 native IPSView colors in their 15 groups. Typography, opacity, shadow geometry and opacity, gradients, borders, corners and background images are not part of the palette."
+                        },
+                        {
+                            "type": "RowLayout",
+                            "items": [
+                                {
+                                    "type": "ValidationTextBox",
+                                    "name": "ColorPaletteName",
+                                    "caption": "Palette name",
+                                    "value": "IPSView Color Palette",
+                                    "width": "360px"
+                                },
+                                {
+                                    "type": "ValidationTextBox",
+                                    "name": "ColorPaletteDescription",
+                                    "caption": "Description (optional)",
+                                    "value": "",
+                                    "width": "520px"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "RowLayout",
+                            "items": [
+                                {
+                                    "type": "Button",
+                                    "name": "ExportColorPaletteJsonButton",
+                                    "caption": "Export palette JSON",
+                                    "onClick": "echo IPSVIEWA_ExportColorPaletteJson($id, $ColorPaletteName, $ColorPaletteDescription);"
+                                },
+                                {
+                                    "type": "SelectCategory",
+                                    "name": "ColorPaletteTargetCategoryID",
+                                    "caption": "Media target category",
+                                    "value": 0,
+                                    "width": "420px"
+                                },
+                                {
+                                    "type": "Button",
+                                    "name": "SaveColorPaletteMediaButton",
+                                    "caption": "Save palette as Symcon media",
+                                    "onClick": "echo IPSVIEWA_SaveColorPaletteMedia($id, $ColorPaletteName, $ColorPaletteDescription, $ColorPaletteTargetCategoryID);"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Label",
+                            "caption": "Export writes a complete Color Palette V1. Import switches the active shared style to Custom and changes only color values; all non-color design settings are preserved."
+                        },
+                        {
+                            "type": "RowLayout",
+                            "items": [
+                                {
+                                    "type": "SelectFile",
+                                    "name": "ColorPaletteImportFile",
+                                    "caption": "Import palette JSON file",
+                                    "width": "520px",
+                                    "extensions": ".json",
+                                    "onChange": "if ($ColorPaletteImportFile !== \"\") { echo IPSVIEWA_ImportColorPaletteFile($id, $ColorPaletteImportFile); }"
+                                },
+                                {
+                                    "type": "SelectMedia",
+                                    "name": "ColorPaletteImportMediaID",
+                                    "caption": "Color palette media",
+                                    "value": 0,
+                                    "width": "420px"
+                                },
+                                {
+                                    "type": "Button",
+                                    "name": "ImportColorPaletteMediaButton",
+                                    "caption": "Import palette media",
+                                    "onClick": "echo IPSVIEWA_ImportColorPaletteMedia($id, $ColorPaletteImportMediaID);"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Label",
+                            "name": "ColorPaletteStatus",
+                            "caption": "No Color Palette V1 has been imported or exported in this Assistant instance."
+                        }
+                    ]
                 }
             ]
         },

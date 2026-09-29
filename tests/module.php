@@ -13,6 +13,7 @@ $effectsSource = file_get_contents($root . '/libs/IPSViewEffects.php');
 $typographySource = file_get_contents($root . '/libs/IPSViewTypography.php');
 $shapeSource = file_get_contents($root . '/libs/IPSViewShape.php');
 $styleProfileSource = file_get_contents($root . '/libs/IPSViewStyleProfileExchange.php');
+$colorPaletteSource = file_get_contents($root . '/libs/IPSViewColorPaletteExchange.php');
 $form = json_decode(
     (string) file_get_contents($root . '/IPSView Assistant/form.json'),
     true,
@@ -28,6 +29,7 @@ assertTest(is_string($effectsSource), 'The IPSView effects source could not be r
 assertTest(is_string($typographySource), 'The IPSView typography source could not be read.');
 assertTest(is_string($shapeSource), 'The IPSView shape source could not be read.');
 assertTest(is_string($styleProfileSource), 'The IPSView Style Profile exchange source could not be read.');
+assertTest(is_string($colorPaletteSource), 'The IPSView Color Palette exchange source could not be read.');
 assertTest(str_contains($moduleSource, 'extends IPSModuleStrict'), 'The module does not use IPSModuleStrict.');
 assertTest(str_contains($moduleSource, 'use ConfigurationFormHelper;'), 'The module does not use ConfigurationFormHelper.');
 assertTest(str_contains($moduleSource, 'public function GetConfigurationForm(): string'), 'The dynamic configuration form is missing.');
@@ -1043,6 +1045,44 @@ assertTest(
     str_contains($styleProfileSource, 'IPSViewStyleProfileHelper::normalizeStyle(')
         && str_contains($styleProfileSource, 'matchesImportedEditor('),
     'The exchange layer does not provide canonical validation and lossless no-edit round-trips.'
+);
+
+$colorPalettePanel = $actionsByName['ColorPalettePanel'] ?? null;
+$colorPaletteName = $actionsByName['ColorPaletteName'] ?? null;
+$colorPaletteDescription = $actionsByName['ColorPaletteDescription'] ?? null;
+$colorPaletteTargetCategory = $actionsByName['ColorPaletteTargetCategoryID'] ?? null;
+$colorPaletteImportFile = $actionsByName['ColorPaletteImportFile'] ?? null;
+$colorPaletteImportMedia = $actionsByName['ColorPaletteImportMediaID'] ?? null;
+$colorPaletteStatus = $actionsByName['ColorPaletteStatus'] ?? null;
+assertTest(is_array($colorPalettePanel), 'The Color Palette panel is missing from the module form.');
+assertTest(($colorPalettePanel['type'] ?? '') === 'ExpansionPanel', 'Color Palette exchange must use a compact expansion panel.');
+assertTest(is_array($colorPaletteName), 'The Color Palette name field is missing.');
+assertTest(is_array($colorPaletteDescription), 'The Color Palette description field is missing.');
+assertTest(is_array($colorPaletteTargetCategory), 'The Color Palette media target category is missing.');
+assertTest(is_array($colorPaletteImportFile), 'The Color Palette JSON file selector is missing.');
+assertTest(($colorPaletteImportFile['extensions'] ?? '') === '.json', 'The Color Palette file selector must be limited to JSON.');
+assertTest(
+    str_contains((string) ($colorPaletteImportFile['onChange'] ?? ''), 'IPSVIEWA_ImportColorPaletteFile('),
+    'The Color Palette file selector does not trigger an import.'
+);
+assertTest(is_array($colorPaletteImportMedia), 'The Color Palette media selector is missing.');
+assertTest(is_array($colorPaletteStatus), 'The Color Palette status line is missing.');
+assertTest(
+    str_contains($formJson, 'IPSVIEWA_ExportColorPaletteJson(')
+        && str_contains($formJson, 'IPSVIEWA_SaveColorPaletteMedia(')
+        && str_contains($formJson, 'IPSVIEWA_ImportColorPaletteMedia('),
+    'The Color Palette form actions are incomplete.'
+);
+assertTest(
+    str_contains($colorPaletteSource, 'public const SCHEMA = \'burki24.ipsview-color-palette\';')
+        && str_contains($colorPaletteSource, 'IPSViewControlThemeHelper::families()')
+        && str_contains($colorPaletteSource, 'IPSViewControlThemeHelper::styleFields()'),
+    'Color Palette V1 is not tied to the shared semantic and native IPSView color catalogues.'
+);
+assertTest(
+    str_contains($moduleSource, 'RegisterAttributeString(self::ATTRIBUTE_COLOR_PALETTE_STATUS, \'\')')
+        && str_contains($moduleSource, 'setConfigurationFormField($form, \'ColorPaletteStatus\', \'caption\''),
+    'The Color Palette status is not retained across configuration-form reloads.'
 );
 
 echo "IPSView Assistant module tests passed.\n";

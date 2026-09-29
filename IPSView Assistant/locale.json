@@ -268,7 +268,32 @@
             "The existing document named \"%s\" is not a valid Style Profile V1 and will not be overwritten.": "Das vorhandene Dokument namens „%s“ ist kein gültiges Style Profile V1 und wird nicht überschrieben.",
             "The Style Profile media file could not be assigned.": "Die Stilprofil-Mediendatei konnte nicht zugewiesen werden.",
             "The Style Profile media content could not be written.": "Der Inhalt des Stilprofil-Mediums konnte nicht geschrieben werden.",
-            "The imported style profile has been modified. The next export rebuilds a complete profile from the visible Assistant values.": "Das importierte Stilprofil wurde geändert. Beim nächsten Export wird aus den sichtbaren Assistant-Werten ein vollständiges neues Profil aufgebaut."
+            "The imported style profile has been modified. The next export rebuilds a complete profile from the visible Assistant values.": "Das importierte Stilprofil wurde geändert. Beim nächsten Export wird aus den sichtbaren Assistant-Werten ein vollständiges neues Profil aufgebaut.",
+            "Color palettes": "Farbpaletten",
+            "Color Palette V1 exchanges only colors: all 21 universal shared-style colors and all 109 native IPSView colors in their 15 groups. Typography, opacity, shadow geometry and opacity, gradients, borders, corners and background images are not part of the palette.": "Color Palette V1 überträgt ausschließlich Farben: alle 21 universellen Farben des gemeinsamen Stils und alle 109 nativen IPSView-Farben in ihren 15 Gruppen. Typografie, Deckkraft, Schattengeometrie und -deckkraft, Verläufe, Rahmen, Ecken und Hintergrundbilder sind nicht Bestandteil der Palette.",
+            "Palette name": "Palettenname",
+            "Export palette JSON": "Paletten-JSON exportieren",
+            "Save palette as Symcon media": "Palette als Symcon-Medium speichern",
+            "Export writes a complete Color Palette V1. Import switches the active shared style to Custom and changes only color values; all non-color design settings are preserved.": "Der Export schreibt eine vollständige Color Palette V1. Beim Import wechselt der aktive gemeinsame Stil auf Benutzerdefiniert und es werden ausschließlich Farbwerte geändert; alle übrigen Designeinstellungen bleiben erhalten.",
+            "Import palette JSON file": "Paletten-JSON-Datei importieren",
+            "Color palette media": "Farbpaletten-Medium",
+            "Import palette media": "Paletten-Medium importieren",
+            "No Color Palette V1 has been imported or exported in this Assistant instance.": "In dieser Assistant-Instanz wurde noch keine Color Palette V1 importiert oder exportiert.",
+            "Color palette \"%s\" was exported as JSON.": "Farbpalette „%s“ wurde als JSON exportiert.",
+            "The color palette could not be exported: %s": "Die Farbpalette konnte nicht exportiert werden: %s",
+            "Color palette \"%s\" was saved as Symcon media object %d.": "Farbpalette „%s“ wurde als Symcon-Medienobjekt %d gespeichert.",
+            "The color palette could not be saved as a Symcon media object: %s": "Die Farbpalette konnte nicht als Symcon-Medienobjekt gespeichert werden: %s",
+            "The color palette file could not be imported: %s": "Die Farbpaletten-Datei konnte nicht importiert werden: %s",
+            "The selected color palette media object does not exist.": "Das gewählte Farbpaletten-Medienobjekt ist nicht vorhanden.",
+            "The selected color palette media object is not a document.": "Das gewählte Farbpaletten-Medienobjekt ist kein Dokument.",
+            "The selected color palette media object does not contain readable content.": "Das gewählte Farbpaletten-Medienobjekt enthält keinen lesbaren Inhalt.",
+            "The color palette media could not be imported: %s": "Das Farbpaletten-Medium konnte nicht importiert werden: %s",
+            "Color palette \"%s\" was imported successfully.": "Farbpalette „%s“ wurde erfolgreich importiert.",
+            "The existing document named \"%s\" is not a valid Color Palette V1 and will not be overwritten.": "Das vorhandene Dokument „%s“ ist keine gültige Color Palette V1 und wird nicht überschrieben.",
+            "The Color Palette media content could not be written.": "Der Inhalt des Farbpaletten-Mediums konnte nicht geschrieben werden.",
+            "The Color Palette media file could not be assigned.": "Die Datei des Farbpaletten-Mediums konnte nicht zugewiesen werden.",
+            "The selected Color Palette target category does not exist.": "Die gewählte Zielkategorie für die Farbpalette ist nicht vorhanden.",
+            "The selected Color Palette target object is not a category.": "Das gewählte Zielobjekt für die Farbpalette ist keine Kategorie."
         }
     }
 }

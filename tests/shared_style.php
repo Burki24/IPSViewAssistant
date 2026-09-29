@@ -54,6 +54,33 @@ assertTest(
 );
 
 assertTest(
+    str_contains($integrationSource, 'public function ExportColorPaletteJson(')
+        && str_contains($integrationSource, 'public function SaveColorPaletteMedia(')
+        && str_contains($integrationSource, 'public function ImportColorPaletteFile(')
+        && str_contains($integrationSource, 'public function ImportColorPaletteMedia('),
+    'The shared style integration does not expose complete Color Palette V1 exchange methods.'
+);
+assertTest(
+    str_contains($integrationSource, 'IPSVIEWA_ExportColorPaletteJson($id')
+        && str_contains($integrationSource, 'IPSVIEWA_SaveColorPaletteMedia($id')
+        && str_contains($integrationSource, 'IPSVIEWA_ImportColorPaletteMedia($id'),
+    'The dynamic Assistant form is not wired to the Color Palette V1 exchange methods.'
+);
+assertTest(
+    str_contains($integrationSource, 'IPSViewSharedStyleAdapter::semanticColors($snapshot[\'style\'])')
+        && str_contains($integrationSource, 'IPSViewControlThemeHelper::fields()')
+        && str_contains($integrationSource, 'IPSViewColorPaletteExchange::nativeOverrides($palette)'),
+    'Color Palette V1 does not exchange every semantic and native IPSView color.'
+);
+assertTest(
+    str_contains($integrationSource, 'IPSViewSharedStyleAdapter::colorPropertyValuesFromProfileStyle($profileStyle)')
+        && str_contains($integrationSource, 'if ($source === self::IPSVIEW_STYLE_SOURCE_CUSTOM)')
+        && str_contains($integrationSource, '[\'IPSViewStyleTransparentBackground\'] = $snapshot[\'transparentBackground\']')
+        && str_contains($integrationSource, 'if (!isset($nativeOverrides[$field]))'),
+    'Color Palette import does not preserve non-color style settings or minimal native overrides.'
+);
+
+assertTest(
     str_contains($integrationSource, 'IPSViewAssistantAttachNativeListOnEdit($sharedItems)')
         && str_contains($integrationSource, 'IPSVIEWA_ApplySharedNativeColorOverride($id')
         && str_contains($integrationSource, "\$item['onEdit'] = sprintf("),
@@ -136,6 +163,13 @@ $style = [
     'PopupShadowOpacity'        => 0.45,
 ];
 
+$semanticColors = IPSViewSharedStyleAdapter::semanticColors($style);
+assertTest(
+    count($semanticColors) === 21
+        && $semanticColors['ShadowColor'] === '#0A141E',
+    'The complete universal color layer is not derived independently from native IPSView overrides.'
+);
+
 $palette = IPSViewSharedStyleAdapter::palette($style);
 assertTest(
     $palette[IPSViewTheme::ROLE_VIEW_BACKGROUND] === '#102030'
@@ -195,6 +229,16 @@ $properties = IPSViewSharedStyleAdapter::propertyValuesFromProfileStyle($profile
 assertTest($properties['IPSViewStyleSource'] === 0, 'Imported profiles must be adopted as a custom shared style.');
 assertTest($properties['IPSViewStyleBorderWidth'] === 9.5, 'Imported border width was not restored exactly.');
 assertTest($properties['IPSViewStyleGradientStrength'] === 37, 'Imported gradient strength was not restored.');
+
+$colorProperties = IPSViewSharedStyleAdapter::colorPropertyValuesFromProfileStyle($profileStyle);
+assertTest(count($colorProperties) === 21, 'The shared adapter does not expose all 21 universal color properties.');
+assertTest(
+    isset($colorProperties['IPSViewStyleViewBackgroundColor'])
+        && isset($colorProperties['IPSViewStyleShadowColor'])
+        && !isset($colorProperties['IPSViewStyleBorderWidth'])
+        && !isset($colorProperties['IPSViewStyleViewBackgroundOpacity']),
+    'The color-only shared property mapping contains non-color settings or misses universal colors.'
+);
 
 $document = new stdClass();
 $document->DefaultFontFamily = 'Roboto Mono';

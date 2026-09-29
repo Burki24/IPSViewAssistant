@@ -31,6 +31,7 @@ Der **IPSView Assistant** erleichtert das Erstellen und Gestalten von IPSView-Pr
 - Bestehende IPSView laden und als separate Designkopie neu gestalten
 - Bereits angelegte Designkopie bei späteren Speichervorgängen aktualisieren
 - Designs als portables Style Profile V1 als JSON oder Symcon-Dokumentmedium exportieren und wieder importieren
+- Reine Farbpaletten als Color Palette V1 mit 21 universellen und allen 109 nativen IPSView-Farben exportieren und importieren
 
 ### 2. Voraussetzungen
 
@@ -176,6 +177,14 @@ Jedes native Farbfeld erbt standardmäßig aus der zugeordneten semantischen Des
 Im **benutzerdefinierten Stil** kann für einzelne native Felder **Abweichend** aktiviert und eine eigene Farbe festgelegt werden. Wird die Farbe eines bisher nicht abweichenden Feldes geändert, aktiviert der Assistant die Abweichung automatisch. Wird **Abweichend** wieder deaktiviert, wird der gespeicherte Override entfernt und das Feld übernimmt wieder den geerbten semantischen Wert.
 
 Die Live-Vorschau verwendet das vollständig aufgelöste native Farbschema. Neben View-, Seiten-, Text- und Rahmenfarben werden dabei auch native Zustände wie Switch- und Sliderfarben direkt sichtbar. Nicht abweichende Felder folgen weiterhin automatisch den übergeordneten Designfarben.
+
+#### 6.2.2 Farbpaletten exportieren und importieren
+
+Der aufklappbare Bereich **Farbpaletten** im Expertenmodus stellt das Austauschformat **Color Palette V1** bereit. Anders als ein Style Profile enthält eine Farbpalette ausschließlich Farben: die **21 universellen Farbfelder** des gemeinsamen Stils und die **109 nativen IPSView-Farbfelder in allen 15 Gruppen** unter **Erweiterte IPSView-Farben**.
+
+Eine Palette kann als JSON ausgegeben, als Symcon-Dokumentmedium gespeichert sowie aus einer `.json`-Datei oder einem zuvor gespeicherten Medium importiert werden. Beim Import wechselt der gemeinsame Stil auf **Benutzerdefiniert**, damit die importierten Farben unmittelbar verwendet und weiterbearbeitet werden können.
+
+Nichtfarbliche Einstellungen werden bewusst nicht ausgetauscht. Insbesondere **Deckkraft/Transparenz, Schattengeometrie, Farbverläufe, Schriftart, Schriftgröße, Ecken, Rahmenbreiten, Hintergrundbilder, View-Format und Seitenstruktur** bleiben erhalten. Die nativen Farbwerte werden nach dem Import mit den universellen Farben verglichen; nur tatsächliche Abweichungen werden als native **Abweichend**-Werte gespeichert. Dadurch bleibt die bestehende Farbvererbung erhalten und die vollständige 109-Farben-Palette kann trotzdem exakt wiederhergestellt werden.
 
 #### 6.3 Allgemeine Effekte
 

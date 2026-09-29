@@ -55,6 +55,7 @@ class IPSViewAssistant extends IPSModuleStrict
     private const ATTRIBUTE_LAST_CREATED_VIEW_ID = 'LastCreatedViewID';
     private const ATTRIBUTE_DESIGNER_OBJECT_ID = 'DesignerObjectID';
     private const ATTRIBUTE_IMPORTED_STYLE_PROFILE = 'ImportedStyleProfile';
+    private const ATTRIBUTE_COLOR_PALETTE_STATUS = 'ColorPaletteStatus';
     private const ATTRIBUTE_SELECTED_SOURCE_VIEW_ID = 'SelectedSourceViewID';
     private const ATTRIBUTE_COPY_VIEW_NAME = 'CopyViewName';
     private const ATTRIBUTE_COPY_TARGET_CATEGORY_ID = 'CopyTargetCategoryID';
@@ -95,6 +96,7 @@ class IPSViewAssistant extends IPSModuleStrict
         $this->RegisterAttributeInteger(self::ATTRIBUTE_LAST_CREATED_VIEW_ID, 0);
         $this->RegisterAttributeInteger(self::ATTRIBUTE_DESIGNER_OBJECT_ID, 1);
         $this->RegisterAttributeString(self::ATTRIBUTE_IMPORTED_STYLE_PROFILE, '');
+        $this->RegisterAttributeString(self::ATTRIBUTE_COLOR_PALETTE_STATUS, '');
         $this->RegisterAttributeInteger(self::ATTRIBUTE_SELECTED_SOURCE_VIEW_ID, 0);
         $this->RegisterAttributeString(self::ATTRIBUTE_COPY_VIEW_NAME, '');
         $this->RegisterAttributeInteger(self::ATTRIBUTE_COPY_TARGET_CATEGORY_ID, 0);
@@ -243,6 +245,10 @@ class IPSViewAssistant extends IPSModuleStrict
         $this->applyStartCheckToForm($form, $startCheck);
         $this->applyQuickStartCheckToForm($form, $startCheck);
         $this->ApplyIPSViewSharedStyleForm($form);
+        $colorPaletteStatus = trim($this->ReadAttributeString(self::ATTRIBUTE_COLOR_PALETTE_STATUS));
+        if ($colorPaletteStatus !== '') {
+            $this->setConfigurationFormField($form, 'ColorPaletteStatus', 'caption', $colorPaletteStatus);
+        }
         $this->applyExistingViewStateToForm($form);
 
         return $this->EncodeConfigurationForm($form);
