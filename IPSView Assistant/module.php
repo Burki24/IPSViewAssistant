@@ -55,6 +55,9 @@ class IPSViewAssistant extends IPSModuleStrict
     private const ATTRIBUTE_LAST_CREATED_VIEW_ID = 'LastCreatedViewID';
     private const ATTRIBUTE_DESIGNER_OBJECT_ID = 'DesignerObjectID';
     private const ATTRIBUTE_IMPORTED_STYLE_PROFILE = 'ImportedStyleProfile';
+    private const ATTRIBUTE_SELECTED_SOURCE_VIEW_ID = 'SelectedSourceViewID';
+    private const ATTRIBUTE_COPY_VIEW_NAME = 'CopyViewName';
+    private const ATTRIBUTE_COPY_TARGET_CATEGORY_ID = 'CopyTargetCategoryID';
 
     /**
      * @var array<string, string>
@@ -92,6 +95,9 @@ class IPSViewAssistant extends IPSModuleStrict
         $this->RegisterAttributeInteger(self::ATTRIBUTE_LAST_CREATED_VIEW_ID, 0);
         $this->RegisterAttributeInteger(self::ATTRIBUTE_DESIGNER_OBJECT_ID, 1);
         $this->RegisterAttributeString(self::ATTRIBUTE_IMPORTED_STYLE_PROFILE, '');
+        $this->RegisterAttributeInteger(self::ATTRIBUTE_SELECTED_SOURCE_VIEW_ID, 0);
+        $this->RegisterAttributeString(self::ATTRIBUTE_COPY_VIEW_NAME, '');
+        $this->RegisterAttributeInteger(self::ATTRIBUTE_COPY_TARGET_CATEGORY_ID, 0);
     }
 
     /**
@@ -237,6 +243,7 @@ class IPSViewAssistant extends IPSModuleStrict
         $this->applyStartCheckToForm($form, $startCheck);
         $this->applyQuickStartCheckToForm($form, $startCheck);
         $this->ApplyIPSViewSharedStyleForm($form);
+        $this->applyExistingViewStateToForm($form);
 
         return $this->EncodeConfigurationForm($form);
     }
@@ -610,6 +617,9 @@ class IPSViewAssistant extends IPSModuleStrict
                     $this->previewStartGrid()
                 )
             );
+            $this->WriteAttributeInteger(self::ATTRIBUTE_SELECTED_SOURCE_VIEW_ID, $SourceViewID);
+            $this->WriteAttributeString(self::ATTRIBUTE_COPY_VIEW_NAME, $copyName);
+            $this->WriteAttributeInteger(self::ATTRIBUTE_COPY_TARGET_CATEGORY_ID, $copyTargetCategoryID);
             $this->UpdateFormField('CopyViewName', 'value', $copyName);
             $this->UpdateFormField('CopyTargetCategoryID', 'value', $copyTargetCategoryID);
             $this->UpdateFormField('ExistingViewStatus', 'caption', $status);
@@ -649,15 +659,20 @@ class IPSViewAssistant extends IPSModuleStrict
     ): string {
         try {
             $factory = new IPSViewCopyFactory();
+            $factory->inspect($SourceViewID);
             $copyName = trim($CopyViewName);
+            $copyTargetCategoryID = $CopyTargetCategoryID === 1 ? 0 : $CopyTargetCategoryID;
+            $this->WriteAttributeInteger(self::ATTRIBUTE_SELECTED_SOURCE_VIEW_ID, $SourceViewID);
+            $this->WriteAttributeString(self::ATTRIBUTE_COPY_VIEW_NAME, $copyName);
+            $this->WriteAttributeInteger(self::ATTRIBUTE_COPY_TARGET_CATEGORY_ID, $copyTargetCategoryID);
             $targetMediaID = $this->findManagedCopy(
                 $SourceViewID,
                 $copyName,
-                $CopyTargetCategoryID
+                $copyTargetCategoryID
             );
 
             if ($targetMediaID === null) {
-                $targetMediaID = $factory->findExistingTarget($copyName, $CopyTargetCategoryID);
+                $targetMediaID = $factory->findExistingTarget($copyName, $copyTargetCategoryID);
             }
 
             if ($targetMediaID !== null) {
@@ -698,7 +713,7 @@ class IPSViewAssistant extends IPSModuleStrict
             $mediaID = $factory->create(
                 $SourceViewID,
                 $copyName,
-                $CopyTargetCategoryID,
+                $copyTargetCategoryID,
                 $Theme,
                 $this->decodePalette($ThemePalette),
                 $DesignScope,
@@ -2462,6 +2477,34 @@ class IPSViewAssistant extends IPSModuleStrict
         }
 
         return $reportText;
+    }
+
+    /**
+     * Restores the current existing-View workflow after a configuration-form reload.
+     *
+     * @param array<string, mixed> $form Configuration-form structure modified in place.
+     */
+    private function applyExistingViewStateToForm(array &$form): void
+    {
+        $sourceViewID = $this->ReadAttributeInteger(self::ATTRIBUTE_SELECTED_SOURCE_VIEW_ID);
+        if ($sourceViewID < 1 || !IPS_MediaExists($sourceViewID)) {
+            return;
+        }
+
+        $this->setConfigurationFormField($form, 'SourceViewID', 'value', $sourceViewID);
+
+        $copyViewName = $this->ReadAttributeString(self::ATTRIBUTE_COPY_VIEW_NAME);
+        if ($copyViewName !== '') {
+            $this->setConfigurationFormField($form, 'CopyViewName', 'value', $copyViewName);
+        }
+
+        $copyTargetCategoryID = $this->ReadAttributeInteger(self::ATTRIBUTE_COPY_TARGET_CATEGORY_ID);
+        $this->setConfigurationFormField(
+            $form,
+            'CopyTargetCategoryID',
+            'value',
+            $copyTargetCategoryID === 1 ? 0 : $copyTargetCategoryID
+        );
     }
 
     /**

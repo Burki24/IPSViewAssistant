@@ -138,6 +138,23 @@ assertTest(
     'The module does not persist its managed design copy registry.'
 );
 assertTest(
+    str_contains($moduleSource, "RegisterAttributeInteger(self::ATTRIBUTE_SELECTED_SOURCE_VIEW_ID, 0)")
+        && str_contains($moduleSource, "RegisterAttributeString(self::ATTRIBUTE_COPY_VIEW_NAME, '')")
+        && str_contains($moduleSource, "RegisterAttributeInteger(self::ATTRIBUTE_COPY_TARGET_CATEGORY_ID, 0)"),
+    'The module does not persist the existing-View selection across form reloads.'
+);
+assertTest(
+    str_contains($moduleSource, '$this->applyExistingViewStateToForm($form);')
+        && str_contains($moduleSource, "setConfigurationFormField(\$form, 'SourceViewID', 'value', \$sourceViewID)"),
+    'The existing-View source is not restored after a configuration-form reload.'
+);
+assertTest(
+    str_contains($moduleSource, 'WriteAttributeInteger(self::ATTRIBUTE_SELECTED_SOURCE_VIEW_ID, $SourceViewID)')
+        && str_contains($moduleSource, 'WriteAttributeString(self::ATTRIBUTE_COPY_VIEW_NAME, $copyName)')
+        && str_contains($moduleSource, 'WriteAttributeInteger(self::ATTRIBUTE_COPY_TARGET_CATEGORY_ID, $copyTargetCategoryID)'),
+    'Loading an existing View does not persist its copy workflow state.'
+);
+assertTest(
     str_contains($moduleSource, '$factory->update('),
     'The module does not update an existing design copy.'
 );

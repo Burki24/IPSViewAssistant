@@ -288,10 +288,15 @@ assertTest(
     'An unknown/custom native IPSView font family was reset instead of being applied exactly.'
 );
 
-fwrite(STDOUT, "Shared IPSView style integration tests passed.\n");
-
 assertTest(
     str_contains($integrationSource, '$targetCategoryID = $TargetCategoryID === 1 ? 0 : $TargetCategoryID;')
         && str_contains($integrationSource, '$factory->findExistingTarget($copyName, $targetCategoryID)'),
     'Shared styled copies do not normalize the empty category selector before target lookup.'
 );
+assertTest(
+    str_contains($integrationSource, 'WriteAttributeInteger(self::ATTRIBUTE_SELECTED_SOURCE_VIEW_ID, 0)')
+        && str_contains($integrationSource, "WriteAttributeString(self::ATTRIBUTE_COPY_VIEW_NAME, '')")
+        && str_contains($integrationSource, 'WriteAttributeInteger(self::ATTRIBUTE_COPY_TARGET_CATEGORY_ID, 0)'),
+    'Clearing the existing-View selector does not clear the persisted copy workflow state.'
+);
+fwrite(STDOUT, "Shared IPSView style integration tests passed.\n");

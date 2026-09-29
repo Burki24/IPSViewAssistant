@@ -76,6 +76,7 @@
 
 ### Fixed
 
+- Preserved the selected source IPSView, copy name and target category across shared-style form reloads so styled copies no longer lose their source before saving.
 - Clearing the local background file now removes the persisted image data and refreshes the preview without restoring the previous image.
 - Moved the bundled preview fonts from the library root into `libs/fonts` so Symcon no longer interprets `assets` as an invalid module.
 - Replaced the unavailable `MEDIATYPE_DASHBOARD` runtime constant with the documented IPSView media type `0` when validating and creating design copies.

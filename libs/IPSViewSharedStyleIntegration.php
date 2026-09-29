@@ -380,6 +380,10 @@ trait IPSViewSharedStyleIntegration
     public function LoadSharedExistingView(int $SourceViewID): void
     {
         if ($SourceViewID <= 0) {
+            $this->WriteAttributeInteger(self::ATTRIBUTE_SELECTED_SOURCE_VIEW_ID, 0);
+            $this->WriteAttributeString(self::ATTRIBUTE_COPY_VIEW_NAME, '');
+            $this->WriteAttributeInteger(self::ATTRIBUTE_COPY_TARGET_CATEGORY_ID, 0);
+
             return;
         }
 

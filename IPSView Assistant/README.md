@@ -122,6 +122,7 @@ Die nur im Expertenmodus sichtbare Schaltfläche **Bestehende View** öffnet die
 7. Mit **Designkopie speichern** die Kopie erstellen oder aktualisieren.
 
 Nach dem Laden zeigt der Assistant unter anderem an, wie viele Seiten und Bedienelemente erkannt wurden. Außerdem werden die aktuelle Schriftart, Grundschriftgröße, Eckenrundung und Rahmenbreite angezeigt.
+Die gewählte Quell-View sowie Name und Ziel der Designkopie bleiben auch bei internen Formularaktualisierungen erhalten.
 
 Die Quell-IPSView bleibt bei diesem Vorgang immer unverändert. Wird später erneut dieselbe Quell-View geladen und die Kopie unter demselben Namen in derselben Zielkategorie gespeichert, aktualisiert der Assistant die bereits angelegte Designkopie.
 
