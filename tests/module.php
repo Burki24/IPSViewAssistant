@@ -138,9 +138,9 @@ assertTest(
     'The module does not persist its managed design copy registry.'
 );
 assertTest(
-    str_contains($moduleSource, "RegisterAttributeInteger(self::ATTRIBUTE_SELECTED_SOURCE_VIEW_ID, 0)")
+    str_contains($moduleSource, 'RegisterAttributeInteger(self::ATTRIBUTE_SELECTED_SOURCE_VIEW_ID, 0)')
         && str_contains($moduleSource, "RegisterAttributeString(self::ATTRIBUTE_COPY_VIEW_NAME, '')")
-        && str_contains($moduleSource, "RegisterAttributeInteger(self::ATTRIBUTE_COPY_TARGET_CATEGORY_ID, 0)"),
+        && str_contains($moduleSource, 'RegisterAttributeInteger(self::ATTRIBUTE_COPY_TARGET_CATEGORY_ID, 0)'),
     'The module does not persist the existing-View selection across form reloads.'
 );
 assertTest(
