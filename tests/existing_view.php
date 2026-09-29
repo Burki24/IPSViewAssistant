@@ -270,6 +270,11 @@ assertTest(
     'The copy factory cannot resolve an existing same-name IPSView target.'
 );
 assertTest(
+    str_contains($copyFactorySource, 'normalizeTargetCategory(')
+        && str_contains($copyFactorySource, '$targetCategoryID === 1 ? 0 : $targetCategoryID'),
+    'The copy factory does not normalize the Symcon no-selection category placeholder.'
+);
+assertTest(
     str_contains($copyFactorySource, '$document = $this->loadDocument($targetMediaID);'),
     'The copy factory does not reload the current target before updating its design.'
 );

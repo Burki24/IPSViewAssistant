@@ -336,23 +336,24 @@ trait IPSViewSharedStyleIntegration
         $effects = IPSViewSharedStyleAdapter::effects($snapshot['style'], $snapshot['gradientStrength']);
         $appearance = IPSViewSharedStyleAdapter::appearance($snapshot['style']);
         $copyName = trim($CopyViewName);
+        $targetCategoryID = $TargetCategoryID === 1 ? 0 : $TargetCategoryID;
         $factory = new IPSViewCopyFactory();
-        $targetBefore = $this->findManagedCopy($SourceViewID, $copyName, $TargetCategoryID);
+        $targetBefore = $this->findManagedCopy($SourceViewID, $copyName, $targetCategoryID);
         if ($targetBefore === null) {
-            $targetBefore = $factory->findExistingTarget($copyName, $TargetCategoryID);
+            $targetBefore = $factory->findExistingTarget($copyName, $targetCategoryID);
         }
 
         $result = $this->CreateStyledCopy(
             $SourceViewID,
             $CopyViewName,
-            $TargetCategoryID,
+            $targetCategoryID,
             IPSViewTheme::THEME_CUSTOM,
             $this->IPSViewAssistantEncodeActionValue($palette),
             $Scope,
             $this->IPSViewAssistantEncodeActionValue($effects),
             $this->IPSViewAssistantEncodeActionValue($appearance)
         );
-        $targetMediaID = $this->findManagedCopy($SourceViewID, $copyName, $TargetCategoryID);
+        $targetMediaID = $this->findManagedCopy($SourceViewID, $copyName, $targetCategoryID);
         if ($targetMediaID === null || !$this->IPSViewAssistantIsCopySuccess(
             $result,
             $copyName,

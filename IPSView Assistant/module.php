@@ -2288,6 +2288,10 @@ class IPSViewAssistant extends IPSModuleStrict
             }
 
             $targetMediaID = $managedCopy['targetMediaID'];
+            if (!IPS_ObjectExists($targetMediaID)) {
+                continue;
+            }
+
             $object = IPS_GetObject($targetMediaID);
 
             if (

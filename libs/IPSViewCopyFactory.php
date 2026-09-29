@@ -100,6 +100,7 @@ final class IPSViewCopyFactory
         array $background = []
     ): int {
         $copyName = trim($copyName);
+        $targetCategoryID = $this->normalizeTargetCategory($targetCategoryID);
 
         $this->validateName($copyName);
         $this->validateTargetCategory($targetCategoryID);
@@ -221,6 +222,7 @@ final class IPSViewCopyFactory
     public function findExistingTarget(string $copyName, int $targetCategoryID): ?int
     {
         $copyName = trim($copyName);
+        $targetCategoryID = $this->normalizeTargetCategory($targetCategoryID);
         $this->validateName($copyName);
         $this->validateTargetCategory($targetCategoryID);
         $matchingObjects = [];
@@ -302,6 +304,14 @@ final class IPSViewCopyFactory
     }
 
     /**
+     * Normalizes the Symcon object-selector placeholder to the root category.
+     */
+    private function normalizeTargetCategory(int $targetCategoryID): int
+    {
+        return $targetCategoryID === 1 ? 0 : $targetCategoryID;
+    }
+
+    /**
      * Accepts the Symcon root or an existing category as copy target.
      */
     private function validateTargetCategory(int $targetCategoryID): void
@@ -315,7 +325,7 @@ final class IPSViewCopyFactory
         }
 
         $object = IPS_GetObject($targetCategoryID);
-        if (($object['ObjectType'] ?? -1) !== 0) {
+        if ((int) ($object['ObjectType'] ?? -1) !== 0) {
             throw new InvalidArgumentException('The selected target object is not a category.');
         }
     }

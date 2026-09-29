@@ -289,3 +289,9 @@ assertTest(
 );
 
 fwrite(STDOUT, "Shared IPSView style integration tests passed.\n");
+
+assertTest(
+    str_contains($integrationSource, '$targetCategoryID = $TargetCategoryID === 1 ? 0 : $TargetCategoryID;')
+        && str_contains($integrationSource, '$factory->findExistingTarget($copyName, $targetCategoryID)'),
+    'Shared styled copies do not normalize the empty category selector before target lookup.'
+);
