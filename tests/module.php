@@ -110,6 +110,11 @@ assertTest(
     'The module does not delegate Style Profile validation to the shared exchange layer.'
 );
 assertTest(
+    str_contains($moduleSource, '@IPS_GetObjectIDByName($name, $targetCategoryID)')
+        && str_contains($moduleSource, 'IPS_CreateMedia($documentType)'),
+    'Style Profile media saving does not quietly create a new document when no same-name object exists.'
+);
+assertTest(
     str_contains($moduleSource, 'updateFontStyleFields('),
     'The module does not adapt font-format controls to the selected font family.'
 );

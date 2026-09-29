@@ -1589,7 +1589,7 @@ trait IPSViewSharedStyleIntegration
         $this->IPSViewAssistantValidateColorPaletteTargetCategory($targetCategoryID);
         IPSViewColorPaletteExchange::importJson($json);
 
-        $existingID = IPS_GetObjectIDByName($name, $targetCategoryID);
+        $existingID = @IPS_GetObjectIDByName($name, $targetCategoryID);
         if (is_int($existingID) && $existingID > 0) {
             if (!IPS_MediaExists($existingID)) {
                 throw new RuntimeException(

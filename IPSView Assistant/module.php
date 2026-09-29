@@ -1572,7 +1572,7 @@ class IPSViewAssistant extends IPSModuleStrict
         $this->validateStyleProfileTargetCategory($targetCategoryID);
         IPSViewStyleProfileExchange::importJson($json);
 
-        $existingID = IPS_GetObjectIDByName($name, $targetCategoryID);
+        $existingID = @IPS_GetObjectIDByName($name, $targetCategoryID);
         if (is_int($existingID) && $existingID > 0) {
             if (!IPS_MediaExists($existingID)) {
                 throw new RuntimeException(

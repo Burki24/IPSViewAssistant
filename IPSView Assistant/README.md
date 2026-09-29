@@ -183,6 +183,7 @@ Die Live-Vorschau verwendet das vollständig aufgelöste native Farbschema. Nebe
 Der aufklappbare Bereich **Farbpaletten** im Expertenmodus stellt das Austauschformat **Color Palette V1** bereit. Anders als ein Style Profile enthält eine Farbpalette ausschließlich Farben: die **21 universellen Farbfelder** des gemeinsamen Stils und die **109 nativen IPSView-Farbfelder in allen 15 Gruppen** unter **Erweiterte IPSView-Farben**.
 
 Eine Palette kann als JSON ausgegeben, als Symcon-Dokumentmedium gespeichert sowie aus einer `.json`-Datei oder einem zuvor gespeicherten Medium importiert werden. Beim Import wechselt der gemeinsame Stil auf **Benutzerdefiniert**, damit die importierten Farben unmittelbar verwendet und weiterbearbeitet werden können.
+Existiert beim Speichern noch kein Dokument mit dem gewählten Namen in der Zielkategorie, legt der Assistant das benötigte Symcon-Dokumentmedium automatisch an; ein vorhandenes kompatibles Medium wird sicher aktualisiert.
 
 Nichtfarbliche Einstellungen werden bewusst nicht ausgetauscht. Insbesondere **Deckkraft/Transparenz, Schattengeometrie, Farbverläufe, Schriftart, Schriftgröße, Ecken, Rahmenbreiten, Hintergrundbilder, View-Format und Seitenstruktur** bleiben erhalten. Die nativen Farbwerte werden nach dem Import mit den universellen Farben verglichen; nur tatsächliche Abweichungen werden als native **Abweichend**-Werte gespeichert. Dadurch bleibt die bestehende Farbvererbung erhalten und die vollständige 109-Farben-Palette kann trotzdem exakt wiederhergestellt werden.
 

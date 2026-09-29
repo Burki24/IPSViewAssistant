@@ -79,6 +79,11 @@ assertTest(
         && str_contains($integrationSource, 'if (!isset($nativeOverrides[$field]))'),
     'Color Palette import does not preserve non-color style settings or minimal native overrides.'
 );
+assertTest(
+    str_contains($integrationSource, '@IPS_GetObjectIDByName($name, $targetCategoryID)')
+        && str_contains($integrationSource, 'IPS_CreateMedia($documentType)'),
+    'Color Palette media saving does not quietly create a new document when no same-name object exists.'
+);
 
 assertTest(
     str_contains($integrationSource, 'IPSViewAssistantAttachNativeListOnEdit($sharedItems)')
