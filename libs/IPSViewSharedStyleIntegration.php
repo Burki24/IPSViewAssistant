@@ -47,51 +47,62 @@ trait IPSViewSharedStyleIntegration
      */
     public function ApplySharedStyleConfiguration(string $Configuration): void
     {
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__);
         try {
-            $configuration = json_decode($Configuration, true, 512, JSON_THROW_ON_ERROR);
-        } catch (JsonException $exception) {
-            throw new RuntimeException('The shared IPSView style configuration is invalid.', 0, $exception);
-        }
-        if (!is_array($configuration)) {
-            throw new RuntimeException('The shared IPSView style configuration must be an object.');
-        }
-
-        $allowed = array_flip($this->IPSViewAssistantSharedStyleFieldNames($this->IPSViewStyleFormItems('240px')));
-        $changed = false;
-        $sourceChanged = false;
-
-        foreach ($configuration as $propertyName => $value) {
-            if (!is_string($propertyName) || !isset($allowed[$propertyName])) {
-                continue;
+            try {
+                $configuration = json_decode($Configuration, true, 512, JSON_THROW_ON_ERROR);
+            } catch (JsonException $exception) {
+                throw new RuntimeException('The shared IPSView style configuration is invalid.', 0, $exception);
+            }
+            if (!is_array($configuration)) {
+                throw new RuntimeException('The shared IPSView style configuration must be an object.');
             }
 
-            $normalized = $this->IPSViewAssistantNormalizeSharedProperty($propertyName, $value);
-            $previous = $this->IPSViewAssistantReadSharedProperty($propertyName);
-            if ($previous !== $normalized) {
-                $changed = true;
-                if (in_array(
-                    $propertyName,
-                    ['IPSViewStyleSource', 'IPSViewStyleMediaID', 'IPSViewStyleProfileMediaID'],
-                    true
-                )) {
-                    $sourceChanged = true;
+            $allowed = array_flip($this->IPSViewAssistantSharedStyleFieldNames($this->IPSViewStyleFormItems('240px')));
+            $changed = false;
+            $sourceChanged = false;
+
+            foreach ($configuration as $propertyName => $value) {
+                if (!is_string($propertyName) || !isset($allowed[$propertyName])) {
+                    continue;
                 }
+
+                $normalized = $this->IPSViewAssistantNormalizeSharedProperty($propertyName, $value);
+                $previous = $this->IPSViewAssistantReadSharedProperty($propertyName);
+                if ($previous !== $normalized) {
+                    $changed = true;
+                    if (in_array(
+                        $propertyName,
+                        ['IPSViewStyleSource', 'IPSViewStyleMediaID', 'IPSViewStyleProfileMediaID'],
+                        true
+                    )) {
+                        $sourceChanged = true;
+                    }
+                }
+                IPS_SetProperty($this->InstanceID, $propertyName, $normalized);
             }
-            IPS_SetProperty($this->InstanceID, $propertyName, $normalized);
+
+            if ($changed) {
+                $this->clearStyleProfileImportState();
+            }
+            IPS_ApplyChanges($this->InstanceID);
+
+            if ($sourceChanged) {
+                $this->ReloadForm();
+
+                return;
+            }
+
+            $this->RefreshSharedStylePreview();
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, true);
         }
-
-        if ($changed) {
-            $this->clearStyleProfileImportState();
-        }
-        IPS_ApplyChanges($this->InstanceID);
-
-        if ($sourceChanged) {
-            $this->ReloadForm();
-
-            return;
-        }
-
-        $this->RefreshSharedStylePreview();
     }
 
     /**
@@ -100,70 +111,81 @@ trait IPSViewSharedStyleIntegration
      */
     public function ApplySharedNativeColorOverride(string $PropertyName, string $Row): void
     {
-        if ($this->IPSViewStyleSource() !== self::IPSVIEW_STYLE_SOURCE_CUSTOM) {
-            throw new RuntimeException('Native IPSView color overrides can only be edited in the custom style.');
-        }
-
-        $propertyMap = $this->IPSViewStyleNativeOverrideProperties();
-        $family = array_search($PropertyName, $propertyMap, true);
-        if (!is_string($family)) {
-            throw new RuntimeException('The native IPSView color group is not supported.');
-        }
-
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__);
         try {
-            $editedRow = json_decode($Row, true, 512, JSON_THROW_ON_ERROR);
-        } catch (JsonException $exception) {
-            throw new RuntimeException('The edited native IPSView color row is invalid.', 0, $exception);
-        }
-        if (!is_array($editedRow)) {
-            throw new RuntimeException('The edited native IPSView color row must be an object.');
-        }
-
-        $field = isset($editedRow['Field']) && is_string($editedRow['Field'])
-            ? trim($editedRow['Field'])
-            : '';
-        $definition = $field === '' ? null : IPSViewControlThemeHelper::definition($field);
-        if ($definition === null || ($definition['family'] ?? null) !== $family) {
-            throw new RuntimeException('The edited IPSView field does not belong to the selected color group.');
-        }
-
-        $stored = $this->IPSViewAssistantNativeOverrideRows($PropertyName, $family);
-        $wasOverridden = isset($stored[$field]);
-        $inheritedColor = $this->IPSViewAssistantNativeInheritedColor($field);
-        $editedColor = array_key_exists('Color', $editedRow)
-            ? max(0, min(0xFFFFFF, (int) $editedRow['Color']))
-            : $inheritedColor;
-        $override = $this->IPSViewAssistantNativeOverrideEnabled($editedRow['Override'] ?? false);
-        if (!$wasOverridden && !$override && $editedColor !== $inheritedColor) {
-            $override = true;
-        }
-
-        if ($override) {
-            $stored[$field] = [
-                'Override' => true,
-                'Field'    => $field,
-                'Color'    => $editedColor
-            ];
-        } else {
-            unset($stored[$field]);
-        }
-
-        $ordered = [];
-        foreach (IPSViewControlThemeHelper::families()[$family] ?? [] as $familyField) {
-            if (isset($stored[$familyField])) {
-                $ordered[] = $stored[$familyField];
+            if ($this->IPSViewStyleSource() !== self::IPSVIEW_STYLE_SOURCE_CUSTOM) {
+                throw new RuntimeException('Native IPSView color overrides can only be edited in the custom style.');
             }
-        }
 
-        IPS_SetProperty(
-            $this->InstanceID,
-            $PropertyName,
-            json_encode($ordered, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR)
-        );
-        $this->clearStyleProfileImportState();
-        IPS_ApplyChanges($this->InstanceID);
-        $this->IPSViewAssistantRefreshNativeList($PropertyName);
-        $this->RefreshSharedStylePreview();
+            $propertyMap = $this->IPSViewStyleNativeOverrideProperties();
+            $family = array_search($PropertyName, $propertyMap, true);
+            if (!is_string($family)) {
+                throw new RuntimeException('The native IPSView color group is not supported.');
+            }
+
+            try {
+                $editedRow = json_decode($Row, true, 512, JSON_THROW_ON_ERROR);
+            } catch (JsonException $exception) {
+                throw new RuntimeException('The edited native IPSView color row is invalid.', 0, $exception);
+            }
+            if (!is_array($editedRow)) {
+                throw new RuntimeException('The edited native IPSView color row must be an object.');
+            }
+
+            $field = isset($editedRow['Field']) && is_string($editedRow['Field'])
+                ? trim($editedRow['Field'])
+                : '';
+            $definition = $field === '' ? null : IPSViewControlThemeHelper::definition($field);
+            if ($definition === null || ($definition['family'] ?? null) !== $family) {
+                throw new RuntimeException('The edited IPSView field does not belong to the selected color group.');
+            }
+
+            $stored = $this->IPSViewAssistantNativeOverrideRows($PropertyName, $family);
+            $wasOverridden = isset($stored[$field]);
+            $inheritedColor = $this->IPSViewAssistantNativeInheritedColor($field);
+            $editedColor = array_key_exists('Color', $editedRow)
+                ? max(0, min(0xFFFFFF, (int) $editedRow['Color']))
+                : $inheritedColor;
+            $override = $this->IPSViewAssistantNativeOverrideEnabled($editedRow['Override'] ?? false);
+            if (!$wasOverridden && !$override && $editedColor !== $inheritedColor) {
+                $override = true;
+            }
+
+            if ($override) {
+                $stored[$field] = [
+                    'Override' => true,
+                    'Field'    => $field,
+                    'Color'    => $editedColor
+                ];
+            } else {
+                unset($stored[$field]);
+            }
+
+            $ordered = [];
+            foreach (IPSViewControlThemeHelper::families()[$family] ?? [] as $familyField) {
+                if (isset($stored[$familyField])) {
+                    $ordered[] = $stored[$familyField];
+                }
+            }
+
+            IPS_SetProperty(
+                $this->InstanceID,
+                $PropertyName,
+                json_encode($ordered, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR)
+            );
+            $this->clearStyleProfileImportState();
+            IPS_ApplyChanges($this->InstanceID);
+            $this->IPSViewAssistantRefreshNativeList($PropertyName);
+            $this->RefreshSharedStylePreview();
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, true);
+        }
     }
 
     /**
@@ -171,7 +193,18 @@ trait IPSViewSharedStyleIntegration
      */
     public function ClearSharedStyleProfileBaseline(): void
     {
-        $this->clearStyleProfileImportState();
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__);
+        try {
+            $this->clearStyleProfileImportState();
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, true);
+        }
     }
 
     /**
@@ -179,7 +212,18 @@ trait IPSViewSharedStyleIntegration
      */
     public function ReloadSharedStyleForm(): void
     {
-        $this->ReloadForm();
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__);
+        try {
+            $this->ReloadForm();
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, true);
+        }
     }
 
     /**
@@ -187,24 +231,35 @@ trait IPSViewSharedStyleIntegration
      */
     public function RefreshSharedStylePreview(): void
     {
-        $snapshot = $this->IPSViewAssistantSharedStyleSnapshot();
-        $style = $snapshot['style'];
-        $palette = IPSViewSharedStyleAdapter::previewPalette($style);
-        $effects = IPSViewSharedStyleAdapter::previewEffects($style, $snapshot['gradientStrength']);
-        $appearance = IPSViewSharedStyleAdapter::appearance($style);
-        $nativeColors = $this->IPSViewAssistantNativePreviewColors($snapshot['nativeTheme']);
-        $preview = IPSViewThemePreview::createDataUri(
-            $palette,
-            $effects,
-            $appearance,
-            $this->backgroundSettings(),
-            $this->previewStartGrid(),
-            $snapshot['transparentBackground'],
-            $nativeColors
-        );
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__);
+        try {
+            $snapshot = $this->IPSViewAssistantSharedStyleSnapshot();
+            $style = $snapshot['style'];
+            $palette = IPSViewSharedStyleAdapter::previewPalette($style);
+            $effects = IPSViewSharedStyleAdapter::previewEffects($style, $snapshot['gradientStrength']);
+            $appearance = IPSViewSharedStyleAdapter::appearance($style);
+            $nativeColors = $this->IPSViewAssistantNativePreviewColors($snapshot['nativeTheme']);
+            $preview = IPSViewThemePreview::createDataUri(
+                $palette,
+                $effects,
+                $appearance,
+                $this->backgroundSettings(),
+                $this->previewStartGrid(),
+                $snapshot['transparentBackground'],
+                $nativeColors
+            );
 
-        $this->IPSViewAssistantSynchronizeLegacyStyleFields($palette, $effects, $appearance);
-        $this->UpdateFormField('ThemePreview', 'image', $preview);
+            $this->IPSViewAssistantSynchronizeLegacyStyleFields($palette, $effects, $appearance);
+            $this->UpdateFormField('ThemePreview', 'image', $preview);
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, true);
+        }
     }
 
     /**
@@ -229,17 +284,28 @@ trait IPSViewSharedStyleIntegration
         bool $FullScreen = false,
         int $StartGrid = IPSViewDocument::START_GRID_NONE
     ): string {
-        return $this->CreateOrOverwriteSharedStyleView(
-            $ViewName,
-            $TargetCategoryID,
-            $AspectRatio,
-            $Orientation,
-            $Template,
-            $MainPageName,
-            $FullScreen,
-            $StartGrid,
-            false
-        );
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__, ['TargetCategoryID' => $TargetCategoryID, 'StartGrid' => $StartGrid]);
+        try {
+            return $debugFlowResult = $this->CreateOrOverwriteSharedStyleView(
+                $ViewName,
+                $TargetCategoryID,
+                $AspectRatio,
+                $Orientation,
+                $Template,
+                $MainPageName,
+                $FullScreen,
+                $StartGrid,
+                false
+            );
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, false);
+        }
     }
 
     /**
@@ -266,56 +332,68 @@ trait IPSViewSharedStyleIntegration
         int $StartGrid,
         bool $OverwriteExistingView
     ): string {
-        $snapshot = $this->IPSViewAssistantSharedStyleSnapshot();
-        $palette = IPSViewSharedStyleAdapter::palette($snapshot['style']);
-        $effects = IPSViewSharedStyleAdapter::effects($snapshot['style'], $snapshot['gradientStrength']);
-        $appearance = IPSViewSharedStyleAdapter::appearance($snapshot['style']);
-        $report = $this->startCheck(
-            $ViewName,
-            $TargetCategoryID,
-            $MainPageName,
-            $AspectRatio,
-            $Orientation,
-            $Template,
-            $StartGrid,
-            $OverwriteExistingView
-        );
-        $wasOverwritten = $OverwriteExistingView && $report['overwriteAvailable'];
-        $result = $this->CreateOrOverwriteView(
-            $ViewName,
-            $TargetCategoryID,
-            $AspectRatio,
-            $Orientation,
-            $Template,
-            $MainPageName,
-            IPSViewTheme::THEME_CUSTOM,
-            $this->IPSViewAssistantEncodeActionValue($palette),
-            $this->IPSViewAssistantEncodeActionValue($effects),
-            $this->IPSViewAssistantEncodeActionValue($appearance),
-            $FullScreen,
-            $StartGrid,
-            $OverwriteExistingView
-        );
-
-        $mediaID = max(0, $this->ReadAttributeInteger(self::ATTRIBUTE_LAST_CREATED_VIEW_ID));
-        if ($mediaID <= 0 || !$this->IPSViewAssistantIsCreateSuccess($result, $ViewName, $mediaID, $wasOverwritten)) {
-            return $result;
-        }
-
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__, ['TargetCategoryID' => $TargetCategoryID, 'StartGrid' => $StartGrid, 'OverwriteExistingView' => $OverwriteExistingView]);
         try {
-            $this->IPSViewAssistantFinalizeSharedStyleMedia(
-                $mediaID,
-                IPSViewTheme::SCOPE_GLOBAL_DEFAULTS,
-                $snapshot,
-                true
+            $snapshot = $this->IPSViewAssistantSharedStyleSnapshot();
+            $palette = IPSViewSharedStyleAdapter::palette($snapshot['style']);
+            $effects = IPSViewSharedStyleAdapter::effects($snapshot['style'], $snapshot['gradientStrength']);
+            $appearance = IPSViewSharedStyleAdapter::appearance($snapshot['style']);
+            $report = $this->startCheck(
+                $ViewName,
+                $TargetCategoryID,
+                $MainPageName,
+                $AspectRatio,
+                $Orientation,
+                $Template,
+                $StartGrid,
+                $OverwriteExistingView
             );
-        } catch (Throwable $exception) {
-            $this->SendDebug('CreateOrOverwriteSharedStyleView', $exception->getMessage(), 0);
+            $wasOverwritten = $OverwriteExistingView && $report['overwriteAvailable'];
+            $result = $this->CreateOrOverwriteView(
+                $ViewName,
+                $TargetCategoryID,
+                $AspectRatio,
+                $Orientation,
+                $Template,
+                $MainPageName,
+                IPSViewTheme::THEME_CUSTOM,
+                $this->IPSViewAssistantEncodeActionValue($palette),
+                $this->IPSViewAssistantEncodeActionValue($effects),
+                $this->IPSViewAssistantEncodeActionValue($appearance),
+                $FullScreen,
+                $StartGrid,
+                $OverwriteExistingView
+            );
 
-            return $result . ' ' . $this->Translate('Warning') . ': ' . $exception->getMessage();
+            $mediaID = max(0, $this->ReadAttributeInteger(self::ATTRIBUTE_LAST_CREATED_VIEW_ID));
+            if ($mediaID <= 0 || !$this->IPSViewAssistantIsCreateSuccess($result, $ViewName, $mediaID, $wasOverwritten)) {
+                return $debugFlowResult = $result;
+            }
+
+            try {
+                $this->IPSViewAssistantFinalizeSharedStyleMedia(
+                    $mediaID,
+                    IPSViewTheme::SCOPE_GLOBAL_DEFAULTS,
+                    $snapshot,
+                    true
+                );
+            } catch (Throwable $exception) {
+                $debugFlowFailed = true;
+                $this->DebugFlowException(__FUNCTION__, __LINE__, $exception);
+
+                return $debugFlowResult = $result . ' ' . $this->Translate('Warning') . ': ' . $exception->getMessage();
+            }
+
+            return $debugFlowResult = $result;
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, false);
         }
-
-        return $result;
     }
 
     /**
@@ -332,47 +410,59 @@ trait IPSViewSharedStyleIntegration
         int $TargetCategoryID,
         int $Scope = IPSViewTheme::SCOPE_MATCHING_CONTROLS
     ): string {
-        $snapshot = $this->IPSViewAssistantSharedStyleSnapshot();
-        $palette = IPSViewSharedStyleAdapter::palette($snapshot['style']);
-        $effects = IPSViewSharedStyleAdapter::effects($snapshot['style'], $snapshot['gradientStrength']);
-        $appearance = IPSViewSharedStyleAdapter::appearance($snapshot['style']);
-        $copyName = trim($CopyViewName);
-        $targetCategoryID = $TargetCategoryID === 1 ? 0 : $TargetCategoryID;
-        $factory = new IPSViewCopyFactory();
-        $targetBefore = $this->findManagedCopy($SourceViewID, $copyName, $targetCategoryID);
-        if ($targetBefore === null) {
-            $targetBefore = $factory->findExistingTarget($copyName, $targetCategoryID);
-        }
-
-        $result = $this->CreateStyledCopy(
-            $SourceViewID,
-            $CopyViewName,
-            $targetCategoryID,
-            IPSViewTheme::THEME_CUSTOM,
-            $this->IPSViewAssistantEncodeActionValue($palette),
-            $Scope,
-            $this->IPSViewAssistantEncodeActionValue($effects),
-            $this->IPSViewAssistantEncodeActionValue($appearance)
-        );
-        $targetMediaID = $this->findManagedCopy($SourceViewID, $copyName, $targetCategoryID);
-        if ($targetMediaID === null || !$this->IPSViewAssistantIsCopySuccess(
-            $result,
-            $copyName,
-            $targetMediaID,
-            $targetBefore !== null
-        )) {
-            return $result;
-        }
-
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__, ['SourceViewID' => $SourceViewID, 'TargetCategoryID' => $TargetCategoryID]);
         try {
-            $this->IPSViewAssistantFinalizeSharedStyleMedia($targetMediaID, $Scope, $snapshot, false);
-        } catch (Throwable $exception) {
-            $this->SendDebug('CreateSharedStyledCopy', $exception->getMessage(), 0);
+            $snapshot = $this->IPSViewAssistantSharedStyleSnapshot();
+            $palette = IPSViewSharedStyleAdapter::palette($snapshot['style']);
+            $effects = IPSViewSharedStyleAdapter::effects($snapshot['style'], $snapshot['gradientStrength']);
+            $appearance = IPSViewSharedStyleAdapter::appearance($snapshot['style']);
+            $copyName = trim($CopyViewName);
+            $targetCategoryID = $TargetCategoryID === 1 ? 0 : $TargetCategoryID;
+            $factory = new IPSViewCopyFactory();
+            $targetBefore = $this->findManagedCopy($SourceViewID, $copyName, $targetCategoryID);
+            if ($targetBefore === null) {
+                $targetBefore = $factory->findExistingTarget($copyName, $targetCategoryID);
+            }
 
-            return $result . ' ' . $this->Translate('Warning') . ': ' . $exception->getMessage();
+            $result = $this->CreateStyledCopy(
+                $SourceViewID,
+                $CopyViewName,
+                $targetCategoryID,
+                IPSViewTheme::THEME_CUSTOM,
+                $this->IPSViewAssistantEncodeActionValue($palette),
+                $Scope,
+                $this->IPSViewAssistantEncodeActionValue($effects),
+                $this->IPSViewAssistantEncodeActionValue($appearance)
+            );
+            $targetMediaID = $this->findManagedCopy($SourceViewID, $copyName, $targetCategoryID);
+            if ($targetMediaID === null || !$this->IPSViewAssistantIsCopySuccess(
+                $result,
+                $copyName,
+                $targetMediaID,
+                $targetBefore !== null
+            )) {
+                return $debugFlowResult = $result;
+            }
+
+            try {
+                $this->IPSViewAssistantFinalizeSharedStyleMedia($targetMediaID, $Scope, $snapshot, false);
+            } catch (Throwable $exception) {
+                $debugFlowFailed = true;
+                $this->DebugFlowException(__FUNCTION__, __LINE__, $exception);
+
+                return $debugFlowResult = $result . ' ' . $this->Translate('Warning') . ': ' . $exception->getMessage();
+            }
+
+            return $debugFlowResult = $result;
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, false);
         }
-
-        return $result;
     }
 
     /**
@@ -380,33 +470,45 @@ trait IPSViewSharedStyleIntegration
      */
     public function LoadSharedExistingView(int $SourceViewID): void
     {
-        if ($SourceViewID <= 0) {
-            $this->WriteAttributeInteger(self::ATTRIBUTE_SELECTED_SOURCE_VIEW_ID, 0);
-            $this->WriteAttributeString(self::ATTRIBUTE_COPY_VIEW_NAME, '');
-            $this->WriteAttributeInteger(self::ATTRIBUTE_COPY_TARGET_CATEGORY_ID, 0);
-
-            return;
-        }
-
-        $factory = new IPSViewCopyFactory();
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__, ['SourceViewID' => $SourceViewID]);
         try {
-            $factory->inspect($SourceViewID);
-            $this->LoadExistingView($SourceViewID);
-            $styleMediaID = $this->findPreferredManagedCopy($SourceViewID) ?? $SourceViewID;
-            IPS_SetProperty($this->InstanceID, 'IPSViewStyleMediaID', $styleMediaID);
-            IPS_SetProperty($this->InstanceID, 'IPSViewStyleSource', self::IPSVIEW_STYLE_SOURCE_MEDIA);
-            IPS_ApplyChanges($this->InstanceID);
-            $this->ReloadForm();
-        } catch (Throwable $exception) {
-            $this->SendDebug('LoadSharedExistingView', $exception->getMessage(), 0);
-            $this->UpdateFormField(
-                'ExistingViewStatus',
-                'caption',
-                sprintf(
-                    $this->Translate('The existing IPSView could not be loaded: %s'),
-                    $exception->getMessage()
-                )
-            );
+            if ($SourceViewID <= 0) {
+                $this->WriteAttributeInteger(self::ATTRIBUTE_SELECTED_SOURCE_VIEW_ID, 0);
+                $this->WriteAttributeString(self::ATTRIBUTE_COPY_VIEW_NAME, '');
+                $this->WriteAttributeInteger(self::ATTRIBUTE_COPY_TARGET_CATEGORY_ID, 0);
+
+                return;
+            }
+
+            $factory = new IPSViewCopyFactory();
+            try {
+                $factory->inspect($SourceViewID);
+                $this->LoadExistingView($SourceViewID);
+                $styleMediaID = $this->findPreferredManagedCopy($SourceViewID) ?? $SourceViewID;
+                IPS_SetProperty($this->InstanceID, 'IPSViewStyleMediaID', $styleMediaID);
+                IPS_SetProperty($this->InstanceID, 'IPSViewStyleSource', self::IPSVIEW_STYLE_SOURCE_MEDIA);
+                IPS_ApplyChanges($this->InstanceID);
+                $this->ReloadForm();
+            } catch (Throwable $exception) {
+                $debugFlowFailed = true;
+                $this->DebugFlowException(__FUNCTION__, __LINE__, $exception);
+                $this->UpdateFormField(
+                    'ExistingViewStatus',
+                    'caption',
+                    sprintf(
+                        $this->Translate('The existing IPSView could not be loaded: %s'),
+                        $exception->getMessage()
+                    )
+                );
+            }
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, true);
         }
     }
 
@@ -418,32 +520,44 @@ trait IPSViewSharedStyleIntegration
      */
     public function ExportSharedStyleProfileJson(string $Name, string $Description): string
     {
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__);
         try {
-            $snapshot = $this->IPSViewAssistantSharedStyleSnapshot();
-            $profile = IPSViewStyleProfileHelper::create(
-                trim($Name),
-                IPSViewSharedStyleAdapter::profileStyle(
-                    $snapshot['style'],
-                    $snapshot['nativeTheme'],
-                    $snapshot['gradientStrength'],
-                    $snapshot['transparentBackground']
-                ),
-                $this->styleProfileMetadata($Description, $this->readStyleProfileImportState())
-            );
-            $json = IPSViewStyleProfileHelper::encode($profile);
-            $this->UpdateFormField(
-                'StyleProfileStatus',
-                'caption',
-                sprintf($this->Translate('Style profile "%s" was exported as JSON.'), trim($Name))
-            );
+            try {
+                $snapshot = $this->IPSViewAssistantSharedStyleSnapshot();
+                $profile = IPSViewStyleProfileHelper::create(
+                    trim($Name),
+                    IPSViewSharedStyleAdapter::profileStyle(
+                        $snapshot['style'],
+                        $snapshot['nativeTheme'],
+                        $snapshot['gradientStrength'],
+                        $snapshot['transparentBackground']
+                    ),
+                    $this->styleProfileMetadata($Description, $this->readStyleProfileImportState())
+                );
+                $json = IPSViewStyleProfileHelper::encode($profile);
+                $this->UpdateFormField(
+                    'StyleProfileStatus',
+                    'caption',
+                    sprintf($this->Translate('Style profile "%s" was exported as JSON.'), trim($Name))
+                );
 
-            return $json;
-        } catch (Throwable $exception) {
-            $this->SendDebug('ExportSharedStyleProfileJson', $exception->getMessage(), 0);
-            $message = sprintf($this->Translate('The style profile could not be exported: %s'), $exception->getMessage());
-            $this->UpdateFormField('StyleProfileStatus', 'caption', $message);
+                return $debugFlowResult = $json;
+            } catch (Throwable $exception) {
+                $debugFlowFailed = true;
+                $this->DebugFlowException(__FUNCTION__, __LINE__, $exception);
+                $message = sprintf($this->Translate('The style profile could not be exported: %s'), $exception->getMessage());
+                $this->UpdateFormField('StyleProfileStatus', 'caption', $message);
 
-            return $message;
+                return $debugFlowResult = $message;
+            }
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, false);
         }
     }
 
@@ -459,37 +573,49 @@ trait IPSViewSharedStyleIntegration
         string $Description,
         int $TargetCategoryID
     ): string {
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__, ['TargetCategoryID' => $TargetCategoryID]);
         try {
-            $name = trim($Name);
-            $snapshot = $this->IPSViewAssistantSharedStyleSnapshot();
-            $profile = IPSViewStyleProfileHelper::create(
-                $name,
-                IPSViewSharedStyleAdapter::profileStyle(
-                    $snapshot['style'],
-                    $snapshot['nativeTheme'],
-                    $snapshot['gradientStrength'],
-                    $snapshot['transparentBackground']
-                ),
-                $this->styleProfileMetadata($Description, $this->readStyleProfileImportState())
-            );
-            $mediaID = $this->writeStyleProfileMedia($name, $TargetCategoryID, IPSViewStyleProfileHelper::encode($profile));
-            $message = sprintf(
-                $this->Translate('Style profile "%s" was saved as Symcon media object %d.'),
-                $name,
-                $mediaID
-            );
-            $this->UpdateFormField('StyleProfileStatus', 'caption', $message);
+            try {
+                $name = trim($Name);
+                $snapshot = $this->IPSViewAssistantSharedStyleSnapshot();
+                $profile = IPSViewStyleProfileHelper::create(
+                    $name,
+                    IPSViewSharedStyleAdapter::profileStyle(
+                        $snapshot['style'],
+                        $snapshot['nativeTheme'],
+                        $snapshot['gradientStrength'],
+                        $snapshot['transparentBackground']
+                    ),
+                    $this->styleProfileMetadata($Description, $this->readStyleProfileImportState())
+                );
+                $mediaID = $this->writeStyleProfileMedia($name, $TargetCategoryID, IPSViewStyleProfileHelper::encode($profile));
+                $message = sprintf(
+                    $this->Translate('Style profile "%s" was saved as Symcon media object %d.'),
+                    $name,
+                    $mediaID
+                );
+                $this->UpdateFormField('StyleProfileStatus', 'caption', $message);
 
-            return $message;
-        } catch (Throwable $exception) {
-            $this->SendDebug('SaveSharedStyleProfileMedia', $exception->getMessage(), 0);
-            $message = sprintf(
-                $this->Translate('The style profile could not be saved as a Symcon media object: %s'),
-                $exception->getMessage()
-            );
-            $this->UpdateFormField('StyleProfileStatus', 'caption', $message);
+                return $debugFlowResult = $message;
+            } catch (Throwable $exception) {
+                $debugFlowFailed = true;
+                $this->DebugFlowException(__FUNCTION__, __LINE__, $exception);
+                $message = sprintf(
+                    $this->Translate('The style profile could not be saved as a Symcon media object: %s'),
+                    $exception->getMessage()
+                );
+                $this->UpdateFormField('StyleProfileStatus', 'caption', $message);
 
-            return $message;
+                return $debugFlowResult = $message;
+            }
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, false);
         }
     }
 
@@ -500,12 +626,23 @@ trait IPSViewSharedStyleIntegration
      */
     public function ImportSharedStyleProfileFile(string $File): string
     {
-        $result = $this->ImportStyleProfileFile($File);
-        if ($this->IPSViewAssistantWasStyleProfileImportSuccessful($result)) {
-            $this->IPSViewAssistantAdoptImportedStyleProfile();
-        }
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__);
+        try {
+            $result = $this->ImportStyleProfileFile($File);
+            if ($this->IPSViewAssistantWasStyleProfileImportSuccessful($result)) {
+                $this->IPSViewAssistantAdoptImportedStyleProfile();
+            }
 
-        return $result;
+            return $debugFlowResult = $result;
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, false);
+        }
     }
 
     /**
@@ -515,12 +652,23 @@ trait IPSViewSharedStyleIntegration
      */
     public function ImportSharedStyleProfileMedia(int $MediaID): string
     {
-        $result = $this->ImportStyleProfileMedia($MediaID);
-        if ($this->IPSViewAssistantWasStyleProfileImportSuccessful($result)) {
-            $this->IPSViewAssistantAdoptImportedStyleProfile();
-        }
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__, ['MediaID' => $MediaID]);
+        try {
+            $result = $this->ImportStyleProfileMedia($MediaID);
+            if ($this->IPSViewAssistantWasStyleProfileImportSuccessful($result)) {
+                $this->IPSViewAssistantAdoptImportedStyleProfile();
+            }
 
-        return $result;
+            return $debugFlowResult = $result;
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, false);
+        }
     }
 
     /**
@@ -533,29 +681,41 @@ trait IPSViewSharedStyleIntegration
      */
     public function ExportColorPaletteJson(string $Name, string $Description): string
     {
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__);
         try {
-            $data = $this->IPSViewAssistantColorPaletteData();
-            $json = IPSViewColorPaletteExchange::exportJson(
-                trim($Name),
-                $Description,
-                $data['semanticColors'],
-                $data['nativeColors']
-            );
-            $message = sprintf($this->Translate('Color palette "%s" was exported as JSON.'), trim($Name));
-            $this->WriteAttributeString(self::ATTRIBUTE_COLOR_PALETTE_STATUS, $message);
-            $this->UpdateFormField('ColorPaletteStatus', 'caption', $message);
+            try {
+                $data = $this->IPSViewAssistantColorPaletteData();
+                $json = IPSViewColorPaletteExchange::exportJson(
+                    trim($Name),
+                    $Description,
+                    $data['semanticColors'],
+                    $data['nativeColors']
+                );
+                $message = sprintf($this->Translate('Color palette "%s" was exported as JSON.'), trim($Name));
+                $this->WriteAttributeString(self::ATTRIBUTE_COLOR_PALETTE_STATUS, $message);
+                $this->UpdateFormField('ColorPaletteStatus', 'caption', $message);
 
-            return $json;
-        } catch (Throwable $exception) {
-            $this->SendDebug('ExportColorPaletteJson', $exception->getMessage(), 0);
-            $message = sprintf(
-                $this->Translate('The color palette could not be exported: %s'),
-                $exception->getMessage()
-            );
-            $this->WriteAttributeString(self::ATTRIBUTE_COLOR_PALETTE_STATUS, $message);
-            $this->UpdateFormField('ColorPaletteStatus', 'caption', $message);
+                return $debugFlowResult = $json;
+            } catch (Throwable $exception) {
+                $debugFlowFailed = true;
+                $this->DebugFlowException(__FUNCTION__, __LINE__, $exception);
+                $message = sprintf(
+                    $this->Translate('The color palette could not be exported: %s'),
+                    $exception->getMessage()
+                );
+                $this->WriteAttributeString(self::ATTRIBUTE_COLOR_PALETTE_STATUS, $message);
+                $this->UpdateFormField('ColorPaletteStatus', 'caption', $message);
 
-            return $message;
+                return $debugFlowResult = $message;
+            }
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, false);
         }
     }
 
@@ -570,35 +730,47 @@ trait IPSViewSharedStyleIntegration
      */
     public function SaveColorPaletteMedia(string $Name, string $Description, int $TargetCategoryID): string
     {
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__, ['TargetCategoryID' => $TargetCategoryID]);
         try {
-            $name = trim($Name);
-            $data = $this->IPSViewAssistantColorPaletteData();
-            $json = IPSViewColorPaletteExchange::exportJson(
-                $name,
-                $Description,
-                $data['semanticColors'],
-                $data['nativeColors']
-            );
-            $mediaID = $this->IPSViewAssistantWriteColorPaletteMedia($name, $TargetCategoryID, $json);
-            $message = sprintf(
-                $this->Translate('Color palette "%s" was saved as Symcon media object %d.'),
-                $name,
-                $mediaID
-            );
-            $this->WriteAttributeString(self::ATTRIBUTE_COLOR_PALETTE_STATUS, $message);
-            $this->UpdateFormField('ColorPaletteStatus', 'caption', $message);
+            try {
+                $name = trim($Name);
+                $data = $this->IPSViewAssistantColorPaletteData();
+                $json = IPSViewColorPaletteExchange::exportJson(
+                    $name,
+                    $Description,
+                    $data['semanticColors'],
+                    $data['nativeColors']
+                );
+                $mediaID = $this->IPSViewAssistantWriteColorPaletteMedia($name, $TargetCategoryID, $json);
+                $message = sprintf(
+                    $this->Translate('Color palette "%s" was saved as Symcon media object %d.'),
+                    $name,
+                    $mediaID
+                );
+                $this->WriteAttributeString(self::ATTRIBUTE_COLOR_PALETTE_STATUS, $message);
+                $this->UpdateFormField('ColorPaletteStatus', 'caption', $message);
 
-            return $message;
-        } catch (Throwable $exception) {
-            $this->SendDebug('SaveColorPaletteMedia', $exception->getMessage(), 0);
-            $message = sprintf(
-                $this->Translate('The color palette could not be saved as a Symcon media object: %s'),
-                $exception->getMessage()
-            );
-            $this->WriteAttributeString(self::ATTRIBUTE_COLOR_PALETTE_STATUS, $message);
-            $this->UpdateFormField('ColorPaletteStatus', 'caption', $message);
+                return $debugFlowResult = $message;
+            } catch (Throwable $exception) {
+                $debugFlowFailed = true;
+                $this->DebugFlowException(__FUNCTION__, __LINE__, $exception);
+                $message = sprintf(
+                    $this->Translate('The color palette could not be saved as a Symcon media object: %s'),
+                    $exception->getMessage()
+                );
+                $this->WriteAttributeString(self::ATTRIBUTE_COLOR_PALETTE_STATUS, $message);
+                $this->UpdateFormField('ColorPaletteStatus', 'caption', $message);
 
-            return $message;
+                return $debugFlowResult = $message;
+            }
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, false);
         }
     }
 
@@ -611,22 +783,34 @@ trait IPSViewSharedStyleIntegration
      */
     public function ImportColorPaletteFile(string $File): string
     {
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__);
         try {
-            $palette = IPSViewColorPaletteExchange::importJson(
-                IPSViewColorPaletteExchange::decodeFileData($File)
-            );
+            try {
+                $palette = IPSViewColorPaletteExchange::importJson(
+                    IPSViewColorPaletteExchange::decodeFileData($File)
+                );
 
-            return $this->IPSViewAssistantApplyColorPalette($palette);
-        } catch (Throwable $exception) {
-            $this->SendDebug('ImportColorPaletteFile', $exception->getMessage(), 0);
-            $message = sprintf(
-                $this->Translate('The color palette file could not be imported: %s'),
-                $exception->getMessage()
-            );
-            $this->WriteAttributeString(self::ATTRIBUTE_COLOR_PALETTE_STATUS, $message);
-            $this->UpdateFormField('ColorPaletteStatus', 'caption', $message);
+                return $debugFlowResult = $this->IPSViewAssistantApplyColorPalette($palette);
+            } catch (Throwable $exception) {
+                $debugFlowFailed = true;
+                $this->DebugFlowException(__FUNCTION__, __LINE__, $exception);
+                $message = sprintf(
+                    $this->Translate('The color palette file could not be imported: %s'),
+                    $exception->getMessage()
+                );
+                $this->WriteAttributeString(self::ATTRIBUTE_COLOR_PALETTE_STATUS, $message);
+                $this->UpdateFormField('ColorPaletteStatus', 'caption', $message);
 
-            return $message;
+                return $debugFlowResult = $message;
+            }
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, false);
         }
     }
 
@@ -639,37 +823,77 @@ trait IPSViewSharedStyleIntegration
      */
     public function ImportColorPaletteMedia(int $MediaID): string
     {
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__, ['MediaID' => $MediaID]);
         try {
-            if ($MediaID <= 0 || !IPS_MediaExists($MediaID)) {
-                throw new RuntimeException($this->Translate('The selected color palette media object does not exist.'));
-            }
+            try {
+                if ($MediaID <= 0 || !IPS_MediaExists($MediaID)) {
+                    throw new RuntimeException($this->Translate('The selected color palette media object does not exist.'));
+                }
 
-            $media = IPS_GetMedia($MediaID);
-            $documentType = defined('MEDIATYPE_DOCUMENT') ? MEDIATYPE_DOCUMENT : 5;
-            if ((int) ($media['MediaType'] ?? -1) !== $documentType) {
-                throw new RuntimeException($this->Translate('The selected color palette media object is not a document.'));
-            }
+                $media = IPS_GetMedia($MediaID);
+                $documentType = defined('MEDIATYPE_DOCUMENT') ? MEDIATYPE_DOCUMENT : 5;
+                if ((int) ($media['MediaType'] ?? -1) !== $documentType) {
+                    throw new RuntimeException($this->Translate('The selected color palette media object is not a document.'));
+                }
 
-            $content = IPS_GetMediaContent($MediaID);
-            $json = is_string($content) ? base64_decode($content, true) : false;
-            if (!is_string($json) || trim($json) === '') {
-                throw new RuntimeException(
-                    $this->Translate('The selected color palette media object does not contain readable content.')
+                $content = IPS_GetMediaContent($MediaID);
+                $this->DebugFlowEvent(__FUNCTION__, __LINE__, 'EMPFANG', 'Dokumentmedium für den Import gelesen; Inhalt bleibt geschützt.', ['Quellmedium' => $MediaID]);
+                $json = is_string($content) ? base64_decode($content, true) : false;
+                if (!is_string($json) || trim($json) === '') {
+                    throw new RuntimeException(
+                        $this->Translate('The selected color palette media object does not contain readable content.')
+                    );
+                }
+
+                return $debugFlowResult = $this->IPSViewAssistantApplyColorPalette(IPSViewColorPaletteExchange::importJson($json));
+            } catch (Throwable $exception) {
+                $debugFlowFailed = true;
+                $this->DebugFlowException(__FUNCTION__, __LINE__, $exception);
+                $message = sprintf(
+                    $this->Translate('The color palette media could not be imported: %s'),
+                    $exception->getMessage()
                 );
+                $this->WriteAttributeString(self::ATTRIBUTE_COLOR_PALETTE_STATUS, $message);
+                $this->UpdateFormField('ColorPaletteStatus', 'caption', $message);
+
+                return $debugFlowResult = $message;
             }
-
-            return $this->IPSViewAssistantApplyColorPalette(IPSViewColorPaletteExchange::importJson($json));
-        } catch (Throwable $exception) {
-            $this->SendDebug('ImportColorPaletteMedia', $exception->getMessage(), 0);
-            $message = sprintf(
-                $this->Translate('The color palette media could not be imported: %s'),
-                $exception->getMessage()
-            );
-            $this->WriteAttributeString(self::ATTRIBUTE_COLOR_PALETTE_STATUS, $message);
-            $this->UpdateFormField('ColorPaletteStatus', 'caption', $message);
-
-            return $message;
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, false);
         }
+    }
+    /**
+     * Routes legacy helper diagnostics through the safe German module envelope.
+     *
+     * @param string $Message Native category; only the controlled structured prefix is forwarded.
+     * @param string $Data Private legacy contents, deliberately omitted from the envelope.
+     * @param int $Format Native format of controlled structured messages.
+     * @return bool Whether the debug dispatch was handled.
+     */
+    protected function SendDebug(string $Message, string $Data, int $Format): bool
+    {
+        if (str_starts_with($Message, static::class . ' | ')) {
+            return parent::SendDebug($Message, $Data, $Format);
+        }
+        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+        $standalone = $this->debugFlowCalls === [];
+        if ($standalone) {
+            $this->DebugFlowStart(__FUNCTION__, __LINE__);
+        }
+        try {
+            $this->DebugFlowEvent($trace[1]['function'] ?? 'Modulhilfe', (int) ($trace[0]['line'] ?? __LINE__), 'FEHLER', 'Die gemeinsame Modulhilfe konnte den Vorgang nicht abschließen; private Diagnoseinhalte bleiben geschützt.');
+        } finally {
+            if ($standalone) {
+                $this->DebugFlowEnd(__FUNCTION__, __LINE__);
+            }
+        }
+        return true;
     }
 
     /**
@@ -1461,6 +1685,7 @@ trait IPSViewSharedStyleIntegration
             throw new RuntimeException('The shared IPSView style could not be written to the media object.');
         }
         IPS_SendMediaEvent($mediaID);
+        $this->DebugFlowEvent(__FUNCTION__, __LINE__, 'SENDEN', 'Gespeichertes Dokumentmedium an Symcon gemeldet; Inhalt bleibt geschützt.', ['Zielmedium' => $mediaID]);
     }
 
     /**
@@ -1661,6 +1886,7 @@ trait IPSViewSharedStyleIntegration
                 throw new RuntimeException($this->Translate('The Color Palette media content could not be written.'));
             }
             IPS_SendMediaEvent($mediaID);
+            $this->DebugFlowEvent(__FUNCTION__, __LINE__, 'SENDEN', 'Gespeichertes Dokumentmedium an Symcon gemeldet; Inhalt bleibt geschützt.', ['Zielmedium' => $mediaID]);
 
             return $mediaID;
         } catch (Throwable $exception) {

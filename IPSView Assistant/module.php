@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/../libs/helper/DebugFlowHelper.php';
+
 require_once __DIR__ . '/../libs/helper/ConfigurationFormHelper.php';
 require_once __DIR__ . '/../libs/helper/IPSViewStyleConfigurationHelper.php';
 require_once __DIR__ . '/../libs/IPSViewBackground.php';
@@ -38,6 +40,8 @@ use Burki24\SymconModuleHelper\IPSViewStyleConfigurationHelper;
 
 class IPSViewAssistant extends IPSModuleStrict
 {
+    use \Burki24\SymconModuleHelper\DebugFlowHelper;
+
     use ConfigurationFormHelper;
     use IPSViewStyleConfigurationHelper;
     use IPSViewSharedStyleIntegration;
@@ -83,23 +87,34 @@ class IPSViewAssistant extends IPSModuleStrict
      */
     public function Create(): void
     {
-        parent::Create();
-        $this->RegisterIPSViewStyleProperties();
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__);
+        try {
+            parent::Create();
+            $this->RegisterIPSViewStyleProperties();
 
-        $this->RegisterAttributeInteger(self::ATTRIBUTE_ASSISTANT_MODE, self::ASSISTANT_MODE_QUICK_START);
-        $this->RegisterAttributeString(self::ATTRIBUTE_MANAGED_COPIES, '[]');
-        $this->RegisterAttributeString(self::ATTRIBUTE_BACKGROUND_IMAGE, '');
-        $this->RegisterAttributeInteger(self::ATTRIBUTE_BACKGROUND_MODE, IPSViewBackground::MODE_PRESERVE);
-        $this->RegisterAttributeString(self::ATTRIBUTE_BACKGROUND_LAYOUT, IPSViewBackground::LAYOUT_STRETCH);
-        $this->RegisterAttributeInteger(self::ATTRIBUTE_BACKGROUND_SCOPE, IPSViewBackground::SCOPE_MAIN_PAGE);
-        $this->RegisterAttributeInteger(self::ATTRIBUTE_PREVIEW_START_GRID, IPSViewDocument::START_GRID_NONE);
-        $this->RegisterAttributeInteger(self::ATTRIBUTE_LAST_CREATED_VIEW_ID, 0);
-        $this->RegisterAttributeInteger(self::ATTRIBUTE_DESIGNER_OBJECT_ID, 1);
-        $this->RegisterAttributeString(self::ATTRIBUTE_IMPORTED_STYLE_PROFILE, '');
-        $this->RegisterAttributeString(self::ATTRIBUTE_COLOR_PALETTE_STATUS, '');
-        $this->RegisterAttributeInteger(self::ATTRIBUTE_SELECTED_SOURCE_VIEW_ID, 0);
-        $this->RegisterAttributeString(self::ATTRIBUTE_COPY_VIEW_NAME, '');
-        $this->RegisterAttributeInteger(self::ATTRIBUTE_COPY_TARGET_CATEGORY_ID, 0);
+            $this->RegisterAttributeInteger(self::ATTRIBUTE_ASSISTANT_MODE, self::ASSISTANT_MODE_QUICK_START);
+            $this->RegisterAttributeString(self::ATTRIBUTE_MANAGED_COPIES, '[]');
+            $this->RegisterAttributeString(self::ATTRIBUTE_BACKGROUND_IMAGE, '');
+            $this->RegisterAttributeInteger(self::ATTRIBUTE_BACKGROUND_MODE, IPSViewBackground::MODE_PRESERVE);
+            $this->RegisterAttributeString(self::ATTRIBUTE_BACKGROUND_LAYOUT, IPSViewBackground::LAYOUT_STRETCH);
+            $this->RegisterAttributeInteger(self::ATTRIBUTE_BACKGROUND_SCOPE, IPSViewBackground::SCOPE_MAIN_PAGE);
+            $this->RegisterAttributeInteger(self::ATTRIBUTE_PREVIEW_START_GRID, IPSViewDocument::START_GRID_NONE);
+            $this->RegisterAttributeInteger(self::ATTRIBUTE_LAST_CREATED_VIEW_ID, 0);
+            $this->RegisterAttributeInteger(self::ATTRIBUTE_DESIGNER_OBJECT_ID, 1);
+            $this->RegisterAttributeString(self::ATTRIBUTE_IMPORTED_STYLE_PROFILE, '');
+            $this->RegisterAttributeString(self::ATTRIBUTE_COLOR_PALETTE_STATUS, '');
+            $this->RegisterAttributeInteger(self::ATTRIBUTE_SELECTED_SOURCE_VIEW_ID, 0);
+            $this->RegisterAttributeString(self::ATTRIBUTE_COPY_VIEW_NAME, '');
+            $this->RegisterAttributeInteger(self::ATTRIBUTE_COPY_TARGET_CATEGORY_ID, 0);
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, true);
+        }
     }
 
     /**
@@ -107,9 +122,20 @@ class IPSViewAssistant extends IPSModuleStrict
      */
     public function ApplyChanges(): void
     {
-        parent::ApplyChanges();
-        $this->RegisterIPSViewStyleMediaMessages();
-        $this->SetStatus(IS_ACTIVE);
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__);
+        try {
+            parent::ApplyChanges();
+            $this->RegisterIPSViewStyleMediaMessages();
+            $this->SetStatus(IS_ACTIVE);
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, true);
+        }
     }
 
     /**
@@ -122,10 +148,21 @@ class IPSViewAssistant extends IPSModuleStrict
      */
     public function MessageSink(int $TimeStamp, int $SenderID, int $Message, array $Data): void
     {
-        unset($TimeStamp, $Data);
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__, ['Quelle' => $SenderID, 'Nachricht' => $Message]);
+        try {
+            unset($TimeStamp, $Data);
 
-        if ($this->IsIPSViewStyleMediaUpdate($SenderID, $Message)) {
-            $this->ReloadForm();
+            if ($this->IsIPSViewStyleMediaUpdate($SenderID, $Message)) {
+                $this->ReloadForm();
+            }
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, true);
         }
     }
 
@@ -136,122 +173,133 @@ class IPSViewAssistant extends IPSModuleStrict
      */
     public function GetConfigurationForm(): string
     {
-        $form = $this->LoadConfigurationForm();
-        $this->setConfigurationFormField(
-            $form,
-            'FontFamilyMode',
-            'options',
-            IPSViewTypography::fontFamilyOptions($this->Translate('Preserve existing'))
-        );
-        $importState = $this->readStyleProfileImportState();
-        $palette = $importState === null
-            ? IPSViewTheme::preset(IPSViewTheme::THEME_STANDARD)
-            : $importState['editor']['palette'];
-        $effects = $importState === null
-            ? IPSViewEffects::resolve()
-            : $importState['editor']['effects'];
-        $appearance = $importState === null
-            ? []
-            : $importState['editor']['appearance'];
-        $startGrid = $this->previewStartGrid();
-        $background = $this->backgroundSettings();
-        $preview = IPSViewThemePreview::createDataUri(
-            $palette,
-            $effects,
-            $appearance,
-            $background,
-            $startGrid
-        );
-
-        foreach (self::FORM_COLOR_FIELDS as $role => $field) {
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__);
+        try {
+            $form = $this->LoadConfigurationForm();
             $this->setConfigurationFormField(
                 $form,
-                $field,
-                'value',
-                IPSViewTheme::toFormColor($palette[$role])
+                'FontFamilyMode',
+                'options',
+                IPSViewTypography::fontFamilyOptions($this->Translate('Preserve existing'))
             );
-        }
+            $importState = $this->readStyleProfileImportState();
+            $palette = $importState === null
+                ? IPSViewTheme::preset(IPSViewTheme::THEME_STANDARD)
+                : $importState['editor']['palette'];
+            $effects = $importState === null
+                ? IPSViewEffects::resolve()
+                : $importState['editor']['effects'];
+            $appearance = $importState === null
+                ? []
+                : $importState['editor']['appearance'];
+            $startGrid = $this->previewStartGrid();
+            $background = $this->backgroundSettings();
+            $preview = IPSViewThemePreview::createDataUri(
+                $palette,
+                $effects,
+                $appearance,
+                $background,
+                $startGrid
+            );
 
-        if ($importState !== null) {
-            $this->applyStyleProfileStateToForm($form, $importState);
-        }
+            foreach (self::FORM_COLOR_FIELDS as $role => $field) {
+                $this->setConfigurationFormField(
+                    $form,
+                    $field,
+                    'value',
+                    IPSViewTheme::toFormColor($palette[$role])
+                );
+            }
 
-        $this->setConfigurationFormField(
-            $form,
-            'ThemePreview',
-            'image',
-            $preview
-        );
-        $this->setConfigurationFormField($form, 'QuickStartPreview', 'image', $preview);
-        $this->setConfigurationFormField($form, 'StartGrid', 'value', $startGrid);
-        $this->setConfigurationFormField($form, 'QuickStartGrid', 'value', $startGrid);
-        $this->setConfigurationFormField($form, 'BackgroundImageMode', 'value', $background['mode']);
-        $this->setConfigurationFormField($form, 'BackgroundImageLayout', 'value', $background['layout']);
-        $this->setConfigurationFormField($form, 'BackgroundImageScope', 'value', $background['scope']);
-        $this->setConfigurationFormField($form, 'QuickStartBackgroundMode', 'value', $background['mode']);
-        $this->setConfigurationFormField($form, 'QuickStartBackgroundLayout', 'value', $background['layout']);
-        $this->setConfigurationFormField($form, 'QuickStartBackgroundScope', 'value', $background['scope']);
-        $this->setConfigurationFormField(
-            $form,
-            'BackgroundImageFile',
-            'visible',
-            $background['mode'] === IPSViewBackground::MODE_FILE
-        );
-        $this->setConfigurationFormField(
-            $form,
-            'BackgroundImageLayout',
-            'visible',
-            $background['mode'] === IPSViewBackground::MODE_FILE
-        );
-        $this->setConfigurationFormField(
-            $form,
-            'BackgroundImageScope',
-            'visible',
-            $background['mode'] !== IPSViewBackground::MODE_PRESERVE
-        );
-        $this->setConfigurationFormField(
-            $form,
-            'QuickStartBackgroundFile',
-            'visible',
-            $background['mode'] === IPSViewBackground::MODE_FILE
-        );
-        $this->setConfigurationFormField(
-            $form,
-            'QuickStartBackgroundLayout',
-            'visible',
-            $background['mode'] === IPSViewBackground::MODE_FILE
-        );
-        $this->setConfigurationFormField(
-            $form,
-            'QuickStartBackgroundScope',
-            'visible',
-            $background['mode'] !== IPSViewBackground::MODE_PRESERVE
-        );
-        $assistantMode = $this->normalizeAssistantMode(
-            $this->ReadAttributeInteger(self::ATTRIBUTE_ASSISTANT_MODE)
-        );
-        $this->setConfigurationFormField($form, 'AssistantMode', 'value', $assistantMode);
-        $this->applyAssistantModeToForm($form, $assistantMode);
-        $this->applyDesignerHandoverToForm($form);
-        $startCheck = $this->startCheck(
-            'Neue IPSView',
-            0,
-            'Hauptseite',
-            IPSViewDocument::ASPECT_RATIO_16_9,
-            IPSViewDocument::ORIENTATION_LANDSCAPE,
-            IPSViewFactory::TEMPLATE_EMPTY,
-            $startGrid
-        );
-        $this->applyStartCheckToForm($form, $startCheck);
-        $this->applyQuickStartCheckToForm($form, $startCheck);
-        $this->ApplyIPSViewSharedStyleForm($form);
-        $colorPaletteStatus = trim($this->ReadAttributeString(self::ATTRIBUTE_COLOR_PALETTE_STATUS));
-        if ($colorPaletteStatus !== '') {
-            $this->setConfigurationFormField($form, 'ColorPaletteStatus', 'caption', $colorPaletteStatus);
-        }
-        $this->applyExistingViewStateToForm($form);
+            if ($importState !== null) {
+                $this->applyStyleProfileStateToForm($form, $importState);
+            }
 
-        return $this->EncodeConfigurationForm($form);
+            $this->setConfigurationFormField(
+                $form,
+                'ThemePreview',
+                'image',
+                $preview
+            );
+            $this->setConfigurationFormField($form, 'QuickStartPreview', 'image', $preview);
+            $this->setConfigurationFormField($form, 'StartGrid', 'value', $startGrid);
+            $this->setConfigurationFormField($form, 'QuickStartGrid', 'value', $startGrid);
+            $this->setConfigurationFormField($form, 'BackgroundImageMode', 'value', $background['mode']);
+            $this->setConfigurationFormField($form, 'BackgroundImageLayout', 'value', $background['layout']);
+            $this->setConfigurationFormField($form, 'BackgroundImageScope', 'value', $background['scope']);
+            $this->setConfigurationFormField($form, 'QuickStartBackgroundMode', 'value', $background['mode']);
+            $this->setConfigurationFormField($form, 'QuickStartBackgroundLayout', 'value', $background['layout']);
+            $this->setConfigurationFormField($form, 'QuickStartBackgroundScope', 'value', $background['scope']);
+            $this->setConfigurationFormField(
+                $form,
+                'BackgroundImageFile',
+                'visible',
+                $background['mode'] === IPSViewBackground::MODE_FILE
+            );
+            $this->setConfigurationFormField(
+                $form,
+                'BackgroundImageLayout',
+                'visible',
+                $background['mode'] === IPSViewBackground::MODE_FILE
+            );
+            $this->setConfigurationFormField(
+                $form,
+                'BackgroundImageScope',
+                'visible',
+                $background['mode'] !== IPSViewBackground::MODE_PRESERVE
+            );
+            $this->setConfigurationFormField(
+                $form,
+                'QuickStartBackgroundFile',
+                'visible',
+                $background['mode'] === IPSViewBackground::MODE_FILE
+            );
+            $this->setConfigurationFormField(
+                $form,
+                'QuickStartBackgroundLayout',
+                'visible',
+                $background['mode'] === IPSViewBackground::MODE_FILE
+            );
+            $this->setConfigurationFormField(
+                $form,
+                'QuickStartBackgroundScope',
+                'visible',
+                $background['mode'] !== IPSViewBackground::MODE_PRESERVE
+            );
+            $assistantMode = $this->normalizeAssistantMode(
+                $this->ReadAttributeInteger(self::ATTRIBUTE_ASSISTANT_MODE)
+            );
+            $this->setConfigurationFormField($form, 'AssistantMode', 'value', $assistantMode);
+            $this->applyAssistantModeToForm($form, $assistantMode);
+            $this->applyDesignerHandoverToForm($form);
+            $startCheck = $this->startCheck(
+                'Neue IPSView',
+                0,
+                'Hauptseite',
+                IPSViewDocument::ASPECT_RATIO_16_9,
+                IPSViewDocument::ORIENTATION_LANDSCAPE,
+                IPSViewFactory::TEMPLATE_EMPTY,
+                $startGrid
+            );
+            $this->applyStartCheckToForm($form, $startCheck);
+            $this->applyQuickStartCheckToForm($form, $startCheck);
+            $this->ApplyIPSViewSharedStyleForm($form);
+            $colorPaletteStatus = trim($this->ReadAttributeString(self::ATTRIBUTE_COLOR_PALETTE_STATUS));
+            if ($colorPaletteStatus !== '') {
+                $this->setConfigurationFormField($form, 'ColorPaletteStatus', 'caption', $colorPaletteStatus);
+            }
+            $this->applyExistingViewStateToForm($form);
+
+            return $debugFlowResult = $this->EncodeConfigurationForm($form);
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, false);
+        }
     }
 
     /**
@@ -261,21 +309,32 @@ class IPSViewAssistant extends IPSModuleStrict
      */
     public function UpdateAssistantMode(int $Mode): void
     {
-        $mode = $this->normalizeAssistantMode($Mode);
-        $advanced = $mode === self::ASSISTANT_MODE_ADVANCED;
-        $this->WriteAttributeInteger(self::ATTRIBUTE_ASSISTANT_MODE, $mode);
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__, ['Mode' => $Mode]);
+        try {
+            $mode = $this->normalizeAssistantMode($Mode);
+            $advanced = $mode === self::ASSISTANT_MODE_ADVANCED;
+            $this->WriteAttributeInteger(self::ATTRIBUTE_ASSISTANT_MODE, $mode);
 
-        foreach ($this->advancedModeFields() as $field) {
-            $this->UpdateFormField($field, 'visible', $advanced);
+            foreach ($this->advancedModeFields() as $field) {
+                $this->UpdateFormField($field, 'visible', $advanced);
+            }
+
+            foreach ($this->quickStartModeFields() as $field) {
+                $this->UpdateFormField($field, 'visible', !$advanced);
+            }
+
+            $this->UpdateFormField('AssistantMode', 'value', $mode);
+            $this->UpdateFormField('AssistantModeInfo', 'caption', $this->assistantModeInfo($mode));
+            $this->UpdateFormField('ThemeDescription', 'caption', $this->themeDescription($mode));
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, true);
         }
-
-        foreach ($this->quickStartModeFields() as $field) {
-            $this->UpdateFormField($field, 'visible', !$advanced);
-        }
-
-        $this->UpdateFormField('AssistantMode', 'value', $mode);
-        $this->UpdateFormField('AssistantModeInfo', 'caption', $this->assistantModeInfo($mode));
-        $this->UpdateFormField('ThemeDescription', 'caption', $this->themeDescription($mode));
     }
 
     /**
@@ -285,18 +344,29 @@ class IPSViewAssistant extends IPSModuleStrict
      */
     public function UpdateUsageProfile(int $Profile): void
     {
-        $profile = $this->normalizeUsageProfile($Profile);
-        $this->UpdateFormField('UsageProfile', 'value', $profile);
-        $this->UpdateFormField('UsageProfileInfo', 'caption', $this->usageProfileInfo($profile));
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__);
+        try {
+            $profile = $this->normalizeUsageProfile($Profile);
+            $this->UpdateFormField('UsageProfile', 'value', $profile);
+            $this->UpdateFormField('UsageProfileInfo', 'caption', $this->usageProfileInfo($profile));
 
-        if ($profile === IPSViewUsageProfile::PROFILE_CUSTOM) {
-            return;
+            if ($profile === IPSViewUsageProfile::PROFILE_CUSTOM) {
+                return;
+            }
+
+            $settings = IPSViewUsageProfile::resolve($profile);
+            $this->UpdateFormField('AspectRatio', 'value', $settings['aspectRatio']);
+            $this->UpdateFormField('Orientation', 'value', $settings['orientation']);
+            $this->UpdateFormField('FullScreen', 'value', $settings['fullScreen']);
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, true);
         }
-
-        $settings = IPSViewUsageProfile::resolve($profile);
-        $this->UpdateFormField('AspectRatio', 'value', $settings['aspectRatio']);
-        $this->UpdateFormField('Orientation', 'value', $settings['orientation']);
-        $this->UpdateFormField('FullScreen', 'value', $settings['fullScreen']);
     }
 
     /**
@@ -304,9 +374,20 @@ class IPSViewAssistant extends IPSModuleStrict
      */
     public function MarkUsageProfileCustom(): void
     {
-        $profile = IPSViewUsageProfile::PROFILE_CUSTOM;
-        $this->UpdateFormField('UsageProfile', 'value', $profile);
-        $this->UpdateFormField('UsageProfileInfo', 'caption', $this->usageProfileInfo($profile));
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__);
+        try {
+            $profile = IPSViewUsageProfile::PROFILE_CUSTOM;
+            $this->UpdateFormField('UsageProfile', 'value', $profile);
+            $this->UpdateFormField('UsageProfileInfo', 'caption', $this->usageProfileInfo($profile));
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, true);
+        }
     }
 
     /**
@@ -316,18 +397,29 @@ class IPSViewAssistant extends IPSModuleStrict
      */
     public function UpdateQuickStartUsageProfile(int $Profile): void
     {
-        $profile = $this->normalizeUsageProfile($Profile);
-        $this->UpdateFormField('QuickStartUsageProfile', 'value', $profile);
-        $this->UpdateFormField('QuickStartUsageProfileInfo', 'caption', $this->usageProfileInfo($profile));
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__);
+        try {
+            $profile = $this->normalizeUsageProfile($Profile);
+            $this->UpdateFormField('QuickStartUsageProfile', 'value', $profile);
+            $this->UpdateFormField('QuickStartUsageProfileInfo', 'caption', $this->usageProfileInfo($profile));
 
-        if ($profile === IPSViewUsageProfile::PROFILE_CUSTOM) {
-            return;
+            if ($profile === IPSViewUsageProfile::PROFILE_CUSTOM) {
+                return;
+            }
+
+            $settings = IPSViewUsageProfile::resolve($profile);
+            $this->UpdateFormField('QuickStartAspectRatio', 'value', $settings['aspectRatio']);
+            $this->UpdateFormField('QuickStartOrientation', 'value', $settings['orientation']);
+            $this->UpdateFormField('QuickStartFullScreen', 'value', $settings['fullScreen']);
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, true);
         }
-
-        $settings = IPSViewUsageProfile::resolve($profile);
-        $this->UpdateFormField('QuickStartAspectRatio', 'value', $settings['aspectRatio']);
-        $this->UpdateFormField('QuickStartOrientation', 'value', $settings['orientation']);
-        $this->UpdateFormField('QuickStartFullScreen', 'value', $settings['fullScreen']);
     }
 
     /**
@@ -335,9 +427,20 @@ class IPSViewAssistant extends IPSModuleStrict
      */
     public function MarkQuickStartUsageProfileCustom(): void
     {
-        $profile = IPSViewUsageProfile::PROFILE_CUSTOM;
-        $this->UpdateFormField('QuickStartUsageProfile', 'value', $profile);
-        $this->UpdateFormField('QuickStartUsageProfileInfo', 'caption', $this->usageProfileInfo($profile));
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__);
+        try {
+            $profile = IPSViewUsageProfile::PROFILE_CUSTOM;
+            $this->UpdateFormField('QuickStartUsageProfile', 'value', $profile);
+            $this->UpdateFormField('QuickStartUsageProfileInfo', 'caption', $this->usageProfileInfo($profile));
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, true);
+        }
     }
 
     /**
@@ -345,14 +448,25 @@ class IPSViewAssistant extends IPSModuleStrict
      */
     public function ResetQuickStartOverwrite(): void
     {
-        $this->UpdateFormField('QuickStartOverwriteExistingView', 'visible', false);
-        $this->UpdateFormField('QuickStartOverwriteExistingView', 'value', false);
-        $this->UpdateFormField('QuickStartOverwriteExistingViewInfo', 'visible', false);
-        $this->UpdateFormField(
-            'QuickStartCheckStatus',
-            'caption',
-            $this->Translate('The start check is being prepared.')
-        );
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__);
+        try {
+            $this->UpdateFormField('QuickStartOverwriteExistingView', 'visible', false);
+            $this->UpdateFormField('QuickStartOverwriteExistingView', 'value', false);
+            $this->UpdateFormField('QuickStartOverwriteExistingViewInfo', 'visible', false);
+            $this->UpdateFormField(
+                'QuickStartCheckStatus',
+                'caption',
+                $this->Translate('The start check is being prepared.')
+            );
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, true);
+        }
     }
 
     /**
@@ -362,10 +476,21 @@ class IPSViewAssistant extends IPSModuleStrict
      */
     public function UpdateDesignerHandover(int $ObjectID): void
     {
-        $objectID = $ObjectID > 1 && IPS_ObjectExists($ObjectID) ? $ObjectID : 1;
-        $this->WriteAttributeInteger(self::ATTRIBUTE_DESIGNER_OBJECT_ID, $objectID);
-        $this->UpdateFormField('DesignerObjectID', 'value', $objectID);
-        $this->UpdateFormField('DesignerObjectHint', 'caption', $this->designerObjectHint($objectID));
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__, ['ObjectID' => $ObjectID]);
+        try {
+            $objectID = $ObjectID > 1 && IPS_ObjectExists($ObjectID) ? $ObjectID : 1;
+            $this->WriteAttributeInteger(self::ATTRIBUTE_DESIGNER_OBJECT_ID, $objectID);
+            $this->UpdateFormField('DesignerObjectID', 'value', $objectID);
+            $this->UpdateFormField('DesignerObjectHint', 'caption', $this->designerObjectHint($objectID));
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, true);
+        }
     }
 
     /**
@@ -400,21 +525,32 @@ class IPSViewAssistant extends IPSModuleStrict
         bool $FullScreen = false,
         int $StartGrid = IPSViewDocument::START_GRID_NONE
     ): string {
-        return $this->CreateOrOverwriteView(
-            $ViewName,
-            $TargetCategoryID,
-            $AspectRatio,
-            $Orientation,
-            $Template,
-            $MainPageName,
-            $Theme,
-            $ThemePalette,
-            $Effects,
-            $Appearance,
-            $FullScreen,
-            $StartGrid,
-            false
-        );
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__, ['TargetCategoryID' => $TargetCategoryID, 'Theme' => $Theme, 'StartGrid' => $StartGrid]);
+        try {
+            return $debugFlowResult = $this->CreateOrOverwriteView(
+                $ViewName,
+                $TargetCategoryID,
+                $AspectRatio,
+                $Orientation,
+                $Template,
+                $MainPageName,
+                $Theme,
+                $ThemePalette,
+                $Effects,
+                $Appearance,
+                $FullScreen,
+                $StartGrid,
+                false
+            );
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, false);
+        }
     }
 
     /**
@@ -451,61 +587,75 @@ class IPSViewAssistant extends IPSModuleStrict
         int $StartGrid,
         bool $OverwriteExistingView
     ): string {
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__, ['TargetCategoryID' => $TargetCategoryID, 'Theme' => $Theme, 'StartGrid' => $StartGrid, 'OverwriteExistingView' => $OverwriteExistingView]);
         try {
-            $startCheck = $this->startCheck(
-                $ViewName,
-                $TargetCategoryID,
-                $MainPageName,
-                $AspectRatio,
-                $Orientation,
-                $Template,
-                $StartGrid,
-                $OverwriteExistingView
-            );
-            $this->showStartCheck($startCheck, $OverwriteExistingView);
-            IPSViewStartCheck::assertReady($startCheck);
-            $wasOverwritten = $OverwriteExistingView && $startCheck['overwriteAvailable'];
-
-            $factory = new IPSViewFactory(__DIR__ . '/../libs/templates');
-            $mediaID = $factory->create(
-                $ViewName,
-                $TargetCategoryID,
-                $AspectRatio,
-                $Orientation,
-                $Template,
-                $MainPageName,
-                $Theme,
-                $this->decodePalette($ThemePalette),
-                $this->decodeEffects($Effects),
-                $this->decodeAppearance($Appearance),
-                $this->backgroundSettings(),
-                $FullScreen,
-                $StartGrid,
-                $OverwriteExistingView
-            );
-            $this->WriteAttributeInteger(self::ATTRIBUTE_PREVIEW_START_GRID, $StartGrid);
-            $this->WriteAttributeInteger(self::ATTRIBUTE_LAST_CREATED_VIEW_ID, $mediaID);
-            $this->WriteAttributeInteger(self::ATTRIBUTE_DESIGNER_OBJECT_ID, 1);
-            $this->showDesignerHandover($mediaID);
-
-            return $wasOverwritten
-                ? sprintf(
-                    $this->Translate('The IPSView "%s" was overwritten successfully while retaining object ID %d.'),
-                    trim($ViewName),
-                    $mediaID
-                )
-                : sprintf(
-                    $this->Translate('The IPSView "%s" was created successfully with object ID %d.'),
-                    trim($ViewName),
-                    $mediaID
+            try {
+                $startCheck = $this->startCheck(
+                    $ViewName,
+                    $TargetCategoryID,
+                    $MainPageName,
+                    $AspectRatio,
+                    $Orientation,
+                    $Template,
+                    $StartGrid,
+                    $OverwriteExistingView
                 );
-        } catch (Throwable $exception) {
-            $this->SendDebug('CreateOrOverwriteView', $exception->getMessage(), 0);
+                $this->showStartCheck($startCheck, $OverwriteExistingView);
+                IPSViewStartCheck::assertReady($startCheck);
+                $wasOverwritten = $OverwriteExistingView && $startCheck['overwriteAvailable'];
 
-            return sprintf(
-                $this->Translate('The IPSView could not be created: %s'),
-                $this->Translate($exception->getMessage())
-            );
+                $factory = new IPSViewFactory(__DIR__ . '/../libs/templates');
+                $this->DebugFlowEvent(__FUNCTION__, __LINE__, 'SENDEN', 'Erstellung eines separaten IPSView-Dokuments an die Medienverwaltung übergeben; Inhalt bleibt geschützt.');
+                $mediaID = $factory->create(
+                    $ViewName,
+                    $TargetCategoryID,
+                    $AspectRatio,
+                    $Orientation,
+                    $Template,
+                    $MainPageName,
+                    $Theme,
+                    $this->decodePalette($ThemePalette),
+                    $this->decodeEffects($Effects),
+                    $this->decodeAppearance($Appearance),
+                    $this->backgroundSettings(),
+                    $FullScreen,
+                    $StartGrid,
+                    $OverwriteExistingView
+                );
+                $this->WriteAttributeInteger(self::ATTRIBUTE_PREVIEW_START_GRID, $StartGrid);
+                $this->WriteAttributeInteger(self::ATTRIBUTE_LAST_CREATED_VIEW_ID, $mediaID);
+                $this->WriteAttributeInteger(self::ATTRIBUTE_DESIGNER_OBJECT_ID, 1);
+                $this->DebugFlowEvent(__FUNCTION__, __LINE__, 'AKTION', 'IPSView erfolgreich gespeichert; Übergabe an den Designer wird vorbereitet.', ['Zielmedium' => $mediaID]);
+                $this->showDesignerHandover($mediaID);
+
+                return $debugFlowResult = $wasOverwritten
+                    ? sprintf(
+                        $this->Translate('The IPSView "%s" was overwritten successfully while retaining object ID %d.'),
+                        trim($ViewName),
+                        $mediaID
+                    )
+                    : sprintf(
+                        $this->Translate('The IPSView "%s" was created successfully with object ID %d.'),
+                        trim($ViewName),
+                        $mediaID
+                    );
+            } catch (Throwable $exception) {
+                $debugFlowFailed = true;
+                $this->DebugFlowException(__FUNCTION__, __LINE__, $exception);
+
+                return $debugFlowResult = sprintf(
+                    $this->Translate('The IPSView could not be created: %s'),
+                    $this->Translate($exception->getMessage())
+                );
+            }
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, false);
         }
     }
 
@@ -518,124 +668,136 @@ class IPSViewAssistant extends IPSModuleStrict
      */
     public function LoadExistingView(int $SourceViewID, string $Effects = '', string $Appearance = ''): void
     {
-        $this->clearStyleProfileImportState();
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__, ['SourceViewID' => $SourceViewID]);
         try {
-            $factory = new IPSViewCopyFactory();
-            $sourceInspection = $factory->inspect($SourceViewID);
-            $copyName = trim($sourceInspection['name']) . ' - ' . $this->Translate('Design copy');
-            $copyTargetCategoryID = $sourceInspection['parentID'];
-            $copyMediaID = $this->findPreferredManagedCopy($SourceViewID);
+            $this->clearStyleProfileImportState();
+            try {
+                $factory = new IPSViewCopyFactory();
+                $sourceInspection = $factory->inspect($SourceViewID);
+                $copyName = trim($sourceInspection['name']) . ' - ' . $this->Translate('Design copy');
+                $copyTargetCategoryID = $sourceInspection['parentID'];
+                $copyMediaID = $this->findPreferredManagedCopy($SourceViewID);
 
-            if ($copyMediaID === null) {
-                $copyMediaID = $factory->findExistingTarget($copyName, $copyTargetCategoryID);
+                if ($copyMediaID === null) {
+                    $copyMediaID = $factory->findExistingTarget($copyName, $copyTargetCategoryID);
 
-                if ($copyMediaID === $SourceViewID) {
-                    $copyMediaID = null;
+                    if ($copyMediaID === $SourceViewID) {
+                        $copyMediaID = null;
+                    }
+
+                    if ($copyMediaID !== null) {
+                        $this->rememberManagedCopy($SourceViewID, $copyMediaID);
+                    }
                 }
+
+                $paletteInspection = $sourceInspection;
+                $status = sprintf(
+                    $this->Translate('Loaded "%s": %d pages and %d controls. The original remains unchanged.'),
+                    $sourceInspection['name'],
+                    $sourceInspection['pageCount'],
+                    $sourceInspection['controlCount']
+                );
 
                 if ($copyMediaID !== null) {
-                    $this->rememberManagedCopy($SourceViewID, $copyMediaID);
+                    $copyInspection = $factory->inspect($copyMediaID);
+                    $copyName = $copyInspection['name'];
+                    $copyTargetCategoryID = $copyInspection['parentID'];
+                    $paletteInspection = $copyInspection;
+                    $status .= ' ' . sprintf(
+                        $this->Translate('The existing design copy "%s" (ID %d) will be updated on the next save.'),
+                        $copyName,
+                        $copyMediaID
+                    );
                 }
-            }
 
-            $paletteInspection = $sourceInspection;
-            $status = sprintf(
-                $this->Translate('Loaded "%s": %d pages and %d controls. The original remains unchanged.'),
-                $sourceInspection['name'],
-                $sourceInspection['pageCount'],
-                $sourceInspection['controlCount']
-            );
-
-            if ($copyMediaID !== null) {
-                $copyInspection = $factory->inspect($copyMediaID);
-                $copyName = $copyInspection['name'];
-                $copyTargetCategoryID = $copyInspection['parentID'];
-                $paletteInspection = $copyInspection;
+                $analysis = $paletteInspection['designAnalysis'];
                 $status .= ' ' . sprintf(
-                    $this->Translate('The existing design copy "%s" (ID %d) will be updated on the next save.'),
-                    $copyName,
-                    $copyMediaID
+                    $this->Translate('%d global design values, %d matching control colors and %d individual or special colors were found.'),
+                    $analysis['globalColors'],
+                    $analysis['matchingControlColors'],
+                    $analysis['individualControlColors']
+                );
+
+                $appearanceInspection = $paletteInspection['appearance'];
+                $appearance = $this->decodeAppearance($Appearance);
+                $appearance['typographyStyle'] = IPSViewTypography::STYLE_PRESERVE;
+                $appearance['fontFamilyMode'] = IPSViewTypography::FONT_PRESERVE;
+                $appearance['customFontFamily'] = $appearanceInspection['fontFamily'];
+                $appearance['customFontSize'] = $appearanceInspection['baseFontSize'];
+                $appearance['fontBoldMode'] = IPSViewTypography::FORMAT_PRESERVE;
+                $appearance['fontItalicMode'] = IPSViewTypography::FORMAT_PRESERVE;
+                $appearance['fontUnderlineMode'] = IPSViewTypography::FORMAT_PRESERVE;
+                $appearance['cornerStyle'] = IPSViewShape::CORNER_PRESERVE;
+                $appearance['customCornerRadius'] = $appearanceInspection['cornerRadius'];
+                $appearance['borderStyle'] = IPSViewShape::BORDER_PRESERVE;
+                $appearance['customBorderWidth'] = $appearanceInspection['borderWidth'];
+                $status .= ' ' . sprintf(
+                    $this->Translate('Current basics: font %s at %d px, corner radius %d px and border width %.1f px.'),
+                    $appearanceInspection['fontFamily'] === ''
+                        ? $this->Translate('IPSView default (Roboto)')
+                        : $appearanceInspection['fontFamily'],
+                    $appearanceInspection['baseFontSize'],
+                    $appearanceInspection['cornerRadius'],
+                    $appearanceInspection['borderWidth']
+                );
+
+                $palette = $paletteInspection['palette'];
+                $background = $paletteInspection['background'];
+                $this->WriteAttributeInteger(self::ATTRIBUTE_BACKGROUND_MODE, IPSViewBackground::MODE_PRESERVE);
+                $this->WriteAttributeString(self::ATTRIBUTE_BACKGROUND_LAYOUT, $background['layout']);
+                $this->WriteAttributeInteger(self::ATTRIBUTE_BACKGROUND_SCOPE, IPSViewBackground::SCOPE_MAIN_PAGE);
+                $this->WriteAttributeString(self::ATTRIBUTE_BACKGROUND_IMAGE, $background['imageData']);
+                $this->UpdateFormField('Theme', 'value', IPSViewTheme::THEME_CUSTOM);
+                $this->UpdateFormField('TypographyStyle', 'value', IPSViewTypography::STYLE_PRESERVE);
+                $this->UpdateFormField('FontFamilyMode', 'value', IPSViewTypography::FONT_PRESERVE);
+                $this->UpdateFormField('CustomFontFamily', 'value', $appearanceInspection['fontFamily']);
+                $this->UpdateFormField('CustomFontSize', 'value', $appearanceInspection['baseFontSize']);
+                $this->updateFontStyleFields($appearance);
+                $this->UpdateFormField('CornerStyle', 'value', IPSViewShape::CORNER_PRESERVE);
+                $this->UpdateFormField('CustomCornerRadius', 'value', $appearanceInspection['cornerRadius']);
+                $this->UpdateFormField('BorderStyle', 'value', IPSViewShape::BORDER_PRESERVE);
+                $this->UpdateFormField('CustomBorderWidth', 'value', $appearanceInspection['borderWidth']);
+                $this->updateColorFields($palette);
+                $this->UpdateFormField('BackgroundImageMode', 'value', IPSViewBackground::MODE_PRESERVE);
+                $this->UpdateFormField('BackgroundImageFile', 'visible', false);
+                $this->UpdateFormField('BackgroundImageLayout', 'value', $background['layout']);
+                $this->UpdateFormField('BackgroundImageLayout', 'visible', false);
+                $this->UpdateFormField('BackgroundImageScope', 'value', IPSViewBackground::SCOPE_MAIN_PAGE);
+                $this->UpdateFormField('BackgroundImageScope', 'visible', false);
+                $this->UpdateFormField(
+                    'ThemePreview',
+                    'image',
+                    IPSViewThemePreview::createDataUri(
+                        $palette,
+                        $this->decodeEffects($Effects),
+                        $appearance,
+                        $this->backgroundSettings(),
+                        $this->previewStartGrid()
+                    )
+                );
+                $this->WriteAttributeInteger(self::ATTRIBUTE_SELECTED_SOURCE_VIEW_ID, $SourceViewID);
+                $this->WriteAttributeString(self::ATTRIBUTE_COPY_VIEW_NAME, $copyName);
+                $this->WriteAttributeInteger(self::ATTRIBUTE_COPY_TARGET_CATEGORY_ID, $copyTargetCategoryID);
+                $this->UpdateFormField('CopyViewName', 'value', $copyName);
+                $this->UpdateFormField('CopyTargetCategoryID', 'value', $copyTargetCategoryID);
+                $this->UpdateFormField('ExistingViewStatus', 'caption', $status);
+            } catch (Throwable $exception) {
+                $debugFlowFailed = true;
+                $this->DebugFlowException(__FUNCTION__, __LINE__, $exception);
+                $this->UpdateFormField(
+                    'ExistingViewStatus',
+                    'caption',
+                    sprintf($this->Translate('The existing IPSView could not be loaded: %s'), $exception->getMessage())
                 );
             }
-
-            $analysis = $paletteInspection['designAnalysis'];
-            $status .= ' ' . sprintf(
-                $this->Translate('%d global design values, %d matching control colors and %d individual or special colors were found.'),
-                $analysis['globalColors'],
-                $analysis['matchingControlColors'],
-                $analysis['individualControlColors']
-            );
-
-            $appearanceInspection = $paletteInspection['appearance'];
-            $appearance = $this->decodeAppearance($Appearance);
-            $appearance['typographyStyle'] = IPSViewTypography::STYLE_PRESERVE;
-            $appearance['fontFamilyMode'] = IPSViewTypography::FONT_PRESERVE;
-            $appearance['customFontFamily'] = $appearanceInspection['fontFamily'];
-            $appearance['customFontSize'] = $appearanceInspection['baseFontSize'];
-            $appearance['fontBoldMode'] = IPSViewTypography::FORMAT_PRESERVE;
-            $appearance['fontItalicMode'] = IPSViewTypography::FORMAT_PRESERVE;
-            $appearance['fontUnderlineMode'] = IPSViewTypography::FORMAT_PRESERVE;
-            $appearance['cornerStyle'] = IPSViewShape::CORNER_PRESERVE;
-            $appearance['customCornerRadius'] = $appearanceInspection['cornerRadius'];
-            $appearance['borderStyle'] = IPSViewShape::BORDER_PRESERVE;
-            $appearance['customBorderWidth'] = $appearanceInspection['borderWidth'];
-            $status .= ' ' . sprintf(
-                $this->Translate('Current basics: font %s at %d px, corner radius %d px and border width %.1f px.'),
-                $appearanceInspection['fontFamily'] === ''
-                    ? $this->Translate('IPSView default (Roboto)')
-                    : $appearanceInspection['fontFamily'],
-                $appearanceInspection['baseFontSize'],
-                $appearanceInspection['cornerRadius'],
-                $appearanceInspection['borderWidth']
-            );
-
-            $palette = $paletteInspection['palette'];
-            $background = $paletteInspection['background'];
-            $this->WriteAttributeInteger(self::ATTRIBUTE_BACKGROUND_MODE, IPSViewBackground::MODE_PRESERVE);
-            $this->WriteAttributeString(self::ATTRIBUTE_BACKGROUND_LAYOUT, $background['layout']);
-            $this->WriteAttributeInteger(self::ATTRIBUTE_BACKGROUND_SCOPE, IPSViewBackground::SCOPE_MAIN_PAGE);
-            $this->WriteAttributeString(self::ATTRIBUTE_BACKGROUND_IMAGE, $background['imageData']);
-            $this->UpdateFormField('Theme', 'value', IPSViewTheme::THEME_CUSTOM);
-            $this->UpdateFormField('TypographyStyle', 'value', IPSViewTypography::STYLE_PRESERVE);
-            $this->UpdateFormField('FontFamilyMode', 'value', IPSViewTypography::FONT_PRESERVE);
-            $this->UpdateFormField('CustomFontFamily', 'value', $appearanceInspection['fontFamily']);
-            $this->UpdateFormField('CustomFontSize', 'value', $appearanceInspection['baseFontSize']);
-            $this->updateFontStyleFields($appearance);
-            $this->UpdateFormField('CornerStyle', 'value', IPSViewShape::CORNER_PRESERVE);
-            $this->UpdateFormField('CustomCornerRadius', 'value', $appearanceInspection['cornerRadius']);
-            $this->UpdateFormField('BorderStyle', 'value', IPSViewShape::BORDER_PRESERVE);
-            $this->UpdateFormField('CustomBorderWidth', 'value', $appearanceInspection['borderWidth']);
-            $this->updateColorFields($palette);
-            $this->UpdateFormField('BackgroundImageMode', 'value', IPSViewBackground::MODE_PRESERVE);
-            $this->UpdateFormField('BackgroundImageFile', 'visible', false);
-            $this->UpdateFormField('BackgroundImageLayout', 'value', $background['layout']);
-            $this->UpdateFormField('BackgroundImageLayout', 'visible', false);
-            $this->UpdateFormField('BackgroundImageScope', 'value', IPSViewBackground::SCOPE_MAIN_PAGE);
-            $this->UpdateFormField('BackgroundImageScope', 'visible', false);
-            $this->UpdateFormField(
-                'ThemePreview',
-                'image',
-                IPSViewThemePreview::createDataUri(
-                    $palette,
-                    $this->decodeEffects($Effects),
-                    $appearance,
-                    $this->backgroundSettings(),
-                    $this->previewStartGrid()
-                )
-            );
-            $this->WriteAttributeInteger(self::ATTRIBUTE_SELECTED_SOURCE_VIEW_ID, $SourceViewID);
-            $this->WriteAttributeString(self::ATTRIBUTE_COPY_VIEW_NAME, $copyName);
-            $this->WriteAttributeInteger(self::ATTRIBUTE_COPY_TARGET_CATEGORY_ID, $copyTargetCategoryID);
-            $this->UpdateFormField('CopyViewName', 'value', $copyName);
-            $this->UpdateFormField('CopyTargetCategoryID', 'value', $copyTargetCategoryID);
-            $this->UpdateFormField('ExistingViewStatus', 'caption', $status);
-        } catch (Throwable $exception) {
-            $this->SendDebug('LoadExistingView', $exception->getMessage(), 0);
-            $this->UpdateFormField(
-                'ExistingViewStatus',
-                'caption',
-                sprintf($this->Translate('The existing IPSView could not be loaded: %s'), $exception->getMessage())
-            );
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, true);
         }
     }
 
@@ -663,33 +825,70 @@ class IPSViewAssistant extends IPSModuleStrict
         string $Effects = '',
         string $Appearance = ''
     ): string {
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__, ['SourceViewID' => $SourceViewID, 'Theme' => $Theme]);
         try {
-            $factory = new IPSViewCopyFactory();
-            $factory->inspect($SourceViewID);
-            $copyName = trim($CopyViewName);
-            $copyTargetCategoryID = $CopyTargetCategoryID === 1 ? 0 : $CopyTargetCategoryID;
-            $this->WriteAttributeInteger(self::ATTRIBUTE_SELECTED_SOURCE_VIEW_ID, $SourceViewID);
-            $this->WriteAttributeString(self::ATTRIBUTE_COPY_VIEW_NAME, $copyName);
-            $this->WriteAttributeInteger(self::ATTRIBUTE_COPY_TARGET_CATEGORY_ID, $copyTargetCategoryID);
-            $targetMediaID = $this->findManagedCopy(
-                $SourceViewID,
-                $copyName,
-                $copyTargetCategoryID
-            );
+            try {
+                $factory = new IPSViewCopyFactory();
+                $factory->inspect($SourceViewID);
+                $copyName = trim($CopyViewName);
+                $copyTargetCategoryID = $CopyTargetCategoryID === 1 ? 0 : $CopyTargetCategoryID;
+                $this->WriteAttributeInteger(self::ATTRIBUTE_SELECTED_SOURCE_VIEW_ID, $SourceViewID);
+                $this->WriteAttributeString(self::ATTRIBUTE_COPY_VIEW_NAME, $copyName);
+                $this->WriteAttributeInteger(self::ATTRIBUTE_COPY_TARGET_CATEGORY_ID, $copyTargetCategoryID);
+                $targetMediaID = $this->findManagedCopy(
+                    $SourceViewID,
+                    $copyName,
+                    $copyTargetCategoryID
+                );
 
-            if ($targetMediaID === null) {
-                $targetMediaID = $factory->findExistingTarget($copyName, $copyTargetCategoryID);
-            }
-
-            if ($targetMediaID !== null) {
-                if ($targetMediaID === $SourceViewID) {
-                    throw new RuntimeException(
-                        $this->Translate('The source IPSView cannot be used as its own design copy.')
-                    );
+                if ($targetMediaID === null) {
+                    $targetMediaID = $factory->findExistingTarget($copyName, $copyTargetCategoryID);
                 }
 
-                $factory->update(
-                    $targetMediaID,
+                if ($targetMediaID !== null) {
+                    if ($targetMediaID === $SourceViewID) {
+                        throw new RuntimeException(
+                            $this->Translate('The source IPSView cannot be used as its own design copy.')
+                        );
+                    }
+
+                    $this->DebugFlowEvent(__FUNCTION__, __LINE__, 'SENDEN', 'Aktualisierung der separaten Designkopie an die Medienverwaltung übergeben.', ['Zielmedium' => $targetMediaID]);
+                    $factory->update(
+                        $targetMediaID,
+                        $Theme,
+                        $this->decodePalette($ThemePalette),
+                        $DesignScope,
+                        $this->decodeEffects($Effects),
+                        $this->decodeAppearance($Appearance),
+                        $this->backgroundSettings()
+                    );
+                    $this->rememberManagedCopy($SourceViewID, $targetMediaID);
+                    $this->DebugFlowEvent(__FUNCTION__, __LINE__, 'AKTION', 'Separate Designkopie erfolgreich aktualisiert; Quell-View bleibt erhalten.', ['Quelle' => $SourceViewID, 'Zielmedium' => $targetMediaID]);
+                    $reportText = $this->formatThemeReport($factory->getLastThemeReport());
+                    $this->UpdateFormField(
+                        'ExistingViewStatus',
+                        'caption',
+                        sprintf(
+                            $this->Translate('The design copy "%s" (ID %d) was updated. The original remains unchanged.'),
+                            $copyName,
+                            $targetMediaID
+                        ) . $reportText
+                    );
+
+                    return $debugFlowResult = sprintf(
+                        $this->Translate('The styled IPSView copy "%s" was updated successfully with object ID %d.'),
+                        $copyName,
+                        $targetMediaID
+                    ) . $reportText;
+                }
+
+                $this->DebugFlowEvent(__FUNCTION__, __LINE__, 'SENDEN', 'Erstellung eines separaten IPSView-Dokuments an die Medienverwaltung übergeben; Inhalt bleibt geschützt.');
+                $mediaID = $factory->create(
+                    $SourceViewID,
+                    $copyName,
+                    $copyTargetCategoryID,
                     $Theme,
                     $this->decodePalette($ThemePalette),
                     $DesignScope,
@@ -697,60 +896,39 @@ class IPSViewAssistant extends IPSModuleStrict
                     $this->decodeAppearance($Appearance),
                     $this->backgroundSettings()
                 );
-                $this->rememberManagedCopy($SourceViewID, $targetMediaID);
+                $this->rememberManagedCopy($SourceViewID, $mediaID);
+                $this->DebugFlowEvent(__FUNCTION__, __LINE__, 'AKTION', 'Separate Designkopie erfolgreich angelegt; Quell-View bleibt erhalten.', ['Quelle' => $SourceViewID, 'Zielmedium' => $mediaID]);
                 $reportText = $this->formatThemeReport($factory->getLastThemeReport());
                 $this->UpdateFormField(
                     'ExistingViewStatus',
                     'caption',
                     sprintf(
-                        $this->Translate('The design copy "%s" (ID %d) was updated. The original remains unchanged.'),
+                        $this->Translate('The design copy "%s" (ID %d) was created and will be updated on future saves.'),
                         $copyName,
-                        $targetMediaID
+                        $mediaID
                     ) . $reportText
                 );
 
-                return sprintf(
-                    $this->Translate('The styled IPSView copy "%s" was updated successfully with object ID %d.'),
-                    $copyName,
-                    $targetMediaID
-                ) . $reportText;
-            }
-
-            $mediaID = $factory->create(
-                $SourceViewID,
-                $copyName,
-                $copyTargetCategoryID,
-                $Theme,
-                $this->decodePalette($ThemePalette),
-                $DesignScope,
-                $this->decodeEffects($Effects),
-                $this->decodeAppearance($Appearance),
-                $this->backgroundSettings()
-            );
-            $this->rememberManagedCopy($SourceViewID, $mediaID);
-            $reportText = $this->formatThemeReport($factory->getLastThemeReport());
-            $this->UpdateFormField(
-                'ExistingViewStatus',
-                'caption',
-                sprintf(
-                    $this->Translate('The design copy "%s" (ID %d) was created and will be updated on future saves.'),
+                return $debugFlowResult = sprintf(
+                    $this->Translate('The styled IPSView copy "%s" was created successfully with object ID %d.'),
                     $copyName,
                     $mediaID
-                ) . $reportText
-            );
+                ) . $reportText;
+            } catch (Throwable $exception) {
+                $debugFlowFailed = true;
+                $this->DebugFlowException(__FUNCTION__, __LINE__, $exception);
 
-            return sprintf(
-                $this->Translate('The styled IPSView copy "%s" was created successfully with object ID %d.'),
-                $copyName,
-                $mediaID
-            ) . $reportText;
-        } catch (Throwable $exception) {
-            $this->SendDebug('CreateStyledCopy', $exception->getMessage(), 0);
-
-            return sprintf(
-                $this->Translate('The styled IPSView copy could not be saved: %s'),
-                $exception->getMessage()
-            );
+                return $debugFlowResult = sprintf(
+                    $this->Translate('The styled IPSView copy could not be saved: %s'),
+                    $exception->getMessage()
+                );
+            }
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, false);
         }
     }
 
@@ -774,31 +952,43 @@ class IPSViewAssistant extends IPSModuleStrict
         string $Effects = '',
         string $Appearance = ''
     ): string {
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__, ['Theme' => $Theme]);
         try {
-            $json = $this->createStyleProfileJson(
-                $Name,
-                $Description,
-                $Theme,
-                $ThemePalette,
-                $Effects,
-                $Appearance
-            );
-            $this->UpdateFormField(
-                'StyleProfileStatus',
-                'caption',
-                sprintf($this->Translate('Style profile "%s" was exported as JSON.'), trim($Name))
-            );
+            try {
+                $json = $this->createStyleProfileJson(
+                    $Name,
+                    $Description,
+                    $Theme,
+                    $ThemePalette,
+                    $Effects,
+                    $Appearance
+                );
+                $this->UpdateFormField(
+                    'StyleProfileStatus',
+                    'caption',
+                    sprintf($this->Translate('Style profile "%s" was exported as JSON.'), trim($Name))
+                );
 
-            return $json;
-        } catch (Throwable $exception) {
-            $this->SendDebug('ExportStyleProfileJson', $exception->getMessage(), 0);
-            $message = sprintf(
-                $this->Translate('The style profile could not be exported: %s'),
-                $exception->getMessage()
-            );
-            $this->UpdateFormField('StyleProfileStatus', 'caption', $message);
+                return $debugFlowResult = $json;
+            } catch (Throwable $exception) {
+                $debugFlowFailed = true;
+                $this->DebugFlowException(__FUNCTION__, __LINE__, $exception);
+                $message = sprintf(
+                    $this->Translate('The style profile could not be exported: %s'),
+                    $exception->getMessage()
+                );
+                $this->UpdateFormField('StyleProfileStatus', 'caption', $message);
 
-            return $message;
+                return $debugFlowResult = $message;
+            }
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, false);
         }
     }
 
@@ -824,34 +1014,46 @@ class IPSViewAssistant extends IPSModuleStrict
         string $Effects = '',
         string $Appearance = ''
     ): string {
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__, ['TargetCategoryID' => $TargetCategoryID, 'Theme' => $Theme]);
         try {
-            $name = trim($Name);
-            $json = $this->createStyleProfileJson(
-                $name,
-                $Description,
-                $Theme,
-                $ThemePalette,
-                $Effects,
-                $Appearance
-            );
-            $mediaID = $this->writeStyleProfileMedia($name, $TargetCategoryID, $json);
-            $message = sprintf(
-                $this->Translate('Style profile "%s" was saved as Symcon media object %d.'),
-                $name,
-                $mediaID
-            );
-            $this->UpdateFormField('StyleProfileStatus', 'caption', $message);
+            try {
+                $name = trim($Name);
+                $json = $this->createStyleProfileJson(
+                    $name,
+                    $Description,
+                    $Theme,
+                    $ThemePalette,
+                    $Effects,
+                    $Appearance
+                );
+                $mediaID = $this->writeStyleProfileMedia($name, $TargetCategoryID, $json);
+                $message = sprintf(
+                    $this->Translate('Style profile "%s" was saved as Symcon media object %d.'),
+                    $name,
+                    $mediaID
+                );
+                $this->UpdateFormField('StyleProfileStatus', 'caption', $message);
 
-            return $message;
-        } catch (Throwable $exception) {
-            $this->SendDebug('SaveStyleProfileMedia', $exception->getMessage(), 0);
-            $message = sprintf(
-                $this->Translate('The style profile could not be saved as a Symcon media object: %s'),
-                $exception->getMessage()
-            );
-            $this->UpdateFormField('StyleProfileStatus', 'caption', $message);
+                return $debugFlowResult = $message;
+            } catch (Throwable $exception) {
+                $debugFlowFailed = true;
+                $this->DebugFlowException(__FUNCTION__, __LINE__, $exception);
+                $message = sprintf(
+                    $this->Translate('The style profile could not be saved as a Symcon media object: %s'),
+                    $exception->getMessage()
+                );
+                $this->UpdateFormField('StyleProfileStatus', 'caption', $message);
 
-            return $message;
+                return $debugFlowResult = $message;
+            }
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, false);
         }
     }
 
@@ -864,19 +1066,31 @@ class IPSViewAssistant extends IPSModuleStrict
      */
     public function ImportStyleProfileFile(string $FileData): string
     {
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__);
         try {
-            return $this->applyStyleProfileImport(
-                IPSViewStyleProfileExchange::decodeFileData($FileData)
-            );
-        } catch (Throwable $exception) {
-            $this->SendDebug('ImportStyleProfileFile', $exception->getMessage(), 0);
-            $message = sprintf(
-                $this->Translate('The style profile file could not be imported: %s'),
-                $exception->getMessage()
-            );
-            $this->UpdateFormField('StyleProfileStatus', 'caption', $message);
+            try {
+                return $debugFlowResult = $this->applyStyleProfileImport(
+                    IPSViewStyleProfileExchange::decodeFileData($FileData)
+                );
+            } catch (Throwable $exception) {
+                $debugFlowFailed = true;
+                $this->DebugFlowException(__FUNCTION__, __LINE__, $exception);
+                $message = sprintf(
+                    $this->Translate('The style profile file could not be imported: %s'),
+                    $exception->getMessage()
+                );
+                $this->UpdateFormField('StyleProfileStatus', 'caption', $message);
 
-            return $message;
+                return $debugFlowResult = $message;
+            }
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, false);
         }
     }
 
@@ -889,31 +1103,44 @@ class IPSViewAssistant extends IPSModuleStrict
      */
     public function ImportStyleProfileMedia(int $MediaID): string
     {
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__, ['MediaID' => $MediaID]);
         try {
-            if ($MediaID <= 0 || !IPS_MediaExists($MediaID)) {
-                throw new RuntimeException(
-                    $this->Translate('The selected Style Profile media object does not exist.')
+            try {
+                if ($MediaID <= 0 || !IPS_MediaExists($MediaID)) {
+                    throw new RuntimeException(
+                        $this->Translate('The selected Style Profile media object does not exist.')
+                    );
+                }
+
+                $encoded = IPS_GetMediaContent($MediaID);
+                $this->DebugFlowEvent(__FUNCTION__, __LINE__, 'EMPFANG', 'Dokumentmedium für den Import gelesen; Inhalt bleibt geschützt.', ['Quellmedium' => $MediaID]);
+                $json = is_string($encoded) ? base64_decode($encoded, true) : false;
+                if (!is_string($json) || trim($json) === '') {
+                    throw new RuntimeException(
+                        $this->Translate('The selected Style Profile media object does not contain readable content.')
+                    );
+                }
+
+                return $debugFlowResult = $this->applyStyleProfileImport($json);
+            } catch (Throwable $exception) {
+                $debugFlowFailed = true;
+                $this->DebugFlowException(__FUNCTION__, __LINE__, $exception);
+                $message = sprintf(
+                    $this->Translate('The style profile media could not be imported: %s'),
+                    $exception->getMessage()
                 );
+                $this->UpdateFormField('StyleProfileStatus', 'caption', $message);
+
+                return $debugFlowResult = $message;
             }
-
-            $encoded = IPS_GetMediaContent($MediaID);
-            $json = is_string($encoded) ? base64_decode($encoded, true) : false;
-            if (!is_string($json) || trim($json) === '') {
-                throw new RuntimeException(
-                    $this->Translate('The selected Style Profile media object does not contain readable content.')
-                );
-            }
-
-            return $this->applyStyleProfileImport($json);
-        } catch (Throwable $exception) {
-            $this->SendDebug('ImportStyleProfileMedia', $exception->getMessage(), 0);
-            $message = sprintf(
-                $this->Translate('The style profile media could not be imported: %s'),
-                $exception->getMessage()
-            );
-            $this->UpdateFormField('StyleProfileStatus', 'caption', $message);
-
-            return $message;
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, false);
         }
     }
 
@@ -931,24 +1158,36 @@ class IPSViewAssistant extends IPSModuleStrict
         string $Effects = '',
         string $Appearance = ''
     ): void {
-        $this->clearStyleProfileImportState();
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__, ['Theme' => $Theme]);
         try {
-            $palette = IPSViewTheme::resolvePalette($Theme, $this->decodePalette($ThemePalette));
-            $this->UpdateFormField('Theme', 'value', $Theme);
-            $this->updateColorFields($palette);
-            $this->UpdateFormField(
-                'ThemePreview',
-                'image',
-                IPSViewThemePreview::createDataUri(
-                    $palette,
-                    $this->decodeEffects($Effects),
-                    $this->decodeAppearance($Appearance),
-                    $this->backgroundSettings(),
-                    $this->previewStartGrid()
-                )
-            );
-        } catch (Throwable $exception) {
-            $this->SendDebug('ApplyThemePreset', $exception->getMessage(), 0);
+            $this->clearStyleProfileImportState();
+            try {
+                $palette = IPSViewTheme::resolvePalette($Theme, $this->decodePalette($ThemePalette));
+                $this->UpdateFormField('Theme', 'value', $Theme);
+                $this->updateColorFields($palette);
+                $this->UpdateFormField(
+                    'ThemePreview',
+                    'image',
+                    IPSViewThemePreview::createDataUri(
+                        $palette,
+                        $this->decodeEffects($Effects),
+                        $this->decodeAppearance($Appearance),
+                        $this->backgroundSettings(),
+                        $this->previewStartGrid()
+                    )
+                );
+            } catch (Throwable $exception) {
+                $debugFlowFailed = true;
+                $this->DebugFlowException(__FUNCTION__, __LINE__, $exception);
+            }
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, true);
         }
     }
 
@@ -964,27 +1203,39 @@ class IPSViewAssistant extends IPSModuleStrict
         string $Effects = '',
         string $Appearance = ''
     ): void {
-        $this->clearStyleProfileImportState();
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__);
         try {
-            $palette = IPSViewTheme::resolvePalette(
-                IPSViewTheme::THEME_CUSTOM,
-                $this->decodePalette($ThemePalette)
-            );
+            $this->clearStyleProfileImportState();
+            try {
+                $palette = IPSViewTheme::resolvePalette(
+                    IPSViewTheme::THEME_CUSTOM,
+                    $this->decodePalette($ThemePalette)
+                );
 
-            $this->UpdateFormField('Theme', 'value', IPSViewTheme::THEME_CUSTOM);
-            $this->UpdateFormField(
-                'ThemePreview',
-                'image',
-                IPSViewThemePreview::createDataUri(
-                    $palette,
-                    $this->decodeEffects($Effects),
-                    $this->decodeAppearance($Appearance),
-                    $this->backgroundSettings(),
-                    $this->previewStartGrid()
-                )
-            );
-        } catch (Throwable $exception) {
-            $this->SendDebug('UpdateThemePreview', $exception->getMessage(), 0);
+                $this->UpdateFormField('Theme', 'value', IPSViewTheme::THEME_CUSTOM);
+                $this->UpdateFormField(
+                    'ThemePreview',
+                    'image',
+                    IPSViewThemePreview::createDataUri(
+                        $palette,
+                        $this->decodeEffects($Effects),
+                        $this->decodeAppearance($Appearance),
+                        $this->backgroundSettings(),
+                        $this->previewStartGrid()
+                    )
+                );
+            } catch (Throwable $exception) {
+                $debugFlowFailed = true;
+                $this->DebugFlowException(__FUNCTION__, __LINE__, $exception);
+            }
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, true);
         }
     }
 
@@ -1000,26 +1251,38 @@ class IPSViewAssistant extends IPSModuleStrict
         string $Effects = '',
         string $Appearance = ''
     ): void {
-        $this->clearStyleProfileImportState();
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__);
         try {
-            $palette = IPSViewTheme::resolvePalette(
-                IPSViewTheme::THEME_CUSTOM,
-                $this->decodePalette($ThemePalette)
-            );
+            $this->clearStyleProfileImportState();
+            try {
+                $palette = IPSViewTheme::resolvePalette(
+                    IPSViewTheme::THEME_CUSTOM,
+                    $this->decodePalette($ThemePalette)
+                );
 
-            $this->UpdateFormField(
-                'ThemePreview',
-                'image',
-                IPSViewThemePreview::createDataUri(
-                    $palette,
-                    $this->decodeEffects($Effects),
-                    $this->decodeAppearance($Appearance),
-                    $this->backgroundSettings(),
-                    $this->previewStartGrid()
-                )
-            );
-        } catch (Throwable $exception) {
-            $this->SendDebug('UpdateEffectsPreview', $exception->getMessage(), 0);
+                $this->UpdateFormField(
+                    'ThemePreview',
+                    'image',
+                    IPSViewThemePreview::createDataUri(
+                        $palette,
+                        $this->decodeEffects($Effects),
+                        $this->decodeAppearance($Appearance),
+                        $this->backgroundSettings(),
+                        $this->previewStartGrid()
+                    )
+                );
+            } catch (Throwable $exception) {
+                $debugFlowFailed = true;
+                $this->DebugFlowException(__FUNCTION__, __LINE__, $exception);
+            }
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, true);
         }
     }
 
@@ -1035,28 +1298,40 @@ class IPSViewAssistant extends IPSModuleStrict
         string $Effects = '',
         string $Appearance = ''
     ): void {
-        $this->clearStyleProfileImportState();
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__);
         try {
-            $palette = IPSViewTheme::resolvePalette(
-                IPSViewTheme::THEME_CUSTOM,
-                $this->decodePalette($ThemePalette)
-            );
-            $appearance = $this->decodeAppearance($Appearance);
-            $this->updateFontStyleFields($appearance);
+            $this->clearStyleProfileImportState();
+            try {
+                $palette = IPSViewTheme::resolvePalette(
+                    IPSViewTheme::THEME_CUSTOM,
+                    $this->decodePalette($ThemePalette)
+                );
+                $appearance = $this->decodeAppearance($Appearance);
+                $this->updateFontStyleFields($appearance);
 
-            $this->UpdateFormField(
-                'ThemePreview',
-                'image',
-                IPSViewThemePreview::createDataUri(
-                    $palette,
-                    $this->decodeEffects($Effects),
-                    $appearance,
-                    $this->backgroundSettings(),
-                    $this->previewStartGrid()
-                )
-            );
-        } catch (Throwable $exception) {
-            $this->SendDebug('UpdateAppearancePreview', $exception->getMessage(), 0);
+                $this->UpdateFormField(
+                    'ThemePreview',
+                    'image',
+                    IPSViewThemePreview::createDataUri(
+                        $palette,
+                        $this->decodeEffects($Effects),
+                        $appearance,
+                        $this->backgroundSettings(),
+                        $this->previewStartGrid()
+                    )
+                );
+            } catch (Throwable $exception) {
+                $debugFlowFailed = true;
+                $this->DebugFlowException(__FUNCTION__, __LINE__, $exception);
+            }
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, true);
         }
     }
 
@@ -1074,24 +1349,36 @@ class IPSViewAssistant extends IPSModuleStrict
         string $Effects = '',
         string $Appearance = ''
     ): void {
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__, ['StartGrid' => $StartGrid]);
         try {
-            $startGrid = $this->normalizeStartGrid($StartGrid);
-            $palette = IPSViewTheme::resolvePalette(
-                IPSViewTheme::THEME_CUSTOM,
-                $this->decodePalette($ThemePalette)
-            );
-            $preview = IPSViewThemePreview::createDataUri(
-                $palette,
-                $this->decodeEffects($Effects),
-                $this->decodeAppearance($Appearance),
-                $this->backgroundSettings(),
-                $startGrid
-            );
+            try {
+                $startGrid = $this->normalizeStartGrid($StartGrid);
+                $palette = IPSViewTheme::resolvePalette(
+                    IPSViewTheme::THEME_CUSTOM,
+                    $this->decodePalette($ThemePalette)
+                );
+                $preview = IPSViewThemePreview::createDataUri(
+                    $palette,
+                    $this->decodeEffects($Effects),
+                    $this->decodeAppearance($Appearance),
+                    $this->backgroundSettings(),
+                    $startGrid
+                );
 
-            $this->WriteAttributeInteger(self::ATTRIBUTE_PREVIEW_START_GRID, $startGrid);
-            $this->UpdateFormField('ThemePreview', 'image', $preview);
-        } catch (Throwable $exception) {
-            $this->SendDebug('UpdateStartGridPreview', $exception->getMessage(), 0);
+                $this->WriteAttributeInteger(self::ATTRIBUTE_PREVIEW_START_GRID, $startGrid);
+                $this->UpdateFormField('ThemePreview', 'image', $preview);
+            } catch (Throwable $exception) {
+                $debugFlowFailed = true;
+                $this->DebugFlowException(__FUNCTION__, __LINE__, $exception);
+            }
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, true);
         }
     }
 
@@ -1103,19 +1390,31 @@ class IPSViewAssistant extends IPSModuleStrict
      */
     public function UpdateQuickStartPreview(int $Theme, int $StartGrid): void
     {
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__, ['Theme' => $Theme, 'StartGrid' => $StartGrid]);
         try {
-            $theme = $this->normalizeQuickStartTheme($Theme);
-            $startGrid = $this->normalizeStartGrid($StartGrid);
-            $this->WriteAttributeInteger(self::ATTRIBUTE_PREVIEW_START_GRID, $startGrid);
-            $this->UpdateFormField('QuickStartTheme', 'value', $theme);
-            $this->UpdateFormField('QuickStartGrid', 'value', $startGrid);
-            $this->UpdateFormField(
-                'QuickStartPreview',
-                'image',
-                $this->createQuickStartPreview($theme, $startGrid, $this->backgroundSettings())
-            );
-        } catch (Throwable $exception) {
-            $this->SendDebug('UpdateQuickStartPreview', $exception->getMessage(), 0);
+            try {
+                $theme = $this->normalizeQuickStartTheme($Theme);
+                $startGrid = $this->normalizeStartGrid($StartGrid);
+                $this->WriteAttributeInteger(self::ATTRIBUTE_PREVIEW_START_GRID, $startGrid);
+                $this->UpdateFormField('QuickStartTheme', 'value', $theme);
+                $this->UpdateFormField('QuickStartGrid', 'value', $startGrid);
+                $this->UpdateFormField(
+                    'QuickStartPreview',
+                    'image',
+                    $this->createQuickStartPreview($theme, $startGrid, $this->backgroundSettings())
+                );
+            } catch (Throwable $exception) {
+                $debugFlowFailed = true;
+                $this->DebugFlowException(__FUNCTION__, __LINE__, $exception);
+            }
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, true);
         }
     }
 
@@ -1139,16 +1438,27 @@ class IPSViewAssistant extends IPSModuleStrict
         int $Template,
         int $StartGrid
     ): void {
-        $this->UpdateStartCheckWithOverwrite(
-            $ViewName,
-            $TargetCategoryID,
-            $MainPageName,
-            $AspectRatio,
-            $Orientation,
-            $Template,
-            $StartGrid,
-            false
-        );
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__, ['TargetCategoryID' => $TargetCategoryID, 'StartGrid' => $StartGrid]);
+        try {
+            $this->UpdateStartCheckWithOverwrite(
+                $ViewName,
+                $TargetCategoryID,
+                $MainPageName,
+                $AspectRatio,
+                $Orientation,
+                $Template,
+                $StartGrid,
+                false
+            );
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, true);
+        }
     }
 
     /**
@@ -1173,30 +1483,42 @@ class IPSViewAssistant extends IPSModuleStrict
         int $StartGrid,
         bool $OverwriteExistingView
     ): void {
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__, ['TargetCategoryID' => $TargetCategoryID, 'StartGrid' => $StartGrid, 'OverwriteExistingView' => $OverwriteExistingView]);
         try {
-            $this->showStartCheck($this->startCheck(
-                $ViewName,
-                $TargetCategoryID,
-                $MainPageName,
-                $AspectRatio,
-                $Orientation,
-                $Template,
-                $StartGrid,
-                $OverwriteExistingView
-            ), $OverwriteExistingView);
-        } catch (Throwable $exception) {
-            $this->SendDebug('UpdateStartCheckWithOverwrite', $exception->getMessage(), 0);
-            $this->UpdateFormField(
-                'StartCheckStatus',
-                'caption',
-                sprintf(
-                    $this->Translate('🔴 The start check could not be completed: %s'),
-                    $exception->getMessage()
-                )
-            );
-            $this->UpdateFormField('CreateViewButton', 'enabled', false);
-            $this->UpdateFormField('OverwriteExistingView', 'visible', false);
-            $this->UpdateFormField('OverwriteExistingViewInfo', 'visible', false);
+            try {
+                $this->showStartCheck($this->startCheck(
+                    $ViewName,
+                    $TargetCategoryID,
+                    $MainPageName,
+                    $AspectRatio,
+                    $Orientation,
+                    $Template,
+                    $StartGrid,
+                    $OverwriteExistingView
+                ), $OverwriteExistingView);
+            } catch (Throwable $exception) {
+                $debugFlowFailed = true;
+                $this->DebugFlowException(__FUNCTION__, __LINE__, $exception);
+                $this->UpdateFormField(
+                    'StartCheckStatus',
+                    'caption',
+                    sprintf(
+                        $this->Translate('🔴 The start check could not be completed: %s'),
+                        $exception->getMessage()
+                    )
+                );
+                $this->UpdateFormField('CreateViewButton', 'enabled', false);
+                $this->UpdateFormField('OverwriteExistingView', 'visible', false);
+                $this->UpdateFormField('OverwriteExistingViewInfo', 'visible', false);
+            }
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, true);
         }
     }
 
@@ -1220,29 +1542,41 @@ class IPSViewAssistant extends IPSModuleStrict
         int $StartGrid,
         bool $OverwriteExistingView
     ): void {
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__, ['TargetCategoryID' => $TargetCategoryID, 'StartGrid' => $StartGrid, 'OverwriteExistingView' => $OverwriteExistingView]);
         try {
-            $this->showQuickStartCheck($this->startCheck(
-                $ViewName,
-                $TargetCategoryID,
-                $MainPageName,
-                $AspectRatio,
-                $Orientation,
-                IPSViewFactory::TEMPLATE_EMPTY,
-                $StartGrid,
-                $OverwriteExistingView
-            ), $OverwriteExistingView);
-        } catch (Throwable $exception) {
-            $this->SendDebug('UpdateQuickStartCheck', $exception->getMessage(), 0);
-            $this->UpdateFormField(
-                'QuickStartCheckStatus',
-                'caption',
-                sprintf(
-                    $this->Translate('🔴 The start check could not be completed: %s'),
-                    $exception->getMessage()
-                )
-            );
-            $this->UpdateFormField('QuickStartOverwriteExistingView', 'visible', false);
-            $this->UpdateFormField('QuickStartOverwriteExistingViewInfo', 'visible', false);
+            try {
+                $this->showQuickStartCheck($this->startCheck(
+                    $ViewName,
+                    $TargetCategoryID,
+                    $MainPageName,
+                    $AspectRatio,
+                    $Orientation,
+                    IPSViewFactory::TEMPLATE_EMPTY,
+                    $StartGrid,
+                    $OverwriteExistingView
+                ), $OverwriteExistingView);
+            } catch (Throwable $exception) {
+                $debugFlowFailed = true;
+                $this->DebugFlowException(__FUNCTION__, __LINE__, $exception);
+                $this->UpdateFormField(
+                    'QuickStartCheckStatus',
+                    'caption',
+                    sprintf(
+                        $this->Translate('🔴 The start check could not be completed: %s'),
+                        $exception->getMessage()
+                    )
+                );
+                $this->UpdateFormField('QuickStartOverwriteExistingView', 'visible', false);
+                $this->UpdateFormField('QuickStartOverwriteExistingViewInfo', 'visible', false);
+            }
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, true);
         }
     }
 
@@ -1268,31 +1602,43 @@ class IPSViewAssistant extends IPSModuleStrict
         int $StartGrid,
         bool $OverwriteExistingView
     ): string {
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__, ['TargetCategoryID' => $TargetCategoryID, 'StartGrid' => $StartGrid, 'OverwriteExistingView' => $OverwriteExistingView]);
         try {
-            $report = $this->startCheck(
-                $ViewName,
-                $TargetCategoryID,
-                $MainPageName,
-                $AspectRatio,
-                $Orientation,
-                IPSViewFactory::TEMPLATE_EMPTY,
-                $StartGrid,
-                $OverwriteExistingView
-            );
-            $this->showQuickStartCheck($report, $OverwriteExistingView);
-
-            return $report['ready']
-                ? ''
-                : $this->Translate(
-                    $report['errors'][0] ?? 'The View configuration is not ready for creation.'
+            try {
+                $report = $this->startCheck(
+                    $ViewName,
+                    $TargetCategoryID,
+                    $MainPageName,
+                    $AspectRatio,
+                    $Orientation,
+                    IPSViewFactory::TEMPLATE_EMPTY,
+                    $StartGrid,
+                    $OverwriteExistingView
                 );
-        } catch (Throwable $exception) {
-            $this->SendDebug('ValidateQuickStartCreation', $exception->getMessage(), 0);
+                $this->showQuickStartCheck($report, $OverwriteExistingView);
 
-            return sprintf(
-                $this->Translate('The start check could not be completed: %s'),
-                $exception->getMessage()
-            );
+                return $debugFlowResult = $report['ready']
+                    ? ''
+                    : $this->Translate(
+                        $report['errors'][0] ?? 'The View configuration is not ready for creation.'
+                    );
+            } catch (Throwable $exception) {
+                $debugFlowFailed = true;
+                $this->DebugFlowException(__FUNCTION__, __LINE__, $exception);
+
+                return $debugFlowResult = sprintf(
+                    $this->Translate('The start check could not be completed: %s'),
+                    $exception->getMessage()
+                );
+            }
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, false);
         }
     }
 
@@ -1322,31 +1668,42 @@ class IPSViewAssistant extends IPSModuleStrict
         int $StartGrid,
         bool $OverwriteExistingView
     ): string {
-        $this->UpdateQuickStartCheck(
-            $ViewName,
-            $TargetCategoryID,
-            $MainPageName,
-            $AspectRatio,
-            $Orientation,
-            $StartGrid,
-            $OverwriteExistingView
-        );
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__, ['TargetCategoryID' => $TargetCategoryID, 'Theme' => $Theme, 'StartGrid' => $StartGrid, 'OverwriteExistingView' => $OverwriteExistingView]);
+        try {
+            $this->UpdateQuickStartCheck(
+                $ViewName,
+                $TargetCategoryID,
+                $MainPageName,
+                $AspectRatio,
+                $Orientation,
+                $StartGrid,
+                $OverwriteExistingView
+            );
 
-        return $this->CreateOrOverwriteView(
-            $ViewName,
-            $TargetCategoryID,
-            $AspectRatio,
-            $Orientation,
-            IPSViewFactory::TEMPLATE_EMPTY,
-            $MainPageName,
-            $this->normalizeQuickStartTheme($Theme),
-            '',
-            '',
-            '',
-            $FullScreen,
-            $this->normalizeStartGrid($StartGrid),
-            $OverwriteExistingView
-        );
+            return $debugFlowResult = $this->CreateOrOverwriteView(
+                $ViewName,
+                $TargetCategoryID,
+                $AspectRatio,
+                $Orientation,
+                IPSViewFactory::TEMPLATE_EMPTY,
+                $MainPageName,
+                $this->normalizeQuickStartTheme($Theme),
+                '',
+                '',
+                '',
+                $FullScreen,
+                $this->normalizeStartGrid($StartGrid),
+                $OverwriteExistingView
+            );
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, false);
+        }
     }
 
     /**
@@ -1371,46 +1728,58 @@ class IPSViewAssistant extends IPSModuleStrict
         string $Appearance = '',
         bool $ImageSelectionChanged
     ): void {
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__, ['Mode' => $Mode]);
         try {
-            $settings = $this->storeBackgroundSettings(
-                $ImageData,
-                $Mode,
-                $Layout,
-                $this->ReadAttributeInteger(self::ATTRIBUTE_BACKGROUND_SCOPE),
-                $ImageSelectionChanged
-            );
-            $fileVisible = $settings['mode'] === IPSViewBackground::MODE_FILE;
-            $this->UpdateFormField('BackgroundImageMode', 'value', $settings['mode']);
-            $this->UpdateFormField('BackgroundImageFile', 'visible', $fileVisible);
-            $this->UpdateFormField('BackgroundImageLayout', 'visible', $fileVisible);
-            $this->UpdateFormField(
-                'BackgroundImageScope',
-                'visible',
-                $settings['mode'] !== IPSViewBackground::MODE_PRESERVE
-            );
-            $this->UpdateFormField(
-                'BackgroundImageStatus',
-                'caption',
-                $this->Translate(
-                    $settings['mode'] === IPSViewBackground::MODE_FILE && $settings['imageData'] === ''
-                        ? 'Please select a PNG or JPEG background image.'
-                        : 'Background image changes are applied to the selected pages. PNG and JPEG files up to 10 MB are embedded directly in the IPSView.'
-                )
-            );
-            $this->UpdateFormField(
-                'ThemePreview',
-                'image',
-                IPSViewThemePreview::createDataUri(
-                    IPSViewTheme::resolvePalette(IPSViewTheme::THEME_CUSTOM, $this->decodePalette($ThemePalette)),
-                    $this->decodeEffects($Effects),
-                    $this->decodeAppearance($Appearance),
-                    $settings,
-                    $this->previewStartGrid()
-                )
-            );
-        } catch (Throwable $exception) {
-            $this->SendDebug('UpdateBackgroundPreview', $exception->getMessage(), 0);
-            $this->UpdateFormField('BackgroundImageStatus', 'caption', $exception->getMessage());
+            try {
+                $settings = $this->storeBackgroundSettings(
+                    $ImageData,
+                    $Mode,
+                    $Layout,
+                    $this->ReadAttributeInteger(self::ATTRIBUTE_BACKGROUND_SCOPE),
+                    $ImageSelectionChanged
+                );
+                $fileVisible = $settings['mode'] === IPSViewBackground::MODE_FILE;
+                $this->UpdateFormField('BackgroundImageMode', 'value', $settings['mode']);
+                $this->UpdateFormField('BackgroundImageFile', 'visible', $fileVisible);
+                $this->UpdateFormField('BackgroundImageLayout', 'visible', $fileVisible);
+                $this->UpdateFormField(
+                    'BackgroundImageScope',
+                    'visible',
+                    $settings['mode'] !== IPSViewBackground::MODE_PRESERVE
+                );
+                $this->UpdateFormField(
+                    'BackgroundImageStatus',
+                    'caption',
+                    $this->Translate(
+                        $settings['mode'] === IPSViewBackground::MODE_FILE && $settings['imageData'] === ''
+                            ? 'Please select a PNG or JPEG background image.'
+                            : 'Background image changes are applied to the selected pages. PNG and JPEG files up to 10 MB are embedded directly in the IPSView.'
+                    )
+                );
+                $this->UpdateFormField(
+                    'ThemePreview',
+                    'image',
+                    IPSViewThemePreview::createDataUri(
+                        IPSViewTheme::resolvePalette(IPSViewTheme::THEME_CUSTOM, $this->decodePalette($ThemePalette)),
+                        $this->decodeEffects($Effects),
+                        $this->decodeAppearance($Appearance),
+                        $settings,
+                        $this->previewStartGrid()
+                    )
+                );
+            } catch (Throwable $exception) {
+                $debugFlowFailed = true;
+                $this->DebugFlowException(__FUNCTION__, __LINE__, $exception);
+                $this->UpdateFormField('BackgroundImageStatus', 'caption', $exception->getMessage());
+            }
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, true);
         }
     }
 
@@ -1434,44 +1803,56 @@ class IPSViewAssistant extends IPSModuleStrict
         int $StartGrid,
         bool $ImageSelectionChanged
     ): void {
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__, ['Mode' => $Mode, 'Theme' => $Theme, 'StartGrid' => $StartGrid]);
         try {
-            $settings = $this->storeBackgroundSettings(
-                $ImageData,
-                $Mode,
-                $Layout,
-                $Scope,
-                $ImageSelectionChanged
-            );
-            $fileVisible = $settings['mode'] === IPSViewBackground::MODE_FILE;
-            $this->UpdateFormField('QuickStartBackgroundMode', 'value', $settings['mode']);
-            $this->UpdateFormField('QuickStartBackgroundFile', 'visible', $fileVisible);
-            $this->UpdateFormField('QuickStartBackgroundLayout', 'visible', $fileVisible);
-            $this->UpdateFormField(
-                'QuickStartBackgroundScope',
-                'visible',
-                $settings['mode'] !== IPSViewBackground::MODE_PRESERVE
-            );
-            $this->UpdateFormField(
-                'QuickStartBackgroundStatus',
-                'caption',
-                $this->Translate(
-                    $settings['mode'] === IPSViewBackground::MODE_FILE && $settings['imageData'] === ''
-                        ? 'Please select a PNG or JPEG background image.'
-                        : 'Background image changes are applied to the selected pages. PNG and JPEG files up to 10 MB are embedded directly in the IPSView.'
-                )
-            );
-            $this->UpdateFormField(
-                'QuickStartPreview',
-                'image',
-                $this->createQuickStartPreview(
-                    $this->normalizeQuickStartTheme($Theme),
-                    $this->normalizeStartGrid($StartGrid),
-                    $settings
-                )
-            );
-        } catch (Throwable $exception) {
-            $this->SendDebug('UpdateQuickStartBackground', $exception->getMessage(), 0);
-            $this->UpdateFormField('QuickStartBackgroundStatus', 'caption', $exception->getMessage());
+            try {
+                $settings = $this->storeBackgroundSettings(
+                    $ImageData,
+                    $Mode,
+                    $Layout,
+                    $Scope,
+                    $ImageSelectionChanged
+                );
+                $fileVisible = $settings['mode'] === IPSViewBackground::MODE_FILE;
+                $this->UpdateFormField('QuickStartBackgroundMode', 'value', $settings['mode']);
+                $this->UpdateFormField('QuickStartBackgroundFile', 'visible', $fileVisible);
+                $this->UpdateFormField('QuickStartBackgroundLayout', 'visible', $fileVisible);
+                $this->UpdateFormField(
+                    'QuickStartBackgroundScope',
+                    'visible',
+                    $settings['mode'] !== IPSViewBackground::MODE_PRESERVE
+                );
+                $this->UpdateFormField(
+                    'QuickStartBackgroundStatus',
+                    'caption',
+                    $this->Translate(
+                        $settings['mode'] === IPSViewBackground::MODE_FILE && $settings['imageData'] === ''
+                            ? 'Please select a PNG or JPEG background image.'
+                            : 'Background image changes are applied to the selected pages. PNG and JPEG files up to 10 MB are embedded directly in the IPSView.'
+                    )
+                );
+                $this->UpdateFormField(
+                    'QuickStartPreview',
+                    'image',
+                    $this->createQuickStartPreview(
+                        $this->normalizeQuickStartTheme($Theme),
+                        $this->normalizeStartGrid($StartGrid),
+                        $settings
+                    )
+                );
+            } catch (Throwable $exception) {
+                $debugFlowFailed = true;
+                $this->DebugFlowException(__FUNCTION__, __LINE__, $exception);
+                $this->UpdateFormField('QuickStartBackgroundStatus', 'caption', $exception->getMessage());
+            }
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, true);
         }
     }
 
@@ -1482,12 +1863,24 @@ class IPSViewAssistant extends IPSModuleStrict
      */
     public function UpdateBackgroundScope(int $Scope): void
     {
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__);
         try {
-            $settings = IPSViewBackground::resolve(['scope' => $Scope]);
-            $this->WriteAttributeInteger(self::ATTRIBUTE_BACKGROUND_SCOPE, $settings['scope']);
-        } catch (Throwable $exception) {
-            $this->SendDebug('UpdateBackgroundScope', $exception->getMessage(), 0);
-            $this->UpdateFormField('BackgroundImageStatus', 'caption', $exception->getMessage());
+            try {
+                $settings = IPSViewBackground::resolve(['scope' => $Scope]);
+                $this->WriteAttributeInteger(self::ATTRIBUTE_BACKGROUND_SCOPE, $settings['scope']);
+            } catch (Throwable $exception) {
+                $debugFlowFailed = true;
+                $this->DebugFlowException(__FUNCTION__, __LINE__, $exception);
+                $this->UpdateFormField('BackgroundImageStatus', 'caption', $exception->getMessage());
+            }
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, true);
         }
     }
 
@@ -1569,87 +1962,99 @@ class IPSViewAssistant extends IPSModuleStrict
      */
     private function writeStyleProfileMedia(string $name, int $targetCategoryID, string $json): int
     {
-        $this->validateStyleProfileTargetCategory($targetCategoryID);
-        IPSViewStyleProfileExchange::importJson($json);
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__);
+        try {
+            $this->validateStyleProfileTargetCategory($targetCategoryID);
+            IPSViewStyleProfileExchange::importJson($json);
 
-        $existingID = @IPS_GetObjectIDByName($name, $targetCategoryID);
-        if (is_int($existingID) && $existingID > 0) {
-            if (!IPS_MediaExists($existingID)) {
-                throw new RuntimeException(
-                    sprintf(
-                        $this->Translate('An object named "%s" already exists in the target category and is not a media object.'),
-                        $name
-                    )
-                );
-            }
-
-            $media = IPS_GetMedia($existingID);
-            $documentType = defined('MEDIATYPE_DOCUMENT') ? MEDIATYPE_DOCUMENT : 5;
-            if ((int) ($media['MediaType'] ?? -1) !== $documentType) {
-                throw new RuntimeException(
-                    sprintf($this->Translate('The existing media object named "%s" is not a document.'), $name)
-                );
-            }
-
-            $previousContent = IPS_GetMediaContent($existingID);
-            $previousJson = is_string($previousContent) ? base64_decode($previousContent, true) : false;
-            try {
-                if (!is_string($previousJson) || trim($previousJson) === '') {
-                    throw new RuntimeException('empty');
+            $existingID = @IPS_GetObjectIDByName($name, $targetCategoryID);
+            if (is_int($existingID) && $existingID > 0) {
+                if (!IPS_MediaExists($existingID)) {
+                    throw new RuntimeException(
+                        sprintf(
+                            $this->Translate('An object named "%s" already exists in the target category and is not a media object.'),
+                            $name
+                        )
+                    );
                 }
-                IPSViewStyleProfileExchange::importJson($previousJson);
-            } catch (Throwable) {
-                throw new RuntimeException(
-                    sprintf(
-                        $this->Translate('The existing document named "%s" is not a valid Style Profile V1 and will not be overwritten.'),
-                        $name
-                    )
-                );
+
+                $media = IPS_GetMedia($existingID);
+                $documentType = defined('MEDIATYPE_DOCUMENT') ? MEDIATYPE_DOCUMENT : 5;
+                if ((int) ($media['MediaType'] ?? -1) !== $documentType) {
+                    throw new RuntimeException(
+                        sprintf($this->Translate('The existing media object named "%s" is not a document.'), $name)
+                    );
+                }
+
+                $previousContent = IPS_GetMediaContent($existingID);
+                $previousJson = is_string($previousContent) ? base64_decode($previousContent, true) : false;
+                try {
+                    if (!is_string($previousJson) || trim($previousJson) === '') {
+                        throw new RuntimeException('empty');
+                    }
+                    IPSViewStyleProfileExchange::importJson($previousJson);
+                } catch (Throwable) {
+                    throw new RuntimeException(
+                        sprintf(
+                            $this->Translate('The existing document named "%s" is not a valid Style Profile V1 and will not be overwritten.'),
+                            $name
+                        )
+                    );
+                }
+
+                try {
+                    if (!IPS_SetMediaContent($existingID, base64_encode($json))) {
+                        throw new RuntimeException($this->Translate('The Style Profile media content could not be written.'));
+                    }
+                    IPS_SendMediaEvent($existingID);
+
+                    return $debugFlowResult = $existingID;
+                } catch (Throwable $exception) {
+                    try {
+                        IPS_SetMediaContent($existingID, $previousContent);
+                        IPS_SendMediaEvent($existingID);
+                    } catch (Throwable) {
+                    }
+
+                    throw $exception;
+                }
             }
 
+            $documentType = defined('MEDIATYPE_DOCUMENT') ? MEDIATYPE_DOCUMENT : 5;
+            $mediaID = IPS_CreateMedia($documentType);
             try {
-                if (!IPS_SetMediaContent($existingID, base64_encode($json))) {
+                IPS_SetName($mediaID, $name);
+                IPS_SetParent($mediaID, $targetCategoryID);
+                $mediaFile = IPS_GetKernelDir()
+                    . 'media'
+                    . DIRECTORY_SEPARATOR
+                    . $mediaID
+                    . '.ipsview-style.json';
+                if (!IPS_SetMediaFile($mediaID, $mediaFile, false)) {
+                    throw new RuntimeException($this->Translate('The Style Profile media file could not be assigned.'));
+                }
+                if (!IPS_SetMediaContent($mediaID, base64_encode($json))) {
                     throw new RuntimeException($this->Translate('The Style Profile media content could not be written.'));
                 }
-                IPS_SendMediaEvent($existingID);
+                IPS_SendMediaEvent($mediaID);
+                $this->DebugFlowEvent(__FUNCTION__, __LINE__, 'SENDEN', 'Gespeichertes Dokumentmedium an Symcon gemeldet; Inhalt bleibt geschützt.', ['Zielmedium' => $mediaID]);
 
-                return $existingID;
+                return $debugFlowResult = $mediaID;
             } catch (Throwable $exception) {
-                try {
-                    IPS_SetMediaContent($existingID, $previousContent);
-                    IPS_SendMediaEvent($existingID);
-                } catch (Throwable) {
+                if (IPS_MediaExists($mediaID)) {
+                    IPS_DeleteMedia($mediaID, true);
                 }
 
                 throw $exception;
             }
-        }
-
-        $documentType = defined('MEDIATYPE_DOCUMENT') ? MEDIATYPE_DOCUMENT : 5;
-        $mediaID = IPS_CreateMedia($documentType);
-        try {
-            IPS_SetName($mediaID, $name);
-            IPS_SetParent($mediaID, $targetCategoryID);
-            $mediaFile = IPS_GetKernelDir()
-                . 'media'
-                . DIRECTORY_SEPARATOR
-                . $mediaID
-                . '.ipsview-style.json';
-            if (!IPS_SetMediaFile($mediaID, $mediaFile, false)) {
-                throw new RuntimeException($this->Translate('The Style Profile media file could not be assigned.'));
-            }
-            if (!IPS_SetMediaContent($mediaID, base64_encode($json))) {
-                throw new RuntimeException($this->Translate('The Style Profile media content could not be written.'));
-            }
-            IPS_SendMediaEvent($mediaID);
-
-            return $mediaID;
-        } catch (Throwable $exception) {
-            if (IPS_MediaExists($mediaID)) {
-                IPS_DeleteMedia($mediaID, true);
-            }
-
-            throw $exception;
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, false);
         }
     }
 
@@ -1684,21 +2089,32 @@ class IPSViewAssistant extends IPSModuleStrict
      */
     private function applyStyleProfileImport(string $json): string
     {
-        $state = IPSViewStyleProfileExchange::importJson($json);
-        $this->WriteAttributeString(
-            self::ATTRIBUTE_IMPORTED_STYLE_PROFILE,
-            json_encode(
-                $state,
-                JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION
-            )
-        );
-        $this->applyStyleProfileStateToOpenForm($state);
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__);
+        try {
+            $state = IPSViewStyleProfileExchange::importJson($json);
+            $this->WriteAttributeString(
+                self::ATTRIBUTE_IMPORTED_STYLE_PROFILE,
+                json_encode(
+                    $state,
+                    JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION
+                )
+            );
+            $this->applyStyleProfileStateToOpenForm($state);
 
-        $name = (string) $state['profile']['name'];
-        $message = sprintf($this->Translate('Style profile "%s" was imported successfully.'), $name);
-        $this->UpdateFormField('StyleProfileStatus', 'caption', $message);
+            $name = (string) $state['profile']['name'];
+            $message = sprintf($this->Translate('Style profile "%s" was imported successfully.'), $name);
+            $this->UpdateFormField('StyleProfileStatus', 'caption', $message);
 
-        return $message;
+            return $debugFlowResult = $message;
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, false);
+        }
     }
 
     /**
@@ -2168,12 +2584,23 @@ class IPSViewAssistant extends IPSModuleStrict
      */
     private function showDesignerHandover(int $mediaID): void
     {
-        $this->UpdateFormField('DesignerHandoverPanel', 'visible', true);
-        $this->UpdateFormField('DesignerHandoverPanel', 'expanded', true);
-        $this->UpdateFormField('DesignerHandoverInitialInfo', 'visible', false);
-        $this->UpdateFormField('DesignerHandoverTitle', 'caption', $this->designerHandoverTitle($mediaID));
-        $this->UpdateFormField('DesignerObjectID', 'value', 1);
-        $this->UpdateFormField('DesignerObjectHint', 'caption', $this->designerObjectHint(1));
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__);
+        try {
+            $this->UpdateFormField('DesignerHandoverPanel', 'visible', true);
+            $this->UpdateFormField('DesignerHandoverPanel', 'expanded', true);
+            $this->UpdateFormField('DesignerHandoverInitialInfo', 'visible', false);
+            $this->UpdateFormField('DesignerHandoverTitle', 'caption', $this->designerHandoverTitle($mediaID));
+            $this->UpdateFormField('DesignerObjectID', 'value', 1);
+            $this->UpdateFormField('DesignerObjectHint', 'caption', $this->designerObjectHint(1));
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, true);
+        }
     }
 
     /**
@@ -2677,17 +3104,28 @@ class IPSViewAssistant extends IPSModuleStrict
         int $startGrid,
         bool $overwriteExisting = false
     ): array {
-        return IPSViewStartCheck::analyze(
-            $viewName,
-            $targetCategoryID,
-            $mainPageName,
-            $aspectRatio,
-            $orientation,
-            $template,
-            $startGrid,
-            $this->backgroundSettings(),
-            $overwriteExisting
-        );
+        $debugFlowResult = null;
+        $debugFlowFailed = false;
+        $this->DebugFlowStart(__FUNCTION__, __LINE__);
+        try {
+            return $debugFlowResult = IPSViewStartCheck::analyze(
+                $viewName,
+                $targetCategoryID,
+                $mainPageName,
+                $aspectRatio,
+                $orientation,
+                $template,
+                $startGrid,
+                $this->backgroundSettings(),
+                $overwriteExisting
+            );
+        } catch (\Throwable $debugFlowException) {
+            $debugFlowFailed = true;
+            $this->DebugFlowException(__FUNCTION__, __LINE__, $debugFlowException);
+            throw $debugFlowException;
+        } finally {
+            $this->DebugFlowEnd(__FUNCTION__, __LINE__, $debugFlowResult, $debugFlowFailed, false);
+        }
     }
 
     /**

@@ -42,6 +42,7 @@ $commands = [
     ['Test IPSView creation and overwrite', 'php tests/factory.php'],
     ['Test existing IPSView handling', 'php tests/existing_view.php'],
     ['Test module integration', 'php tests/module.php'],
+    ['Test debug behavior', 'php tests/debug_output.php'],
     ['Test library metadata updater', 'python3 tests/test_update_library_metadata.py'],
 ];
 

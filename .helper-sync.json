@@ -21,6 +21,9 @@
         },
         "IPSViewStyleProfileHelper": {
             "target": "libs/helper/IPSViewStyleProfileHelper.php"
+        },
+        "DebugFlowHelper": {
+            "target": "libs/helper/DebugFlowHelper.php"
         }
     }
 }

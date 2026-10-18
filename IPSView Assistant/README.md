@@ -409,3 +409,5 @@ Der IPSView Assistant übernimmt die grundlegende Erstellung und Gestaltung. Sei
 - Bei bestehenden Views sind die Optionen **Bestehende Einstellung beibehalten** für Schatten, Transparenz, Verläufe, Schriftgrößen, Schriftart, Ecken und Rahmen die sicherste Ausgangsbasis.
 - Der Assistant verändert keine Seitenstruktur, Positionen, Navigation, Aktionen oder Symcon-Objektzuordnungen.
 - Spätere Änderungen, die im IPSView Designer an einer verwalteten Designkopie vorgenommen wurden, bleiben bei erneuter Designaktualisierung erhalten, soweit sie nicht zu den gewählten Designwerten gehören.
+
+Debug-Ausgaben im Symcon-Debugfenster erläutern Aktionen und Ergebnisse auf Deutsch mit Funktions- und Zeilenangabe. Inhalte Ihrer Views und importierten Dokumente werden dabei geschützt.

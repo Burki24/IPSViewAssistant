@@ -1,3 +1,9 @@
+# Unveröffentlicht
+
+## Neu
+
+- Einheitliche deutsche Debug-Ausgaben nach dem OpenHomeAlarm-Vorbild für Modulaktionen, Import/Export, View-Erstellung und Gestaltung, Schnittstellen und Fehler; mit Vorgangskennung, Funktions-/Zeilenangabe und geschützten Dokumentinhalten.
+
 # Changelog
 
 ## Unreleased

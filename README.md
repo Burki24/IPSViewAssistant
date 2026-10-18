@@ -29,3 +29,5 @@ Folgende Module enthält die Bibliothek:
 - Symcon ab Version 9.1
 - Installiertes und lizenziertes IPSView (Standard oder Professional)
 - IPSView Designer zum Öffnen, Bearbeiten und Speichern der erzeugten View; ohne erkannten Designer bleibt die Erstellung mit einem gelben Startcheck-Hinweis möglich
+
+Debug-Ausgaben im Symcon-Debugfenster erläutern Aktionen und Ergebnisse auf Deutsch mit Funktions- und Zeilenangabe. Inhalte Ihrer Views und importierten Dokumente werden dabei geschützt.
