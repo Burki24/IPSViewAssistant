@@ -5,15 +5,15 @@ Die Dateien in diesem Verzeichnis stammen aus dem gemeinsamen Repository
 
 | Datei | Upstream-Version | SHA-256 |
 | --- | --- | --- |
-| `ConfigurationFormHelper.php` | 1.0.1 | `bd45f15a1c2f6e2800eff51eefeb3094f5745a3469434d6a57b98d54f30d363f` |
+| `ConfigurationFormHelper.php` | 1.0.2 | `852803dccc90b62a28c09a755814743dacc8d7be225e6820b39d275726c857a3` |
 | `DebugFlowHelper.php` | 1.1.0 | `ee763d210b8883c5e8a483e51f6a87e9cefeee73a89f6ef7bc7b4cfd61e28005` |
-| `DebugHelper.php` | 1.0.3 | `b58cd75c9c2c01fc0a6e2610b3f41d817e9799400f08179d380eaa81791864e3` |
+| `DebugHelper.php` | 1.0.4 | `4259c0424d762d98fe37445658b86c559a860dfb0baafc5fcefede21c6c1107f` |
 | `IPSViewControlThemeHelper.php` | 1.0.3 | `7be5f3300ebf0562f818b050a53cfa67d7631a30e3d62f1ab41525501604fac6` |
 | `IPSViewStylePresetHelper.php` | 1.0.1 | `770bfc48051a908b55e931f6d4eba6e8984ba73b4aa78cd987470006c7b3a9e7` |
 | `IPSViewFontCatalogHelper.php` | 1.1.0 | `cddb6f51b2d4ceb76d8b291204d26fa17d7ccf4711c3f4f462ec7f73f5514c25` |
-| `IPSViewStyleConfigurationHelper.php` | 1.1.0 | `e6f558a0dee301d251d2f5845ebdedb765dc07ca5352427d1e08792d940629b7` |
-| `HelperTranslationHelper.php` | 1.0.0 | `d3deee581eca9f8eb11e9adce060170227a2dc836ee898bd134f93d27604f639` |
+| `IPSViewStyleConfigurationHelper.php` | 1.1.1 | `1b367ca24374d5cd0eb0fe1db9289b5f1ed1c4ea47e44197388792a9dbfe9a62` |
+| `HelperTranslationHelper.php` | 1.0.1 | `513bad1084c3b4d58a05757ce4d080698d17dc26f2541a93de7929205f5a0e2e` |
 | `IPSViewStyleProfileHelper.php` | 1.0.1 | `eca6aa486d60b0db11cc7db0b486dc5b1723c49e26c23fe72465a33cf73f453d` |
-| `IPSViewStyleHelper.php` | 1.6.9 | `44140d34f866a59808948d29849de23a5bc2b1441df1fdc92df6f39d97e90e21` |
+| `IPSViewStyleHelper.php` | 1.6.10 | `16773fc594ae3b6df9b7d352611ec79a02c4c7089466769c94b77b1f90cdc7d9` |
 
 Die Kopien werden bewusst mit der Library ausgeliefert; zur Laufzeit besteht keine externe Abhängigkeit.
