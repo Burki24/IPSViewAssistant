@@ -3,10 +3,10 @@
     "source_repository": "Burki24/Symcon_ModuleHelper",
     "helpers": {
         "ConfigurationFormHelper": {
-            "version": "1.0.2",
-            "sha256": "852803dccc90b62a28c09a755814743dacc8d7be225e6820b39d275726c857a3",
+            "version": "1.0.3",
+            "sha256": "532c26b557dff545b1a7ea3a845729a932fb65321d62d6276374a33de959deba",
             "path": "libs/helper/ConfigurationFormHelper.php",
-            "source_sha": "657dc31a23bf529cc019682c0099d48418f9acc1"
+            "source_sha": "ce2038f4d5f82d32b7c2c8cfc388fc31a0057e96"
         },
         "IPSViewControlThemeHelper": {
             "version": "1.0.3",
@@ -282,10 +282,10 @@
                 },
                 {
                     "name": "HelperTranslationHelper",
-                    "version": "1.0.1",
-                    "sha256": "513bad1084c3b4d58a05757ce4d080698d17dc26f2541a93de7929205f5a0e2e",
+                    "version": "1.0.2",
+                    "sha256": "7c0184b51923e3f4f78fb150d403ea092b0117b0b01fb5c04fdc4568b269ebdd",
                     "path": "libs/helper/HelperTranslationHelper.php",
-                    "source_sha": "657dc31a23bf529cc019682c0099d48418f9acc1"
+                    "source_sha": "ce2038f4d5f82d32b7c2c8cfc388fc31a0057e96"
                 },
                 {
                     "name": "IPSViewFontCatalogHelper",
@@ -426,10 +426,10 @@
             "dependencies": [
                 {
                     "name": "DebugHelper",
-                    "version": "1.0.4",
-                    "sha256": "4259c0424d762d98fe37445658b86c559a860dfb0baafc5fcefede21c6c1107f",
+                    "version": "1.0.5",
+                    "sha256": "a3db963c500a56d7daaa6cab71fe51f236d9859c93cb75cc9100e9f47dc93d04",
                     "path": "libs/helper/DebugHelper.php",
-                    "source_sha": "657dc31a23bf529cc019682c0099d48418f9acc1"
+                    "source_sha": "ce2038f4d5f82d32b7c2c8cfc388fc31a0057e96"
                 }
             ]
         }
