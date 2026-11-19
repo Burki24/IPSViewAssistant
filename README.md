@@ -7,6 +7,8 @@
 [![Check Style](https://github.com/Burki24/IPSViewAssistant/actions/workflows/style.yml/badge.svg?branch=main)](https://github.com/Burki24/IPSViewAssistant/actions/workflows/style.yml?query=branch%3Amain)
 [![Run Tests](https://github.com/Burki24/IPSViewAssistant/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/Burki24/IPSViewAssistant/actions/workflows/tests.yml?query=branch%3Amain)
 
+[![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](#spenden)
+
 IPSView Assistant erleichtert das Erstellen und Gestalten von IPSView-Projekten direkt in Symcon.
 
 Ein übersichtlicher Schnellstart führt mit Einsatzprofilen für Wandtablet, Tablet, Smartphone und Browser, einem optionalen zwei- oder dreispaltigen Start-Raster und einem wählbaren Design durch die grundlegenden Einstellungen. Ein Startcheck prüft die Konfiguration vor der Erstellung und erlaubt das bewusste Überschreiben einer eindeutig erkannten gleichnamigen IPSView; im Expertenmodus können bestehende Views als separate Designkopie neu gestaltet werden. Das Original bleibt unverändert.
@@ -20,3 +22,9 @@ Folgende Module enthält die Bibliothek:
 - Symcon ab Version 9.0
 - Installiertes und lizenziertes IPSView (Standard oder Professional)
 - IPSView Designer zum Öffnen, Bearbeiten und Speichern der erzeugten View; ohne erkannten Designer bleibt die Erstellung mit einem gelben Startcheck-Hinweis möglich
+
+## Spenden
+
+Mit einer freiwilligen Spende kannst du die Weiterentwicklung dieses Projekts unterstützen.
+
+[![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](https://www.paypal.me/BurkhardKneiseler)
